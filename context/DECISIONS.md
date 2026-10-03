@@ -1,5 +1,35 @@
 # Decisions and constraints
 
+## User-authorized team handoff - 2026-10-04T02:07:20+05:30
+
+User states laptop has no NeoPixel and physical hardware testing belongs to team.
+Do not ask for a physical laptop LED check. Phase3 mock checks printed UDP states.
+User wants remote software handoff for testing now; preserve live acceptance as
+pending and allow testing commit before that check. This is an explicit exception
+to holding the commit until live acceptance, not permission to mark complete or
+advance hardware gates. Session A supplies software; Session B owns firmware.
+
+---
+
+Prior entries below are historical; this update controls the current handoff.
+
+## Phase 3 decisions - 2026-10-04T01:38:42+05:30
+
+Use UDP audio by default to exercise the final hardware interface. --mic laptop
+is diagnostic. --mock changes hosts only; shared ports/PCM/HTTP remain unchanged.
+Photo jobs run separately while centering so tracking/audio continue; moves pause
+for capture. Burst centers once then captures3 with400ms spacing. Timer gives3
+one-second-spaced blue flashes before shooting. Save succeeds before ACK; failed
+ACK is retried before another capture to avoid duplicating held images.
+Single app writer per photo directory, preserve orphan/restart numbering and refuse
+corrupt metadata. speaker_enabled defaults false; eSpeak NG/eSpeak optional,
+missing/disabled synthesis no-op. No firmware/pin/IP decisions made here.
+
+---
+
+Earlier entries below are historical snapshots; this current software update
+takes precedence. Session B records are preserved.
+
 ## Firmware Session B authorization - 2026-10-04
 
 User requested starting FIRMWARE_PLAN.md, selecting Session B for this task.
@@ -144,3 +174,65 @@ retune confidence if necessary and repeat real command/audio acceptance.
 Session B's firmware/STATUS.md records explicit user authorization for shared
 root context updates. That overrides firmware-only edit guidance for those
 context maintenance files; firmware implementation remains exclusively B-owned.
+
+## Board facts update - 2026-10-04
+
+User identifies the camera board as ESP32 S3 CAM DEVKIT N16R8 DUAL PORT WITH
+2MP CAMERA and reports servos connected to GPIO 1/2. Preserve planned mapping
+pan=GPIO 1, tilt=GPIO 2; wiring report is not a completed servo/power test.
+Exact-name seller listing found: Tomson Electronics SKU SEN-29083, 16MB flash,
+8MB PSRAM, UART+OTG USB, RHYX M21-45 2MP camera:
+https://www.tomsonelectronics.com/products/esp32-s3-cam-devkit-n16r8-dual-port-with-2mp-camera
+No board-specific camera GPIO map established from that listing. Do not assume
+ESP32S3_EYE or another core camera profile merely from the N16R8 module label.
+Obtain seller schematic/pin map or matching board documentation before F2.
+Network clarification: user notes live S3/C3 reachability can only be checked
+once Wi-Fi firmware is flashed. Defer live connectivity verification to F2/F3;
+static network values can be configured beforehand once the subnet is known.
+Other F0 checks are ongoing per user. F0 DONE not received; F1 not started.
+Next action: await remaining F0 toolchain/board facts and F0 DONE; obtain actual
+camera pin map before camera implementation. No flash, commit or push here.
+
+## Confirmed wiring and sensor - 2026-10-04
+
+User explicitly confirms pan=GPIO 1, tilt=GPIO 2, and camera sensor=OV3660
+on the ESP32 S3 CAM DEVKIT N16R8 dual-port board. OV3660 supersedes the earlier
+2MP/RHYX seller description for this user's installed sensor. Sensor model
+confirmation does not establish camera bus/control GPIO wiring; actual board
+camera pin map remains pending before F2. Do not assume a core camera profile.
+F0 DONE not received; other F0 checks remain pending. No F1 implementation,
+flashing, new compile check, commit or push in this update.
+Next action: await remaining F0 confirmation and F0 DONE, then implement F1.
+Live S3/C3 network verification remains deferred until Wi-Fi firmware flashing.
+
+## Camera pinout evidence - 2026-10-04
+
+User supplied an ESP32-S3-CAM N16R8 pinout diagram. Read directly from it:
+SIOD=4, SIOC=5, XCLK=15, VSYNC=6, HREF=7, PCLK=13;
+D0/Y2=11, D1/Y3=9, D2/Y4=8, D3/Y5=10, D4/Y6=12, D5/Y7=18,
+D6/Y8=17, D7/Y9=16. All 14 labelled camera signals exactly match the installed
+Arduino ESP32 core 3.3.11 CameraWebServer CAMERA_MODEL_ESP32S3_EYE entry.
+This is pin-map correspondence, not identification as a physical S3-EYE board.
+Diagram does not label camera PWDN/RESET. Core entry uses -1/-1; those two
+connections remain unverified and must not be represented as image-confirmed.
+GPIO 1 and 2 have no camera assignment in this diagram; retain user-confirmed
+pan=1 and tilt=2. Camera sensor remains user-confirmed OV3660.
+No camera implementation, physical test or flashing performed. F0 DONE still
+pending. Next action: await remaining F0 confirmation/resume phrase, then F1.
+At F2 use this documented map, resolve PWDN/RESET via board documentation or
+team confirmation, and verify camera initialization on hardware. No commit/push.
+
+## Firmware documentation commit preparation - 2026-10-04
+
+User requested commands to commit/push the documented board facts for team
+review. Existing HEAD: 73077515675bfa622279da0254a7ae7ca674f8ad.
+Intended message: fw docs: record board wiring and camera pinout for team review.
+This is a documentation handoff, not new executable firmware or F0 completion.
+F0 DONE and remaining checks pending; F1 sketches not implemented. Camera
+PWDN/RESET still unverified. Live connectivity deferred to Wi-Fi flashing.
+Git diff --check passed. No new compile/hardware tests run for these records.
+Shared context currently contains app team's concurrent Phase 3 records:
+selectively stage only Session B updates there and preserve app implementation.
+Next action: user reviews/stages firmware documentation and corresponding shared
+context updates, commits/pushes; then await remaining F0 checks and F0 DONE.
+No staging, commit or push performed by this agent for this preparation.

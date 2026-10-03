@@ -1,5 +1,61 @@
 # Verification and runnable commands
 
+## Team handoff evidence - 2026-10-04T02:07:20+05:30
+
+Latest automated result:98 passed. Real-model headless HTTP/UDP app smoke exit0.
+No software/dependency changes since those checks; only docs/context refreshed.
+Latest diff whitespace check to run before handoff. Live demo logs are not a pass:
+heard/error light flashes, no verified track/shoot/gallery sequence, camera stream
+unavailable after bounded mock timeout. User clarifies physical hardware checks
+are for team; no local NeoPixel required to observe mock's printed states.
+Team should run context/TEAM_TESTING.md, return spoken tracking/shoot/gallery and
+printed saved results. Physical INMP441/C3/NeoPixel/servo checks remain separately
+pending per appropriate firmware/software hardware gates. Do not claim any real
+hardware result from laptop mocks. No raw media or secrets in tracked handoff.
+
+---
+
+Prior entries below are historical; this update controls the current handoff.
+
+## Live Phase 3 demo launched - 2026-10-04 01:40 +05:30
+
+The actual webcam mock is serving :80/:81. boAt headset device4 sends UDP audio,
+and the app runs --mock --preview with actual models. Gallery8080 returned HTTP200;
+initial indexed photo count0. Visible headset/light console and OpenCV preview
+are open. Each process has a10-minute bound; Q exits app, Ctrl+C exits mocks.
+Ignored logs/phase3-live-processes.json records spawned PIDs; voice/app/camera
+logs are in logs/phase3-live-*.log. No raw audio recording.
+First app launch preceded webcam readiness and exited; restarted successfully
+once camera /status worked. README now requires waiting for Mock camera ready.
+User acceptance question pending: camera track person -> visible crop follows ->
+camera shoot -> photo appears in gallery -> saved white-flash message. No passing
+human observation claimed yet. Next action: review response and live logs; fix
+failures if any, then refresh all context before committing. Do not advance gates.
+
+## Latest software verification - 2026-10-04T01:38:42+05:30
+
+- python -m pytest -q: 98 passed in6.42s (70 regression +28 Phase3).
+- pip check: no broken requirements. Flask3.1.3 installed, already in requirements.
+- git diff --check: passed; rerun before commit.
+- app.main/tools.mock_camera/tools.mock_voice_unit --help: all passed.
+- Synthetic HTTP camera + UDP silence mock + actual ONNX/YuNet/Vosk app
+  --mock --seconds5: exit0. Ignored logs/phase3-smoke-app.log and mock-0/1.log.
+- Tests cover controller math/rate/limits, storage restart/gaps/corruption/failed
+  index writes, state missing-subject/sleep/cancel/timer/burst, save-before-ACK,
+  ACK recovery, real HTTP/MJPEG/UDP, gallery newest-first/full image, and integrated
+  parsed command -> crop move -> capture -> photo/gallery -> saved UDP light.
+- Parsed command injection is automated integration, NOT spoken live acceptance.
+- Remaining: user says camera track person, moves, camera shoot; verify crop
+  follows, gallery8080 holds full photo, voice mock prints saved white flash.
+- Headset boAt device4 available now; default Elgato virtual input. IDs can change.
+  No original built-in mic/distance or INMP441 validation claimed. No raw audio or
+  private media in context/Git; runtime photos/models/logs ignored.
+
+---
+
+Earlier entries below are historical snapshots; this current software update
+takes precedence. Session B records are preserved.
+
 ## Firmware Session B verification - 2026-10-04
 
 - Arduino CLI 1.5.1 official archive SHA256 matched its release checksum.
@@ -219,3 +275,95 @@ setup deviation explicitly. Final MEMS audio clarity, real-mic command recogniti
 confidence tuning and light states still need firmware F3/software Phase 7 checks.
 No claim of final hardware acceptance. git diff --check passed before handing
 the software commit commands to the user. No firmware code or tests changed.
+
+## Firmware Session B push verification - 2026-10-04
+
+User reported committing and pushing firmware preparation for a different
+team to test. Verified HEAD, origin/main and live git ls-remote main all equal
+993e3d5f51fb7ea9d6a8a9212a5e485a3c93151e.
+Message: fw phase 0: prepare toolchain and scaffold for team testing.
+F0 board facts and F0 DONE remain pending; no flashing or F1 work authorized.
+User previously explicitly allowed shared context updates for B. Preserve
+Session A's separately updated software records above. Firmware is now tracked,
+not untracked; earlier Session A ownership descriptions remain historical.
+Next firmware action: await testing team's exact S3 model, free pan/tilt pins,
+confirmed network plan and flashing ports, with F0 DONE. HARDWARE_PLAN.md absent.
+These post-push handoff updates remain local/uncommitted; no additional commit
+or push performed by the agent. Existing software changes remain untouched.
+
+## Network report - 2026-10-04
+
+User supplied Arduino interface addresses:
+172.20.0.1, 172.17.0.1, 172.18.0.1, 172.19.0.1, 192.168.29.199,
+2405:201:f025:d03c:f99c:335:258b:cfa0.
+Recorded as candidate Uno Q addresses, not a confirmed shared-network UNOQ_IP.
+Interface names, shared hotspot subnet/gateway and S3/C3 reachability are unknown.
+Do not select an address from this list or change secrets/config until confirmed.
+User says other checks are ongoing and will confirm once done. F0 DONE has not
+been received. F0 board facts remain pending; no F1 work or flashing performed.
+Next action: await board facts and confirmation of the Uno Q IPv4 address that
+S3/C3 can reach on their shared network, plus the remaining F0 checks/F0 DONE.
+Existing verified HEAD/remote: 993e3d5f51fb7ea9d6a8a9212a5e485a3c93151e.
+This network/handoff update is local and uncommitted; no new commit/push.
+
+## Board facts update - 2026-10-04
+
+User identifies the camera board as ESP32 S3 CAM DEVKIT N16R8 DUAL PORT WITH
+2MP CAMERA and reports servos connected to GPIO 1/2. Preserve planned mapping
+pan=GPIO 1, tilt=GPIO 2; wiring report is not a completed servo/power test.
+Exact-name seller listing found: Tomson Electronics SKU SEN-29083, 16MB flash,
+8MB PSRAM, UART+OTG USB, RHYX M21-45 2MP camera:
+https://www.tomsonelectronics.com/products/esp32-s3-cam-devkit-n16r8-dual-port-with-2mp-camera
+No board-specific camera GPIO map established from that listing. Do not assume
+ESP32S3_EYE or another core camera profile merely from the N16R8 module label.
+Obtain seller schematic/pin map or matching board documentation before F2.
+Network clarification: user notes live S3/C3 reachability can only be checked
+once Wi-Fi firmware is flashed. Defer live connectivity verification to F2/F3;
+static network values can be configured beforehand once the subnet is known.
+Other F0 checks are ongoing per user. F0 DONE not received; F1 not started.
+Next action: await remaining F0 toolchain/board facts and F0 DONE; obtain actual
+camera pin map before camera implementation. No flash, commit or push here.
+
+## Confirmed wiring and sensor - 2026-10-04
+
+User explicitly confirms pan=GPIO 1, tilt=GPIO 2, and camera sensor=OV3660
+on the ESP32 S3 CAM DEVKIT N16R8 dual-port board. OV3660 supersedes the earlier
+2MP/RHYX seller description for this user's installed sensor. Sensor model
+confirmation does not establish camera bus/control GPIO wiring; actual board
+camera pin map remains pending before F2. Do not assume a core camera profile.
+F0 DONE not received; other F0 checks remain pending. No F1 implementation,
+flashing, new compile check, commit or push in this update.
+Next action: await remaining F0 confirmation and F0 DONE, then implement F1.
+Live S3/C3 network verification remains deferred until Wi-Fi firmware flashing.
+
+## Camera pinout evidence - 2026-10-04
+
+User supplied an ESP32-S3-CAM N16R8 pinout diagram. Read directly from it:
+SIOD=4, SIOC=5, XCLK=15, VSYNC=6, HREF=7, PCLK=13;
+D0/Y2=11, D1/Y3=9, D2/Y4=8, D3/Y5=10, D4/Y6=12, D5/Y7=18,
+D6/Y8=17, D7/Y9=16. All 14 labelled camera signals exactly match the installed
+Arduino ESP32 core 3.3.11 CameraWebServer CAMERA_MODEL_ESP32S3_EYE entry.
+This is pin-map correspondence, not identification as a physical S3-EYE board.
+Diagram does not label camera PWDN/RESET. Core entry uses -1/-1; those two
+connections remain unverified and must not be represented as image-confirmed.
+GPIO 1 and 2 have no camera assignment in this diagram; retain user-confirmed
+pan=1 and tilt=2. Camera sensor remains user-confirmed OV3660.
+No camera implementation, physical test or flashing performed. F0 DONE still
+pending. Next action: await remaining F0 confirmation/resume phrase, then F1.
+At F2 use this documented map, resolve PWDN/RESET via board documentation or
+team confirmation, and verify camera initialization on hardware. No commit/push.
+
+## Firmware documentation commit preparation - 2026-10-04
+
+User requested commands to commit/push the documented board facts for team
+review. Existing HEAD: 73077515675bfa622279da0254a7ae7ca674f8ad.
+Intended message: fw docs: record board wiring and camera pinout for team review.
+This is a documentation handoff, not new executable firmware or F0 completion.
+F0 DONE and remaining checks pending; F1 sketches not implemented. Camera
+PWDN/RESET still unverified. Live connectivity deferred to Wi-Fi flashing.
+Git diff --check passed. No new compile/hardware tests run for these records.
+Shared context currently contains app team's concurrent Phase 3 records:
+selectively stage only Session B updates there and preserve app implementation.
+Next action: user reviews/stages firmware documentation and corresponding shared
+context updates, commits/pushes; then await remaining F0 checks and F0 DONE.
+No staging, commit or push performed by this agent for this preparation.
