@@ -1,0 +1,8 @@
+# Uno Q runtime only; no PyTorch or ultralytics.
+opencv-python-headless
+onnxruntime
+vosk
+flask
+pyyaml
+requests
+numpy

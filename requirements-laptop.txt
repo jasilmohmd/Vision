@@ -1,0 +1,12 @@
+# Laptop runtime and model export only. Never install this on the Uno Q.
+opencv-python
+onnxruntime
+vosk
+sounddevice
+flask
+pyyaml
+requests
+numpy
+ultralytics
+# Test runner
+pytest

@@ -1,0 +1,24 @@
+# Example hotspot addresses; confirm the real addresses at Gate 0.
+s3_ip: 192.168.43.101
+c3_ip: 192.168.43.102
+unoq_ip: 192.168.43.103
+camera_http_port: 80
+camera_stream_port: 81
+audio_port: 5005
+light_port: 5006
+shoot_port: 5007
+gallery_port: 8080
+detect_every_n_frames: 5
+dead_zone: 0.08
+gain_deg: 12
+max_step_deg: 4
+pan_min: 10
+pan_max: 170
+tilt_min: 40
+tilt_max: 140
+invert_pan: false
+invert_tilt: false
+vosk_conf_threshold: 0.7
+centre_timeout_s: 1.5
+# Relative paths resolve from the configuration file's directory.
+photos_dir: photos
