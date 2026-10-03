@@ -11,7 +11,7 @@ Compile probes use generic chip profiles; actual S3 model/PSRAM/pins await F0.
 Credentials are entered locally into ignored secrets.h; never put passwords in
 chat/context. Confirm actual network addresses before using them.
 
-Updated: 2026-10-04T01:04:13+05:30 (Asia/Calcutta).
+Updated: 2026-10-04T01:17:16+05:30 (Asia/Calcutta).
 
 ## Mandatory user rules
 
@@ -131,3 +131,16 @@ headset setup as Phase 2 acceptance or running the original mic/distance check.
 Await that answer before phase completion/commit. No Phase 3 work. Firmware B
 has its own new files; none edited or staged in this task. Earlier active-run
 entries above are historical and superseded by this completed headset result.
+
+## Accepted temporary microphone setup (2026-10-04)
+
+User accepted the passing headset test as the current Phase 2 setup after the
+final hardware path was explained, then asked for commit commands. Do not demand
+another temporary built-in microphone test before the software phase commit.
+Do not claim the original built-in-mic/distance test or INMP441 passed. Real
+INMP441/C3 sends the contract PCM over UDP to Uno Q; select --mic udp at Phase 7,
+retune confidence if necessary and repeat real command/audio acceptance.
+
+Session B's firmware/STATUS.md records explicit user authorization for shared
+root context updates. That overrides firmware-only edit guidance for those
+context maintenance files; firmware implementation remains exclusively B-owned.

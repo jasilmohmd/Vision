@@ -19,7 +19,7 @@
   portable CLI, build output and check.wav are excluded. Git status reviewed;
   pre-existing software changes remain uncommitted and were not staged.
 
-Updated: 2026-10-04T01:04:13+05:30 (Asia/Calcutta).
+Updated: 2026-10-04T01:17:16+05:30 (Asia/Calcutta).
 
 ## Phase 1 executed checks (2026-10-04)
 
@@ -205,3 +205,17 @@ headset setup as Phase 2 acceptance or running the original mic/distance check.
 Await that answer before phase completion/commit. No Phase 3 work. Firmware B
 has its own new files; none edited or staged in this task. Earlier active-run
 entries above are historical and superseded by this completed headset result.
+
+## Accepted Phase 2 result / limitations (2026-10-04)
+
+User accepted the temporary headset test workflow after clarification of the
+final INMP441/C3/UDP integration and asked for commit commands. Headset checks:
+19/19 phrases; 20.09 seconds background; 0 command events; threshold 0.7.
+Latest regression: 70 passed after input display/levels change. No application
+code changed afterward, so tests were not repeated for this context-only update.
+
+Built-in laptop mic at 0.5-1 m was not verified. Record this accepted temporary
+setup deviation explicitly. Final MEMS audio clarity, real-mic command recognition,
+confidence tuning and light states still need firmware F3/software Phase 7 checks.
+No claim of final hardware acceptance. git diff --check passed before handing
+the software commit commands to the user. No firmware code or tests changed.

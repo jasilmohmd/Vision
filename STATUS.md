@@ -5,12 +5,13 @@
 F0 started at user request; toolchain/scaffold ready, both generic compile probes
 passed. Board facts and F0 DONE pending; F1-F5 not started. No flashing or
 firmware commit. See firmware/STATUS.md. User allowed shared context updates.
-Software acceptance below remains pending independently.
+That firmware paragraph is a pre-commit snapshot: preparation committed as
+993e3d5; F0 board facts remain pending. Current software result is below.
 
 - Phase 0: complete and committed (de1dfad).
 - Phase 1: complete and committed (891274f); all acceptance checks passed.
-- Phase 2: implemented; 70 tests and headset live checklist passed; microphone acceptance choice pending.
-- Updated: 2026-10-04T01:04:13+05:30 (Asia/Calcutta).
+- Phase 2: complete for accepted temporary headset setup; 70 tests passed; ready for user commit.
+- Updated: 2026-10-04T01:17:16+05:30 (Asia/Calcutta).
 
 ## What works
 
@@ -171,3 +172,17 @@ headset setup as Phase 2 acceptance or running the original mic/distance check.
 Await that answer before phase completion/commit. No Phase 3 work. Firmware B
 has its own new files; none edited or staged in this task. Earlier active-run
 entries above are historical and superseded by this completed headset result.
+
+## Phase 2 accepted / ready for user commit
+
+User accepted the temporary headset workflow after confirming the final
+INMP441 -> ESP32-C3 -> UDP -> Uno Q path, and requested commit commands.
+Headset result: all 19 commands, 20.09-second background check, zero false events;
+latest regression 70 passed. Original built-in-mic 0.5-1 m test unverified; this
+is an accepted temporary-setup deviation. Final real-MEMS checks are still due
+at firmware F3/software Phase 7; no final hardware acceptance claimed.
+
+Context updated before commit handoff. Intended message: phase 2: laptop voice
+and recognition. Current HEAD 993e3d5 (firmware preparation). No software
+commit/push by this session; Phase 3 not started. Earlier pending-choice/active
+check entries above are historical and superseded by this acceptance record.

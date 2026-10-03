@@ -17,9 +17,10 @@
 3. **Use mocks until the real hardware exists.** Every hardware-facing component has a mock so the whole app runs on a laptop.
 4. **Keep `STATUS.md` updated** after every phase: phase, date/time, what works, what's pending, known issues.
 5. **Commit after every phase** with a message like `phase 3: control core + mocks`.
-6. **Never guess board-specific pin maps.** If a pin or board model is unknown, ask the user.
+6. **Never guess IPs or ports.** If one is unknown, ask the user.
 7. **Never install PyTorch / ultralytics on the Uno Q.** Export models on the laptop; run them on the Uno Q with `onnxruntime` / OpenCV.
 8. Prefer small, testable modules. Every module gets a quick test or a runnable demo script.
+9. **Firmware is not yours.** A parallel session builds it from `FIRMWARE_PLAN.md`. Never edit `firmware/`. If the interface contract (§2) needs a change, stop and ask the user, since the firmware depends on it.
 
 ---
 
@@ -108,12 +109,10 @@ photo-rig/
 │   ├── download_models.sh      # YuNet ONNX + Vosk small EN model
 │   ├── mock_camera.py          # laptop webcam served with the S3 contract (+ simulated pan/tilt crop)
 │   ├── mock_voice_unit.py      # laptop mic -> UDP 5005; prints light states from 5006
-│   ├── check_camera.py         # hits every S3 endpoint, reports pass/fail
-│   ├── check_voice_unit.py     # records 5 s of UDP audio to WAV, sends every light state
 │   └── bench_vision.py         # FPS of detector/tracker on current machine
-├── firmware/
-│   ├── camera_head/camera_head.ino
-│   └── voice_unit/voice_unit.ino
+├── firmware/                   # owned by Session B (FIRMWARE_PLAN.md); do not edit
+│   ├── camera_head/  voice_unit/  bench/
+│   └── tools/check_camera.py, check_voice_unit.py
 ├── deploy/
 │   ├── install_unoq.sh
 │   └── photo-rig.service       # systemd unit
@@ -197,29 +196,12 @@ Legend: 💻 = laptop only · 🧠 = Uno Q · 🔌 = needs real hardware · 🛑
 
 ---
 
-### Phase 4 — Firmware code (compile only) 💻
+### Phase 4 — Firmware (handled by Session B, skip) 🚫
 
-Write both sketches now so the hardware team can flash them as soon as wiring is done. Use Arduino-ESP32 core 3.x.
-
-**`firmware/camera_head/camera_head.ino`**
-- Board camera pin map selected by a `#define` at the top. **Leave it as a clearly marked TODO and ask the user for the board model at Gate 0.**
-- Requires PSRAM. Stream at QVGA (320×240) on port 81; for `/capture` switch frame size to the highest reliable setting, grab, switch back.
-- Servos on **GPIO 1 (pan)** and **GPIO 2 (tilt)** as `#define`s (user confirms at Gate 0), 50 Hz (ESP32Servo library or LEDC). Clamp angles to the same limits as `config.yaml`. Centre on boot.
-- The servos are powered from the S3's own 5V pin, so keep current spikes small: move at most a few degrees per command, and **don't move the servos while `/capture` is grabbing a frame**.
-- Hold the last capture in a PSRAM buffer until `/ack`.
-- Static IP on the hotspot; Wi-Fi reconnect loop that never gives up; `/status` endpoint.
-
-**`firmware/voice_unit/voice_unit.ino`**
-- I2S (ESP_I2S) from INMP441: SCK GPIO 4, WS GPIO 5, SD GPIO 6, L/R tied to GND (left channel), 16 kHz, 32-bit slots → convert to 16-bit with a configurable shift/gain.
-- Send 512-sample packets to `UNOQ_IP:5005` over UDP.
-- Listen on UDP 5006; drive one WS2812 on GPIO 7 per the colour map (non-blocking timers for flashes/blinks).
-- Optional IR on GPIO 1: hold ≥ 1 s → send `shoot` to `:5007`, 2 s lockout.
-- Static IP, Wi-Fi reconnect loop; show `reconnect` colour while offline.
-- Put SSID, password and IPs in a `secrets.h` (gitignored) with a `secrets.example.h`.
-
-**Acceptance**
-- Both sketches compile (`arduino-cli compile` for ESP32S3 and ESP32C3 targets, or the IDE).
-- `tools/check_camera.py` and `tools/check_voice_unit.py` written and tested against the mocks.
+Firmware is built in a **separate session** that follows `FIRMWARE_PLAN.md`, driven by the hardware team, in parallel with you.
+- **Do not create or edit anything in `firmware/`.**
+- Make sure `tools/mock_camera.py` and `tools/mock_voice_unit.py` follow the contract in §2 exactly; that's what lets your app switch to the real boards at Gates A and B with only an IP change.
+- The hardware checks you'll use later are `firmware/tools/check_camera.py` and `firmware/tools/check_voice_unit.py`, written by Session B. You may run them; don't edit them.
 
 ---
 
@@ -230,8 +212,7 @@ Write both sketches now so the hardware team can flash them as soon as wiring is
 - [ ] Phone hotspot is set up (name + password noted).
 - [ ] Arduino Uno Q is booted, joined to the hotspot, and reachable over SSH from the laptop.
 - [ ] Tell me the Uno Q's IP address (or confirm the fixed IP plan).
-- [ ] Tell me the **exact ESP32-S3 camera board model** (e.g. Freenove ESP32-S3-WROOM CAM, XIAO ESP32S3 Sense, generic ESP32-S3-CAM) and confirm **GPIO 1 (pan) and GPIO 2 (tilt)** are free on it (or give replacements).
-- [ ] Confirm the C3 pins match the plan: mic SCK 4 / WS 5 / SD 6, NeoPixel 7, IR 1.
+- [ ] Tell me the static IPs planned for the S3 and C3 (the firmware session sets them on the boards).
 
 **Troubleshooting:** Uno Q not booting → use a USB-C cable and supply rated 5V 3A. Can't find its IP → check the hotspot's connected-devices list.
 
@@ -240,7 +221,6 @@ Write both sketches now so the hardware team can flash them as soon as wiring is
 ### Phase 5 — Deploy to the Uno Q (against laptop mocks) 🧠
 
 **Tasks**
-- Fill the S3 pin map from Gate 0 answers; change the servo pins only if the user gave replacements.
 - `deploy/install_unoq.sh`: apt packages if needed, venv, `pip install -r requirements-unoq.txt`, copy `models/` (ONNX, YuNet, Vosk) from the laptop via `scp`.
 - Run the app on the Uno Q while `mock_camera.py` and `mock_voice_unit.py` run on the laptop (point `config.yaml` at the laptop's IP).
 - Run `tools/bench_vision.py` on the Uno Q. If too slow: lower input size, raise `detect_every_n_frames`, prefer KCF over CSRT.
@@ -261,9 +241,9 @@ Write both sketches now so the hardware team can flash them as soon as wiring is
 - [ ] S3 powered from power bank A, one port, with a short thick USB cable (or the laptop while flashing).
 - [ ] S3 5V pin stays above about 4.6V while both servos move.
 - [ ] Servos mounted on the pan-tilt bracket, camera attached, bracket free to move.
-- [ ] Plug the S3 into this laptop over USB and tell me — I'll flash `camera_head.ino` (or flash it yourself and tell me it's done).
+- [ ] The firmware session has flashed `camera_head.ino` and its Gate F2 passed. Tell me the S3's IP.
 
-**After you reply, I will run `tools/check_camera.py` and report every endpoint.**
+**After you reply, I will run `firmware/tools/check_camera.py --ip <S3_IP>` and report every endpoint.**
 
 **Troubleshooting:** S3 resets when servos move → shorter/thicker USB cable, check capacitor polarity, reduce `max_step_deg`; last resort, feed the servo rail from the bank's second port (keep the shared ground). Servos twitch → shared ground missing. No stream → PSRAM not enabled in board settings or wrong pin map.
 
@@ -272,7 +252,7 @@ Write both sketches now so the hardware team can flash them as soon as wiring is
 ### Phase 6 — Real camera integration 🧠🔌
 
 **Tasks**
-- Flash `camera_head.ino` (with user confirmation). Run `check_camera.py`.
+- Run `firmware/tools/check_camera.py` against the real S3 (already flashed by Session B). Report any firmware bugs to the user for Session B; don't fix them here.
 - Point the app at the real S3. Tune `invert_pan/tilt`, `dead_zone`, `gain_deg`, `max_step_deg` until tracking is smooth with no oscillation.
 - Verify `/capture` + `/ack` and the stream recovering after `/capture`.
 - Keep using `mock_voice_unit.py` for voice.
@@ -290,9 +270,9 @@ Write both sketches now so the hardware team can flash them as soon as wiring is
 - [ ] NeoPixel: DIN → 330 Ω → GPIO 7, VCC → 5V, GND → GND.
 - [ ] (Optional) IR sensor: VCC 3V3, GND, OUT GPIO 1.
 - [ ] C3 powered by USB (for now) or LiPo → TP4056 OUT+/OUT− → C3 5V/GND (100–470 µF capacitor only if it resets).
-- [ ] Plug the C3 into this laptop and tell me — I'll flash `voice_unit.ino` (or flash it yourself and confirm).
+- [ ] The firmware session has flashed `voice_unit.ino`, its Gate F3 passed, and `UNOQ_IP` in the C3's `secrets.h` now points at the Uno Q. Tell me the C3's IP.
 
-**After you reply, I will run `tools/check_voice_unit.py`: it records 5 s of your voice to `check.wav` and cycles every light colour. Listen to the WAV and confirm it sounds clear.**
+**After you reply, I will stop the app briefly and run `firmware/tools/check_voice_unit.py` on the Uno Q: it records 5 s of your voice to `check.wav` and cycles every light colour. Listen to the WAV and confirm it sounds clear.**
 
 **Troubleshooting:** silence → L/R pin floating or wrong I2S pins. Loud hiss/clipping → adjust the bit shift/gain in firmware. NeoPixel dark → check 5V and data direction (DIN, not DOUT).
 
@@ -301,7 +281,7 @@ Write both sketches now so the hardware team can flash them as soon as wiring is
 ### Phase 7 — Real voice integration 🧠🔌
 
 **Tasks**
-- Flash `voice_unit.ino`. Run `check_voice_unit.py`.
+- Run `firmware/tools/check_voice_unit.py` on the Uno Q (C3 already flashed by Session B).
 - Switch the app to `UdpAudioSource` from the real C3. Retune `vosk_conf_threshold` with the real mic position (5–15 cm from the mouth).
 - Verify the full light-state flow on the real NeoPixel.
 - Optional: IR `shoot` on `:5007`.

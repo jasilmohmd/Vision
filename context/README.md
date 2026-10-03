@@ -1,7 +1,7 @@
 # Project context - start here
 
 This folder is the durable handoff for any new session. Read it before changing
-code. Updated: 2026-10-04T00:14:29+05:30 (Asia/Calcutta).
+code. Updated: 2026-10-04T01:17:16+05:30 (Asia/Calcutta).
 
 ## Read order
 
@@ -11,7 +11,9 @@ code. Updated: 2026-10-04T00:14:29+05:30 (Asia/Calcutta).
 4. PROJECT.md - scope, architecture, contracts and file map.
 5. DECISIONS.md - choices that must be preserved and unresolved questions.
 6. TESTING.md - commands, last observed results and remaining acceptance.
-7. ../SOFTWARE_PLAN.md - authoritative full tasks and word-for-word hardware gates.
+7. [PLAN_REVIEW.md](PLAN_REVIEW.md) - software/firmware ownership, revised gates and review findings.
+8. ../SOFTWARE_PLAN.md - authoritative software tasks and word-for-word gates.
+9. ../FIRMWARE_PLAN.md - read for cross-session dependencies; Session B owns implementation.
 
 ## Mandatory maintenance
 
@@ -36,3 +38,6 @@ Do not label acceptance complete merely because code or automated tests pass.
 The plan defines desired behavior; this folder describes actual progress and
 accepted decisions. If records conflict, inspect code/Git and ask only for
 information that cannot be verified. Preserve explicit user instructions.
+
+Session A never edits firmware/. Session B has independent F0-F5 phases.
+See PLAN_REVIEW.md for the unresolved shared-context maintenance boundary.

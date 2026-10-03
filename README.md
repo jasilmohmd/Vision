@@ -78,3 +78,63 @@ Model/export references: [Ultralytics ONNX export](https://docs.ultralytics.com/
 [OpenCV YuNet](https://github.com/opencv/opencv_zoo/tree/main/models/face_detection_yunet),
 [Vosk models](https://alphacephei.com/vosk/models),
 and [FaceDetectorYN API](https://docs.opencv.org/4.x/df/d20/classcv_1_1FaceDetectorYN.html).
+
+
+## Phase 2 voice (PowerShell)
+
+```powershell
+.\.venv\Scripts\python.exe -m pip install vosk sounddevice
+.\.venv\Scripts\python.exe -m tools.demo_voice --list-devices
+.\.venv\Scripts\python.exe -m tools.demo_voice --list-commands
+.\.venv\Scripts\python.exe -m tools.demo_voice --mic laptop --device 3
+```
+
+Device 3 was this laptop's AMD microphone array during development; the default
+input was a virtual Elgato line. Check device IDs on each machine and choose the
+actual microphone; this does not change the system default. Ctrl+C stops the demo.
+Use --seconds 30 for a finite run. Events are printed as JSON: heard, command
+(with a typed action/target/direction/small-step flag), or low_confidence.
+Nothing moves the camera in Phase 2; app.main still only validates configuration.
+
+Vosk uses all 19 exact "camera <command>" phrases plus [unk]. A final command
+requires the leading wake word and confidence at or above config.vosk_conf_threshold
+for every word, including "camera". Empty/[unk] results are ignored; other rejected
+non-empty results emit low_confidence. Partial "camera" emits heard once per utterance.
+
+Run the guided acceptance check from 0.5-1 m away:
+
+```powershell
+.\.venv\Scripts\python.exe -m tools.demo_voice --device 3 --checklist --report logs/phase2-voice-check.json
+```
+
+Say each prompted phrase, pause for its command event and repeat if rejected.
+After all 19 commands, talk normally for the prompted 20-second background test,
+without saying command phrases. It should produce no command events. The summary
+records coverage and false commands, not raw audio or chatter transcripts. A
+passing summary still needs confirmation that the distance and chatter conditions
+were actually exercised. No recording is saved. Ctrl+C produces an incomplete
+summary if you stop early. --background-seconds can adjust the test duration.
+
+UDP mode is also runnable without real hardware:
+
+```powershell
+.\.venv\Scripts\python.exe -m tools.demo_voice --mic udp --seconds 30
+```
+
+It binds config.audio_port (5005 by default) on 0.0.0.0. Each datagram must contain
+512 mono s16le samples (1024 bytes) at 16 kHz. A bounded arrival-order queue buffers
+jitter, drops old backlog and inserts 32 ms silence chunks for missing playout slots.
+The raw contract has no sequence numbers/timestamps, so it cannot reconstruct packet
+reordering or exact losses. Before any valid packet, read_chunk returns empty on
+short timeouts. Closing the source releases its receiver thread/socket.
+
+API references: [Vosk microphone example](https://github.com/alphacep/vosk-api/blob/master/python/example/test_microphone.py),
+[Vosk recognizer API](https://github.com/alphacep/vosk-api/blob/master/python/vosk/__init__.py),
+[sounddevice raw streams](https://python-sounddevice.readthedocs.io/en/latest/api/raw-streams.html).
+
+
+For no-response diagnosis, demo_voice --levels prints input RMS/peak once per
+second and the selected input name. Verify --list-devices after connecting a
+headset; IDs can change. Nonzero changing levels show capture activity, not
+successful recognition. Headset tests are diagnostic and do not by themselves
+replace the planned laptop-microphone acceptance at 0.5-1 m.

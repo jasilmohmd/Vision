@@ -11,13 +11,13 @@ Exact camera board/profile, pins, IPs/ports and F0 DONE remain pending.
 F0 is not complete; no F1 work, upload, commit or push. Software progress below
 is preserved. No app tests rerun for firmware scaffolding.
 
-Updated: 2026-10-04T01:04:13+05:30 (Asia/Calcutta).
+Updated: 2026-10-04T01:17:16+05:30 (Asia/Calcutta).
 
 | Phase | State | Remaining acceptance |
 | --- | --- | --- |
 | 0 Scaffold/config/contract | Complete; de1dfad | None |
 | 1 Laptop vision | Complete; 891274f | None |
-| 2 Laptop voice | Headset live check passed; uncommitted | Accept headset setup or run original laptop-mic/distance check |
+| 2 Laptop voice | Complete for accepted temporary headset setup; ready to commit | Final INMP441 check belongs to later integration |
 | 3 Control/mocks/gallery | Not started | All planned checks |
 | 4 Firmware | Skipped by Session A; owned by Session B | Independent F0-F5 checks; no firmware evidence yet |
 | 5 Uno Q with mocks | Not started | Gate 0 first; all checks |
@@ -151,3 +151,17 @@ headset setup as Phase 2 acceptance or running the original mic/distance check.
 Await that answer before phase completion/commit. No Phase 3 work. Firmware B
 has its own new files; none edited or staged in this task. Earlier active-run
 entries above are historical and superseded by this completed headset result.
+
+## Phase 2 completion / user commit handoff (2026-10-04)
+
+Following the passing headset report, explained the final INMP441/C3 UDP path
+and later real-hardware acceptance. User accepted that workflow and requested
+commit commands. Temporary headset recognition is accepted for Phase 2; the
+unverified built-in mic/distance check is an acknowledged deviation, not a pass.
+Context updated before handing over commands. Intended message:
+phase 2: laptop voice and recognition. Existing HEAD 993e3d5 (B's firmware
+preparation commit). No software commit/push by this session; Phase 3 not started.
+
+Firmware preparation is now committed by B as 993e3d5. Earlier firmware entries
+above are pre-commit snapshots; F0 board facts and F0 DONE still remain pending
+per firmware/STATUS.md. User explicitly allowed shared context maintenance for B.

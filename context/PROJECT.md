@@ -9,7 +9,7 @@ firmware/.gitignore excludes secrets, toolchain, builds and check media.
 firmware/toolchain_probe/ and tools/verify_toolchain.ps1 prove compilation only,
 without pin maps, network or uploads. Bench/check implementations await F1-F3.
 
-Updated: 2026-10-04T00:43:16+05:30 (Asia/Calcutta).
+Updated: 2026-10-04T01:17:16+05:30 (Asia/Calcutta).
 
 ## Purpose
 
@@ -109,3 +109,11 @@ firmware/tools/check_voice_unit.py (A may run, never edit). Shared contract in
 SOFTWARE_PLAN.md section 2 remains authoritative. Unknown IPs must be confirmed.
 Gate 0 is network readiness; board pin/model confirmation is Session B Gate F0.
 See PLAN_REVIEW.md for missing hardware plan and other cross-session findings.
+
+## Confirmed final voice path / current test setup
+
+Final hardware remains INMP441 MEMS -> ESP32-C3 SuperMini -> Wi-Fi UDP 5005 ->
+Uno Q UdpAudioSource/Vosk. 16 kHz mono s16le, 512 samples/1024 bytes per packet.
+Firmware B owns I2S conversion/transmission; software A owns reception and
+recognition. Current headset is a temporary accepted Phase 2 test input, not
+final hardware. Its passed checklist does not replace firmware F3/Phase 7 checks.

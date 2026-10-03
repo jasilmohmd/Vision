@@ -23,3 +23,18 @@ future commit hash. Do not put credentials or private media in context files.
 
 Before ending a session, update the handoff even when no commit is made.
 Do not mark a phase complete or start the next phase while acceptance is pending.
+
+## Software session ownership (updated plans)
+
+This session is Session A. Follow the updated SOFTWARE_PLAN.md; never create,
+edit, move or delete files inside firmware/. Software Phase 4 is skipped.
+Read context/PLAN_REVIEW.md for cross-session dependencies. FIRMWARE_PLAN.md
+is implemented only by the separate Session B, with its independent F0-F5
+sequence and firmware-only ownership; software phase order does not prevent
+that separate session from proceeding. No firmware implementation in Session A.
+
+SOFTWARE_PLAN.md section 2 is the shared contract. Ask the user before changing
+it. Never guess unknown IPs or ports. Run firmware-owned checks only at the
+appropriate integration gates; report firmware bugs through the user for B.
+Shared context must still be updated before every commit; coordinate ownership
+for B rather than silently waiving the existing maintenance rule.
