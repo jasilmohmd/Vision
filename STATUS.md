@@ -1,36 +1,76 @@
-﻿# Project status
+# Project status
 
-- Phase: 0 - complete; acceptance checks passed.
-- Updated: 2026-10-03 23:44:07 +05:30 (local time).
+- Phase 0: complete and committed (de1dfad).
+- Phase 1: complete; automated checks, webcam benchmark and visual acceptance passed.
+- Updated: 2026-10-04T00:14:29+05:30 (Asia/Calcutta).
 
 ## What works
 
-- Planned repository layout with clearly labeled future-phase placeholders.
-- Separate laptop and Uno Q requirements; export dependencies are laptop-only.
-- YAML configuration with contract ports, example IPs, thresholds and servo limits.
-- Frozen typed configuration with type/range checks and unknown-key rejection.
-- Relative photo paths resolved beside the selected configuration file.
-- CLI with --help, --config, --mock and --mic laptop|udp.
-- Configuration/CLI tests, setup instructions, and ignore rules for generated
-  files, local environments and firmware secrets.
+- YOLOv8n exported on the laptop to models/yolov8n.onnx: static FP32 input
+  (1, 3, 320, 320), raw output (1, 84, 2100), opset 17, no embedded NMS.
+- ONNX Runtime detector with RGB letterboxing, class filtering, NMS and
+  inverse-coordinate mapping/clipping. No PyTorch runtime imports.
+- YuNet FaceDetectorYN with matching detection tuples.
+- CSRT tracking with KCF fallback, per-frame updates, configured detection
+  interval, immediate re-detection after failure and nearest-box association.
+- Per-frame target box or None, with normalised dx/dy (positive right/down).
+- Webcam/video demo with overlay, printed offsets and headless option.
+- Detector-only and detector+tracker benchmark with optional JSON report.
+- Cross-platform model downloader and shell wrapper. YuNet and Vosk small
+  English models downloaded locally. Models are ignored by Git.
+- Runtime uses opencv-contrib-python (headless contrib for Uno Q) so CSRT/KCF
+  are available. Export dependencies are separate in requirements-export.txt
+  to prevent simultaneous installation of conflicting cv2 distributions.
 
 ## Verification
 
-Run using .venv on Python 3.13.5 with PyYAML 6.0.3 and pytest 9.1.1:
+- Python 3.13.5, OpenCV contrib 4.14.0, ONNX Runtime 1.30.0, NumPy 2.5.3.
+- python -m pytest: 23 passed (15 config/CLI tests plus 8 vision tests).
+- Vision tests cover letterboxing, inverse box mapping, class filtering/NMS,
+  clipping, offset signs/bounds, detection cadence, identity association,
+  failure recovery, real CSRT/KCF initialization, fallback and missing models.
+- YOLO export succeeded; official bus sample yielded 3 people with YOLO and
+  2 faces with YuNet. Both real models loaded and ran successfully.
+- Webcam headless smoke: person tracking over 10 frames, face tracking over
+  3 frames; boxes and offsets printed.
+- Main, demo, export and download CLI help checks passed.
+- pip check: no broken requirements. git diff --check: passed.
 
-- python -m app.main --help: passed.
-- python -m app.main --config config.yaml: passed.
-- python -m pytest: 15 tests passed.
-- Tests cover default contract values, configuration overrides, photo path
-  resolution, invalid types/ranges and CLI help.
+## Laptop webcam benchmark
+
+Source 0, person, CSRT, 320x240, detect_every_n_frames=5; CPU processing only,
+excluding camera acquisition and model load (same cached frames for both runs):
+
+- Frames: 100.
+- Detector-only: 68.39 FPS.
+- Detector+tracker: 19.13 FPS.
+- Detected frames: 100/100.
+- Tracked frames: 100/100.
+- Local report: models/benchmark-webcam.json (Git ignored).
 
 ## Pending and known issues
 
-- Phase 1 has not started; vision, voice, control, mocks, gallery, firmware and
-  deployment files are placeholders for their specified phases.
-- Hardware board models, pin maps and actual network addresses are unconfirmed.
-- The normal sandbox command runner currently fails during setup. Phase 0 checks
-  ran through approved escalated commands. Git commands use a per-command
-  safe.directory setting because the repository was created by the sandbox user;
-  no global Git trust setting was changed.
-- No known Phase 0 implementation failures.
+- Visible person demo passed on 2026-10-04. User confirmed smooth tracking
+  and changing offsets. Numerical logs showed tracking without errors. Command:
+  .\.venv\Scripts\python.exe -m tools.demo_vision --target person
+- Phase 1 acceptance is complete. Context updated before preparing commit:
+  phase 1: laptop vision and tracking. Resolve the resulting hash from git log.
+- Phase 2 and later have not started. Their files remain placeholders.
+- Camera board pin maps and actual network addresses remain unconfirmed.
+- Normal sandbox command runner still fails during setup; verification and
+  file changes ran through approved escalated commands.
+
+## Licence
+
+Ultralytics YOLOv8 weights are AGPL-3.0, as flagged in SOFTWARE_PLAN.md.
+Ultralytics/PyTorch were used on this laptop only for export. The deployed
+vision code uses ONNX Runtime/OpenCV; never install export dependencies on Uno Q.
+
+## Durable session handoff
+
+- context/README.md indexes the handoff, project scope, decisions, progress and
+  verification records. Read context/HANDOFF.md first in a new session.
+- User requires context updates BEFORE EVERY commit; AGENTS.md records this
+  mandatory rule, including documentation-only commits.
+- Context files and guidance are included with the prepared Phase 1 commit.
+- No remaining Phase 1 acceptance blockers; Phase 2 has not started.

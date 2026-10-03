@@ -1,5 +1,6 @@
 # Uno Q runtime only; no PyTorch or ultralytics.
-opencv-python-headless
+# Contrib is needed for CSRT/KCF (headless on Uno Q).
+opencv-contrib-python-headless>=4.10,<5
 onnxruntime
 vosk
 flask

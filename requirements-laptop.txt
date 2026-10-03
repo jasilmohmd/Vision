@@ -1,5 +1,6 @@
-# Laptop runtime and model export only. Never install this on the Uno Q.
-opencv-python
+# Laptop runtime. Model export uses requirements-export.txt in a separate venv.
+# Contrib is needed for CSRT/KCF; do not install multiple cv2 variants.
+opencv-contrib-python>=4.10,<5
 onnxruntime
 vosk
 sounddevice
@@ -7,6 +8,5 @@ flask
 pyyaml
 requests
 numpy
-ultralytics
 # Test runner
 pytest

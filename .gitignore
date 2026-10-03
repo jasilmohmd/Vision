@@ -8,3 +8,4 @@ logs/
 check.wav
 .env
 secrets.h
+.venv-export/

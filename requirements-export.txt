@@ -1,0 +1,3 @@
+# Laptop export environment only; never install on Uno Q.
+ultralytics
+onnx
