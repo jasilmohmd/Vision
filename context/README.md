@@ -40,4 +40,4 @@ accepted decisions. If records conflict, inspect code/Git and ask only for
 information that cannot be verified. Preserve explicit user instructions.
 
 Session A never edits firmware/. Session B has independent F0-F5 phases.
-See PLAN_REVIEW.md for the unresolved shared-context maintenance boundary.
+User authorized Session B shared-context maintenance; preserve both sessions' records.

@@ -22,7 +22,7 @@ def test_override_and_relative_photos(tmp_path):
     assert config.gain_deg == 6.0
     assert config.invert_pan is True
     assert config.photos_dir == tmp_path / "images"
-    assert main(["--config", str(path)]) == 0
+    assert main(["--config", str(path), "--check-config"]) == 0
 
 
 @pytest.mark.parametrize("contents", [

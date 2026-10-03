@@ -1,4 +1,4 @@
-﻿# Hands-free photography rig
+ï»¿# Hands-free photography rig
 
 Follow SOFTWARE_PLAN.md for the interface contract and phase requirements.
 Read [context/README.md](context/README.md), [context/HANDOFF.md](context/HANDOFF.md)
@@ -11,7 +11,7 @@ required by AGENTS.md. Future-phase files are labeled placeholders.
 python -m venv .venv
 .\.venv\Scripts\python.exe -m pip install pyyaml pytest
 .\.venv\Scripts\python.exe -m app.main --help
-.\.venv\Scripts\python.exe -m app.main --config config.yaml
+.\.venv\Scripts\python.exe -m app.main --config config.yaml --check-config
 .\.venv\Scripts\python.exe -m pytest
 ```
 
@@ -19,8 +19,8 @@ Only PyYAML and pytest are needed for Phase 0. The requirements files list
 later laptop and Uno Q dependencies. Ultralytics is laptop-only for export;
 never install it or PyTorch on the Uno Q.
 
-The CLI supports --config, --mock, and --mic laptop|udp. In Phase 0 it validates
-configuration and exits. Hardware, mocks, voice, and gallery runtime are pending.
+Use --check-config to validate configuration without starting devices. Phase 3
+adds --mock, --mic laptop|udp (default udp), --preview and --seconds.
 Relative photos_dir values resolve beside the selected YAML file. IP defaults
 are examples awaiting confirmation at Gate 0. Ports follow the source contract.
 
@@ -94,7 +94,7 @@ input was a virtual Elgato line. Check device IDs on each machine and choose the
 actual microphone; this does not change the system default. Ctrl+C stops the demo.
 Use --seconds 30 for a finite run. Events are printed as JSON: heard, command
 (with a typed action/target/direction/small-step flag), or low_confidence.
-Nothing moves the camera in Phase 2; app.main still only validates configuration.
+The standalone Phase 2 demo prints events only. The Phase 3 app applies commands.
 
 Vosk uses all 19 exact "camera <command>" phrases plus [unk]. A final command
 requires the leading wake word and confidence at or above config.vosk_conf_threshold
@@ -138,3 +138,50 @@ second and the selected input name. Verify --list-devices after connecting a
 headset; IDs can change. Nonzero changing levels show capture activity, not
 successful recognition. Headset tests are diagnostic and do not by themselves
 replace the planned laptop-microphone acceptance at 0.5-1 m.
+
+
+## Phase 3 mock rig (three PowerShell terminals)
+
+Install laptop dependencies with `.\.venv\Scripts\python.exe -m pip install -r requirements-laptop.txt`.
+Models must already exist locally (see Phase 1/2 setup above). From the repository
+root, run one command in each terminal. Start the camera mock first and wait
+for "Mock camera ready" before starting the app (webcam startup can take a while):
+
+```powershell
+.\.venv\Scripts\python.exe -m tools.mock_camera
+.\.venv\Scripts\python.exe -m tools.mock_voice_unit --device 4
+.\.venv\Scripts\python.exe -m app.main --mock --preview
+```
+
+Device 4 is the verified boAt headset on this laptop; check `tools.demo_voice
+--list-devices` before using another computer. The voice mock sends live 16 kHz
+mono s16le audio in 1024-byte UDP packets, and prints light states/colours. The
+app uses UDP audio by default; `--mic laptop --device N` bypasses the voice mock
+for diagnosis. It does not change the system microphone setting.
+
+Wait for "Ready", say **camera track person**, then move left/right. The camera
+mock shifts its 320x240 crop inside the full webcam image; the preview shows the
+box, offsets and pan/tilt. A narrow crop may require standing farther back or
+moving into its initial centre. Say **camera shoot**, check the `saved` white
+flash in the voice console, and open http://localhost:8080. Tap the newest photo
+to open its full resolution. The gallery refreshes when a new photo is saved.
+Press Q in the preview, then Ctrl+C in both mock terminals.
+
+Manual direction/small-step/centre commands work while idle or tracking. Stop
+tracking returns to idle; sleep ignores commands until camera wake. Burst saves
+three photos about 400 ms apart after centering; timer flashes blue three times
+then shoots. Missing subjects produce nosubject after two seconds. Movement is
+limited to ten requests per second and configured angle limits. Captures wait
+for centering or the configured timeout, save before ACK, and retain camera
+photos if saving fails. A failed ACK is retried before another capture.
+
+`photos/` (including index metadata), model files and diagnostic logs are Git
+ignored. Runtime needs write access to photos_dir. Only one app instance may
+write the same photo directory. Optional `speaker_enabled: true` uses eSpeak NG
+or eSpeak when installed; disabled/missing synthesis is a no-op.
+
+For headless diagnostics, camera `--synthetic` or `--image path.jpg` avoids the
+webcam; voice `--silence` avoids microphone access; all three support --seconds.
+The mock HTTP/UDP ports match the shared contract exactly. `--mock` only changes
+camera/light destination addresses to localhost; real board/network integration
+waits for the plan's hardware gates. Firmware is owned by separate Session B.

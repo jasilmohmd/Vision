@@ -33,6 +33,7 @@ class Config:
     vosk_conf_threshold: float = 0.7
     centre_timeout_s: float = 1.5
     photos_dir: Path = Path("photos")
+    speaker_enabled: bool = False
 
 
 def load_config(path: str | Path = DEFAULT_CONFIG_PATH) -> Config:

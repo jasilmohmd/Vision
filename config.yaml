@@ -22,3 +22,6 @@ vosk_conf_threshold: 0.7
 centre_timeout_s: 1.5
 # Relative paths resolve from the configuration file's directory.
 photos_dir: photos
+
+# Optional eSpeak replies; no-op when disabled or unavailable.
+speaker_enabled: false

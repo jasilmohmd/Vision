@@ -1,5 +1,22 @@
 # Project scope and architecture
 
+## Phase 3 runtime map - 2026-10-04T01:38:42+05:30
+
+app/main.py now runs devices/workers; --check-config validates without devices.
+Default audioUDP; --mock selects localhost camera/light hosts, same wire contract.
+app/state.py owns commands/photo jobs; control/controller.py angle math;
+vision/stream.py latest MJPEG; storage.py numbered photos/atomic index;
+gallery/server.py and templates gallery. io/ has camera/light/speaker clients.
+tools/mock_camera.py shifts a320x240 crop inside full webcam frame; held JPEG
+capture persists until ACK. tools/mock_voice_unit.py sends raw16kHz mono s16le
+1024-byte packets and prints5006 light states/flash restore. README has commands.
+One app writer per photos_dir. Hardware/firmware owned separately by Session B.
+
+---
+
+Earlier entries below are historical snapshots; this current software update
+takes precedence. Session B records are preserved.
+
 ## Firmware Session B scaffold - 2026-10-04
 
 firmware/AGENTS.md scopes Session B to FIRMWARE_PLAN.md; firmware/STATUS.md and
