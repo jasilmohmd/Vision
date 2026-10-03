@@ -1,0 +1,7 @@
+.toolchain/
+.build/
+secrets.h
+stream.jpg
+capture.jpg
+check.wav
+__pycache__/

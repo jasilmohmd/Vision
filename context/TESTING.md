@@ -1,8 +1,27 @@
 # Verification and runnable commands
 
-Updated: 2026-10-04T00:14:29+05:30 (Asia/Calcutta).
+## Firmware Session B verification - 2026-10-04
 
-## Latest executed checks (2026-10-04)
+- Arduino CLI 1.5.1 official archive SHA256 matched its release checksum.
+- Existing ESP32 core 3.3.11 and board option metadata inspected locally.
+- Local ESP32Servo 3.2.1 / Adafruit NeoPixel 1.15.5 installed and listed.
+- ./firmware/tools/verify_toolchain.ps1 runs pin-free compilation only.
+  Generic S3 PSRAM=opi passed: 266499 bytes flash, 22388 bytes RAM.
+  Generic C3 CDCOnBoot=cdc passed: 295710 bytes flash, 14476 bytes RAM.
+  Verification script completed with exit 0.
+- ESP32Servo emits upstream unused-variable and S3 legacy MCPWM warnings.
+- Hardware-specific profile/PSRAM/pins, uploads and all real-part tests unrun.
+  Generic compilation does not verify the actual camera board or PSRAM hardware.
+- Initial --user-dir install attempt failed (unsupported CLI flag); corrected
+  with ARDUINO_DIRECTORIES_USER. Normal shell helper failed; escalated runner works.
+- Software tests not rerun; software evidence below is separately attributed.
+- git diff --check passed; git check-ignore confirmed both secrets.h paths,
+  portable CLI, build output and check.wav are excluded. Git status reviewed;
+  pre-existing software changes remain uncommitted and were not staged.
+
+Updated: 2026-10-04T01:04:13+05:30 (Asia/Calcutta).
+
+## Phase 1 executed checks (2026-10-04)
 
 - pytest: 23 passed (15 Phase 0/config tests, 8 vision tests).
 - CLI help: app.main, tools.demo_vision, tools.export_onnx, tools.download_models passed.
@@ -29,7 +48,7 @@ Laptop CPU, webcam source 0, person target, CSRT, 320x240, detection interval 5.
 - Earlier 30-frame run: 66.52/38.04 FPS, detected 4/30, tracked 7/30; do not
   use its higher tracking FPS as the normal present-subject benchmark.
 
-## Current-session docs verification
+## Phase 1 context verification
 
 - Context file inventory, relative Markdown links and git diff --check verified.
 - No application tests rerun for this documentation-only change. Last 23-test
@@ -76,4 +95,113 @@ Numeric logs remain in ignored logs/; no camera images were saved for this check
 
 No application code changed since the 23-test pass. Documentation/context
 updates were checked with git diff --check before the Phase 1 commit.
-No remaining Phase 1 acceptance checks. Phase 2 has not started.
+No remaining Phase 1 acceptance checks. Phase 1 commit: 891274f.
+Phase 2 was subsequently started; see its current verification below.
+
+## Phase 2 verification (2026-10-04)
+
+- Full pytest: 70 passed (15 config + 8 vision + 47 voice).
+- Voice tests: all 19 phrases, exact wake word/whole phrase rejection, typed
+  parsing; heard dedup/reset; threshold boundary, missing/mismatched word
+  evidence, low/NaN/out-of-range confidence; flush/worker; mic format/cleanup;
+  real UDP loopback validation, bounded buffer/drop, underrun silence,
+  recovery, initial timeout and close waking a waiting reader.
+- Vosk 0.3.45 and sounddevice 0.5.6 installed; pip check clean.
+- Real Vosk small EN model loaded and every grammar word is present, including
+  centre. 3.2 seconds synthetic silence produced no events.
+- AMD device 3: 32 real microphone chunks, 1024 bytes each at 16 kHz mono,
+  zero overflows. Audio kept only in memory; no recording saved.
+- Finite laptop demo (2 seconds) and UDP idle demo (1 second) succeeded.
+- demo_voice --help and --list-commands succeeded.
+- These smoke checks do not prove recognition of live commands/background speech.
+
+### Outstanding live acceptance
+
+```powershell
+.\.venv\Scripts\python.exe -m tools.demo_voice --device 3 --checklist --report logs/phase2-voice-check.json
+```
+
+Stand 0.5-1 m away, speak each of 19 phrases with pauses, then talk normally
+without command phrases during the 20-second chatter segment. No background
+command events. Check report and obtain user confirmation of distance and chatter.
+Do not mark Phase 2 complete or commit before this acceptance passes.
+For a different device ID, run demo_voice --list-devices first.
+
+### Phase 2 final checks and user status
+
+- Full regression rerun after guided demo changes: 70 passed.
+- Finite guided-checklist smoke (0.1 seconds) correctly reported checks_passed
+  false with all 19 commands missing; summary JSON verified programmatically.
+- git diff --check and relative Markdown links passed.
+- User explicitly reported not running the real guided acceptance check yet.
+  That smoke summary is not live acceptance and must never be used as a pass.
+
+## Updated-plan review verification (2026-10-04)
+
+- Reviewed software diff against HEAD 891274f and the complete firmware plan.
+- Programmatically compared software section 2 with HEAD: contract unchanged.
+- HARDWARE_PLAN.md absent; firmware/ contains only the initial two sketch placeholders
+  at inspection. No firmware completion/status/gate evidence was supplied.
+- Documentation/relative links and diff whitespace checked; firmware file hashes
+  unchanged across this documentation update.
+- No application tests rerun for this documentation-only review. Latest actual
+  application result remains 70 passed; live Phase 2 acceptance still pending.
+- No hardware/toolchain/flashing checks executed in this session.
+
+## Live microphone check launched (2026-10-04)
+
+User authorized the check. Opened a visible console running demo_voice with
+AMD mic device 3, --checklist --seconds 600 and summary-only report at
+logs/phase2-live-voice-check.json. Await all 19 commands, 20-second real chatter
+with zero command events, and user confirmation of 0.5-1 m distance. No raw
+audio saved. No Phase 2 commit or Phase 3 work until acceptance passes.
+
+## Live voice check retry (2026-10-04)
+
+User reported the first console did not run properly and requested a restart;
+no specific error/phrase supplied yet. Closed only the identified first voice
+workers/console to release the mic. Launched a new visible console titled
+Vision - Phase 2 live voice check (console PID 24896 at launch), with clear
+instructions and unbuffered output. Verified voice worker is running; Vosk
+startup diagnostics show model/grammar loading, no failure at inspection.
+Current result: logs/phase2-live-voice-retry.json. Startup diagnostics:
+logs/phase2-voice-retry-startup.log. Launcher: logs/launch-voice-check.ps1.
+All are ignored local test artifacts. This retry supersedes the previous
+live-check console; wait for its report plus distance/chatter confirmation.
+No acceptance pass, phase commit or Phase 3 work has been recorded.
+
+## Microphone selection diagnosis (2026-10-04)
+
+User reported no recognition and said headphones were in use. Verified the
+running checklist used device 3 (AMD laptop array), not the headphones. Newly
+available headset: boAt Rockerz 255 Pro+, device 4 (MME); 16 kHz mono int16
+format check passed. Vosk model/grammar startup showed no error. Stopped only
+the owned laptop-mic workers/console and switched the diagnostic to device 4.
+The earlier timeout/incomplete runs have not passed acceptance.
+
+Added demo --levels (normalised RMS/peak once per second) and explicit input
+device display. Full regression after change: 70 passed. No threshold change.
+Headset diagnostic console PID 25368 at launch, --device 4 --levels --checklist,
+600-second limit. Summary logs/phase2-headset-diagnostic.json; startup diagnostics
+logs/phase2-headset-startup.log. Both ignored; no raw audio saved. Await user
+report of input levels and heard/command events. This supersedes previous active
+laptop check consoles; verify process IDs before any cleanup.
+
+Headset diagnosis does not satisfy the specified laptop microphone check from
+0.5-1 m. After fixing input/recognition, return to verified laptop-mic acceptance
+or obtain an explicit user-approved acceptance change. No Phase 2 commit or
+Phase 3 advancement; no firmware edits.
+
+## Headset live check result (2026-10-04)
+
+User reported all checks passed. Verified logs/phase2-headset-diagnostic.json:
+19/19 supported commands, zero missing commands, 20.09 seconds background test,
+zero background command events, confidence threshold 0.7, device 4 boAt headset,
+checks_passed true. No raw audio recorded. Latest full regression remains 70 passed.
+
+The headset result is passing evidence for that setup. Original built-in laptop
+microphone at 0.5-1 m remains unverified. Asked the user to choose accepting the
+headset setup as Phase 2 acceptance or running the original mic/distance check.
+Await that answer before phase completion/commit. No Phase 3 work. Firmware B
+has its own new files; none edited or staged in this task. Earlier active-run
+entries above are historical and superseded by this completed headset result.

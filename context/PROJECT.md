@@ -1,6 +1,15 @@
 # Project scope and architecture
 
-Updated: 2026-10-04T00:14:29+05:30 (Asia/Calcutta).
+## Firmware Session B scaffold - 2026-10-04
+
+firmware/AGENTS.md scopes Session B to FIRMWARE_PLAN.md; firmware/STATUS.md and
+firmware/context/HANDOFF.md track its independent gates. User allows shared
+context updates. firmware/secrets.example.h contains zero-address placeholders;
+firmware/.gitignore excludes secrets, toolchain, builds and check media.
+firmware/toolchain_probe/ and tools/verify_toolchain.ps1 prove compilation only,
+without pin maps, network or uploads. Bench/check implementations await F1-F3.
+
+Updated: 2026-10-04T00:43:16+05:30 (Asia/Calcutta).
 
 ## Purpose
 
@@ -21,7 +30,7 @@ user explicitly approves a cut.
 ## Contracts to preserve
 
 Camera HTTP: stream on :81/stream (320x240 MJPEG); HTTP :80 /move?pan=...&tilt=...
-returns applied angles; /capture returns held JPEG; /ack frees it; /status
+returns clamped angles (firmware specifies target angles while slewing); /capture returns held JPEG; /ack frees it; /status
 returns pan, tilt, uptime_s, held_photo and rssi. See source plan for exact JSON.
 
 Voice UDP: C3 -> Uno Q :5005 raw signed little-endian 16-bit mono PCM, 16 kHz,
@@ -64,10 +73,11 @@ for authoritative current values and ../app/config.py for typed validation.
 
 ## Future-phase placeholders
 
-app/vision/stream.py; app/voice/*; app/control/controller.py; app/io/*;
+app/vision/stream.py; app/control/controller.py; app/io/*;
 app/state.py; app/storage.py; app/gallery/server.py and templates/index.html;
-tools/mock_camera.py, mock_voice_unit.py, check_camera.py, check_voice_unit.py;
-firmware/*/*.ino; deploy/install_unoq.sh and photo-rig.service.
+tools/mock_camera.py, mock_voice_unit.py; deploy/install_unoq.sh and photo-rig.service.
+Firmware sketches/check tools are owned independently by Session B. Legacy root
+tools/check_camera.py and check_voice_unit.py remain unused scaffold placeholders.
 These are scaffold files, not functioning implementations.
 
 ## Local-only artifacts
@@ -75,3 +85,27 @@ These are scaffold files, not functioning implementations.
 models/yolov8n.pt, yolov8n.onnx, face_detection_yunet_2023mar.onnx,
 vosk-model-small-en-us-0.15/, validation-bus.jpg and benchmark-webcam.json.
 Models, generated media, environments and secrets must stay out of commits.
+
+## Phase 2 file map
+
+- app/voice/commands.py: frozen Command dataclass, 19 supported phrases, grammar,
+  parse(text) -> Command or None. Wake word and whole phrase must match.
+- app/voice/audio_source.py: AudioSource interface/context manager,
+  LaptopMicSource via sounddevice RawInputStream and UdpAudioSource on :5005.
+  Both return s16le/16 kHz/mono chunks; UDP contract is exactly 1024 bytes.
+- app/voice/recognizer.py: VoiceRecognizer processes PCM and puts VoiceEvent
+  objects on a Queue (heard/command/low_confidence). Configured threshold gates
+  every final word; flush handles residual speech; run supports a future worker.
+- tools/demo_voice.py: standalone voice CLI and guided live acceptance check.
+- tests/test_voice.py: 47 parser, recognizer, audio and UDP cases at last run.
+- No state machine, light client, control or app orchestration in Phase 2.
+
+## Ownership after the updated software plan
+
+Session A: app/, root tools/, deploy/, config.yaml and software context/docs.
+Session B: all firmware/, following FIRMWARE_PLAN.md F0-F5. Software Phase 4
+is skipped. Canonical hardware checks: firmware/tools/check_camera.py and
+firmware/tools/check_voice_unit.py (A may run, never edit). Shared contract in
+SOFTWARE_PLAN.md section 2 remains authoritative. Unknown IPs must be confirmed.
+Gate 0 is network readiness; board pin/model confirmation is Session B Gate F0.
+See PLAN_REVIEW.md for missing hardware plan and other cross-session findings.
