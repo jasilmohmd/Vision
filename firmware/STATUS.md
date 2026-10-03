@@ -1,5 +1,43 @@
 # Firmware status (Session B)
 
+## Current: F1 bench firmware ready for team testing - 2026-10-04
+
+User explicitly directed implementing all four bench sketches now, while other
+F0 checks are ongoing. This authorizes preparation, not a claim of F0/F1
+hardware acceptance. Prior snapshots below are historical.
+
+- Actual firmware implemented: bench/servo_sweep, neopixel_test, mic_level,
+  ir_test. All four compiled; simultaneous-servo variant compiled too.
+- verify_bench.ps1 -IncludeServoStress completed exit0 using CLI1.5.1,
+  core3.3.11, ESP32Servo3.2.1, NeoPixel1.15.5. Servo builds emitted upstream
+  MCPWM deprecation/unused-variable warnings; no compile errors.
+- Servo: GPIO1 pan / GPIO2 tilt, 50Hz, 30..150 degree sweep, 1deg/40ms,
+  sequential by default, BOTH_TOGETHER switch, centres and waits for r repeat.
+- NeoPixel: GPIO7, brightness40, GRB default, all eight colour/flash states.
+- Mic: INMP441 SCK4/WS5/SD6, 16kHz/32-bit left mono, 800-sample RMS/peak
+  windows, SHIFT14 and clipping; no raw audio saved.
+- IR: GPIO1, raw+debounced state and hold time. IR_ACTIVE_LOW=1 is provisional
+  until real sensor test; optional part may be omitted.
+- All sketches Serial115200, boot/reset and error logs, no network/secrets.
+- TEAM_TESTING.md has setup, compile/upload commands, wiring, observations,
+  troubleshooting and return report. verify_bench.ps1 never uploads.
+- No physical test or flash by this agent. F1 real-part gate pending; wait for
+  team results and F1 DONE before F2. F2/F3 camera/voice sketches are placeholders.
+- Board: user-confirmed N16R8 dual-port with OV3660; camera signal map from user
+  image matches core S3-EYE entry. PWDN/RESET remain unverified before F2.
+- Network addresses remain unselected; live reachability checks follow F2/F3.
+  HARDWARE_PLAN.md still absent.
+- Existing HEAD: 5194c5ed39c02b2bcc91bfaef899492f5788838c.
+  Intended testing commit: fw phase 1: add bench sketches for hardware testing.
+  Implementation/context changes local and uncommitted; no push here.
+
+Exact next action: user commits/pushes the actual bench sketches and handoff;
+hardware team follows TEAM_TESTING.md and returns Gate F1 results/F1 DONE.
+
+---
+
+Earlier entries below are historical.
+
 Updated: 2026-10-04. Current phase: F0; board facts / F0 DONE pending.
 
 - Portable Arduino CLI 1.5.1 downloaded from Arduino's official release;

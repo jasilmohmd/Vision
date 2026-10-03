@@ -1,5 +1,18 @@
 # Progress ledger
 
+## Verified push and next steps - 2026-10-04T02:53:49+05:30
+
+User pushed Phase3 team-testing implementation commit5194c5e. Verified exact
+local/live-origin hash5194c5ed39c02b2bcc91bfaef899492f5788838c. Software is shared
+with team; this does not complete live acceptance. Await team results, then
+close Phase3 if successful. Phase4 belongs to B; Gate0 precedes Phase5.
+No software/code changes, new test runs, staging, commits or pushes in this turn.
+Only post-push context refreshed; firmware work preserved.
+
+---
+
+Previous entries are historical snapshots.
+
 ## Team-testing handoff - 2026-10-04T02:07:20+05:30
 
 Phase3 software implementation ready to share;98 automated tests pass. User
@@ -306,3 +319,27 @@ selectively stage only Session B updates there and preserve app implementation.
 Next action: user reviews/stages firmware documentation and corresponding shared
 context updates, commits/pushes; then await remaining F0 checks and F0 DONE.
 No staging, commit or push performed by this agent for this preparation.
+
+## Firmware Session B: F1 implemented for team testing - 2026-10-04
+
+User explicitly requested actual F1 test firmware now while remaining F0 checks
+continue; do not keep the software team waiting for sketches that do not exist.
+All four implemented: servo_sweep, neopixel_test, mic_level, ir_test, plus
+verify_bench.ps1 and firmware/TEAM_TESTING.md with setup/uploads/exact GateF1.
+Compile command: ./firmware/tools/verify_bench.ps1 -IncludeServoStress; exit0.
+CLI1.5.1/core3.3.11/ESP32Servo3.2.1/NeoPixel1.15.5. Build sizes flash/RAM bytes:
+servo299058/22724; pixel298986/14532; mic330354/17796; IR296890/14500;
+both-servo298958/22724. Servo dependency emitted upstream MCPWM/unused-variable
+warnings. No compile error. No board upload, physical observation or new app tests.
+S3 profile esp32:esp32:esp32s3:PSRAM=opi,FlashSize=16M (UART connector default);
+C3 esp32:esp32:esp32c3:CDCOnBoot=cdc. F1 bench programs use no Wi-Fi or secrets.
+Confirmed servo panGPIO1/tiltGPIO2; I2S4/5/6, SHIFT14, left; pixel7 GRB brightness40;
+IR1 active-low remains provisional pending real sensor test. No camera/voice runtime
+firmware yet. User image camera map correspondence recorded; PWDN/RESET unresolved.
+F0 other setup checks still ongoing; F1 real-part acceptance pending. No phase
+completion or F2 advancement claimed. HARDWARE_PLAN.md absent; live IP verification
+follows Wi-Fi firmware. Preserve Session A software scope/results separately.
+Existing HEAD:5194c5ed39c02b2bcc91bfaef899492f5788838c. Intended testing commit:
+fw phase 1: add bench sketches for hardware testing. No staging/commit/push here.
+Next action: user commits/pushes actual bench firmware/context; team flashes on
+identified boards and returns Gate F1 observations/F1 DONE. Fix failures within F1.

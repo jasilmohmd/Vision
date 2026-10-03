@@ -1,5 +1,26 @@
 # Firmware handoff
 
+## Current F1 handoff - 2026-10-04
+
+User explicitly asked to implement all four F1 bench sketches while other F0
+checks continue. All four are now implemented and compile, plus the both-servo
+variant. This preparation does not claim hardware gates passed. No flashing.
+See ../TEAM_TESTING.md for exact team setup, uploads, observations and reporting.
+S3 pan1/tilt2; C3 pixel7, I2S4/5/6 left/SHIFT14, optional IR1 active-low provisional.
+Serial115200. No Wi-Fi/secrets needed. Camera/voice integration sketches not done.
+
+Existing HEAD5194c5ed39c02b2bcc91bfaef899492f5788838c. Intended testing message:
+fw phase 1: add bench sketches for hardware testing. No staging/commit/push here.
+Shared context was refreshed under user's permission; preserve app-team records.
+Next action: user commits/pushes actual firmware, team runs GateF1, then await
+F1 DONE. Fix reported failures within F1; do not start F2 ahead of hardware
+results. Remaining F0 facts, camera PWDN/RESET and confirmed network plan tracked.
+HARDWARE_PLAN.md absent. Live network verification deferred until Wi-Fi firmware.
+
+---
+
+Earlier entries are historical.
+
 2026-10-04: user started FIRMWARE_PLAN.md as Session B and allowed shared root
 context updates. F0 scaffold/toolchain set up; both generic compile probes passed
 with library warnings. See ../STATUS.md. Actual S3 model, pin availability, PSRAM mode,

@@ -1,5 +1,24 @@
 # Session handoff
 
+## Verified push and next steps - 2026-10-04T02:53:49+05:30
+
+Latest verified software commit:5194c5ed39c02b2bcc91bfaef899492f5788838c,
+local HEAD equals live origin/main. User pushed team-testing handoff. Immediate
+next action: collect team's spoken mock tracking -> shoot -> gallery -> printed
+saved results per TEAM_TESTING.md.98 automated tests and real-model headless
+smoke passed; live acceptance not yet confirmed. Physical checks are team-owned.
+Phase4 skipped. Require Gate0 before Phase5: shared hotspot, UnoQ reachable over
+SSH, confirmed UnoQ address and S3/C3 planned static IPs, user GATE 0 DONE.
+Candidate192.168.29.199 from B is not selected/confirmed here. Separate B now has
+board wiring docs commit2c80d15 and new bench working-tree changes; none modified
+or staged by Session A. firmware/STATUS.md still records F0 DONE pending despite
+added board facts. This handoff refresh is uncommitted; update context before any
+next commit. Do not start later software phases until acceptance/gates pass.
+
+---
+
+Previous entries are historical snapshots.
+
 ## Current next action: user push for team testing - 2026-10-04T02:07:20+05:30
 
 User clarified no NeoPixel connected to this laptop and hardware team owns all
@@ -227,3 +246,27 @@ selectively stage only Session B updates there and preserve app implementation.
 Next action: user reviews/stages firmware documentation and corresponding shared
 context updates, commits/pushes; then await remaining F0 checks and F0 DONE.
 No staging, commit or push performed by this agent for this preparation.
+
+## Firmware Session B: F1 implemented for team testing - 2026-10-04
+
+User explicitly requested actual F1 test firmware now while remaining F0 checks
+continue; do not keep the software team waiting for sketches that do not exist.
+All four implemented: servo_sweep, neopixel_test, mic_level, ir_test, plus
+verify_bench.ps1 and firmware/TEAM_TESTING.md with setup/uploads/exact GateF1.
+Compile command: ./firmware/tools/verify_bench.ps1 -IncludeServoStress; exit0.
+CLI1.5.1/core3.3.11/ESP32Servo3.2.1/NeoPixel1.15.5. Build sizes flash/RAM bytes:
+servo299058/22724; pixel298986/14532; mic330354/17796; IR296890/14500;
+both-servo298958/22724. Servo dependency emitted upstream MCPWM/unused-variable
+warnings. No compile error. No board upload, physical observation or new app tests.
+S3 profile esp32:esp32:esp32s3:PSRAM=opi,FlashSize=16M (UART connector default);
+C3 esp32:esp32:esp32c3:CDCOnBoot=cdc. F1 bench programs use no Wi-Fi or secrets.
+Confirmed servo panGPIO1/tiltGPIO2; I2S4/5/6, SHIFT14, left; pixel7 GRB brightness40;
+IR1 active-low remains provisional pending real sensor test. No camera/voice runtime
+firmware yet. User image camera map correspondence recorded; PWDN/RESET unresolved.
+F0 other setup checks still ongoing; F1 real-part acceptance pending. No phase
+completion or F2 advancement claimed. HARDWARE_PLAN.md absent; live IP verification
+follows Wi-Fi firmware. Preserve Session A software scope/results separately.
+Existing HEAD:5194c5ed39c02b2bcc91bfaef899492f5788838c. Intended testing commit:
+fw phase 1: add bench sketches for hardware testing. No staging/commit/push here.
+Next action: user commits/pushes actual bench firmware/context; team flashes on
+identified boards and returns Gate F1 observations/F1 DONE. Fix failures within F1.

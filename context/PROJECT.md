@@ -134,3 +134,27 @@ Uno Q UdpAudioSource/Vosk. 16 kHz mono s16le, 512 samples/1024 bytes per packet.
 Firmware B owns I2S conversion/transmission; software A owns reception and
 recognition. Current headset is a temporary accepted Phase 2 test input, not
 final hardware. Its passed checklist does not replace firmware F3/Phase 7 checks.
+
+## Firmware Session B: F1 implemented for team testing - 2026-10-04
+
+User explicitly requested actual F1 test firmware now while remaining F0 checks
+continue; do not keep the software team waiting for sketches that do not exist.
+All four implemented: servo_sweep, neopixel_test, mic_level, ir_test, plus
+verify_bench.ps1 and firmware/TEAM_TESTING.md with setup/uploads/exact GateF1.
+Compile command: ./firmware/tools/verify_bench.ps1 -IncludeServoStress; exit0.
+CLI1.5.1/core3.3.11/ESP32Servo3.2.1/NeoPixel1.15.5. Build sizes flash/RAM bytes:
+servo299058/22724; pixel298986/14532; mic330354/17796; IR296890/14500;
+both-servo298958/22724. Servo dependency emitted upstream MCPWM/unused-variable
+warnings. No compile error. No board upload, physical observation or new app tests.
+S3 profile esp32:esp32:esp32s3:PSRAM=opi,FlashSize=16M (UART connector default);
+C3 esp32:esp32:esp32c3:CDCOnBoot=cdc. F1 bench programs use no Wi-Fi or secrets.
+Confirmed servo panGPIO1/tiltGPIO2; I2S4/5/6, SHIFT14, left; pixel7 GRB brightness40;
+IR1 active-low remains provisional pending real sensor test. No camera/voice runtime
+firmware yet. User image camera map correspondence recorded; PWDN/RESET unresolved.
+F0 other setup checks still ongoing; F1 real-part acceptance pending. No phase
+completion or F2 advancement claimed. HARDWARE_PLAN.md absent; live IP verification
+follows Wi-Fi firmware. Preserve Session A software scope/results separately.
+Existing HEAD:5194c5ed39c02b2bcc91bfaef899492f5788838c. Intended testing commit:
+fw phase 1: add bench sketches for hardware testing. No staging/commit/push here.
+Next action: user commits/pushes actual bench firmware/context; team flashes on
+identified boards and returns Gate F1 observations/F1 DONE. Fix failures within F1.
