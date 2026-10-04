@@ -1351,3 +1351,212 @@ builds/toolchain/photos/logs excluded. Existing HEAD64994af remains unchanged.
 No flash, hardware retest, commit or push performed. F2 acceptance still pending.
 User next action: review git diff --cached --stat, commit with intended message
 fw phase 2: implement S3 camera head and servo control, then git push origin main.
+
+## Firmware publication confirmed - 2026-10-04
+User committed3176b53 (fw phase 2: implement S3 camera head and servo control).
+Their initial push failed connecting to GitHub443. Retried the already authorized
+git push origin main successfully:64994af..3176b53 main -> main. Verified local
+HEAD and origin/main ahead0/behind0. All11 firmware implementation/doc/checker
+files and required context from that commit are now published. Separate pending
+software/deployment/enclosure changes remain uncommitted. No new agent commit,
+flash or hardware checks. F2 remains incomplete; C3 production firmware deferred.
+Exact next action: complete remaining F2 camera acceptance with current verified
+S3 network details/exclusive viewer, or resume Phase5 Uno Q acceptance only when
+its other session releases it and current connection details are supplied.
+This publication note is an uncommitted handoff update after the pushed commit.
+
+## Secrets header editor include repair - 2026-10-04
+User requested fixing include errors in secrets.h and confirmed red underlines
+in the editor rather than Arduino compile errors. Verified IPAddress.h exists
+in installed ESP32 core3.3.11; the existing include is valid. No credentials
+printed or changed. User firmware override plus explicit fix request applies.
+Added .vscode/c_cpp_properties.json with matching ESP32-S3 compiler/core/SDK/
+ESP32Servo paths and existing camera compilation database; added settings.json
+Arduino .ino C++ association. Paths use LOCALAPPDATA/workspaceFolder and current
+installed versions (esp-x32 2601/core3.3.11). Documented setup/cache reload and
+version dependency in firmware/camera_head/README.md. JSON parsing and existence
+checks passed for every configured compiler/database/include path. Actual editor
+red-underline disappearance is not agent-observed; user may need editor reload.
+Compile-only check started; final result recorded below when available.
+Existing HEAD3176b5374386035afae7eb9d81eb5c6bf1379fe8, already pushed. No new
+commit/push/flash. All earlier firmware/software acceptance remains unchanged.
+Next action: finish compile check, user reloads editor and confirms diagnostics
+clear; preserve ignored credentials and unrelated pending deployment changes.
+Compile recheck completed exit0:984997 program bytes,56656 globals. Ignored log
+firmware/.build/camera-include-check.log. Firmware behavior/credentials unchanged.
+No staging/commit/push. Remaining action: reload editor window and verify cached
+include diagnostics clear. This editor repair does not close F2 acceptance.
+
+## All-board connection and Uno Q readiness - 2026-10-04
+User reports S3,C3,Uno Q connected and requests fixing the complete setup;
+asks whether Arduino App Lab installation is mandatory. Official Arduino Debian
+Linux documentation supports direct SSH/Python/CLI workflow; this project's
+existing deployment uses SSH/venv and does not require laptop App Lab.
+Read-only Arduino CLI board list positively identifies UNO Q product on COM20;
+ESP32 USB303A:1001 on COM18; CH343 adapter on COM19 consistent with prior S3.
+Generic ESP32 listing does not independently identify C3 silicon. No port opened,
+board flashed, remote install/deploy/service restart or servo movement performed.
+Laptop IPv4 resolves10.153.76.189 and virtual172.19.192.1. Historical board IPs
+are not assumed current. SSH executable available; ADB not on PATH. Initial
+Python serial inventory failed because project venv lacks pyserial; used CLI
+board list instead, no package installed. Windows CIM inventory returned same
+USB ports. User question pending: current Uno Q IP, SSH username (previously
+arduino), and release from other session. No passwords requested.
+Exact next action after supplied details: verify read-only Uno Q SSH identity/
+network/runtime state, then resume Phase5 laptop-mock flow/gallery and benchmark
+acceptance. Preserve hardware gates: F2 is pending, F3/C3 production code not
+implemented. Connected boards alone do not pass gates or authorize flashing.
+Existing HEAD3176b53 pushed; editor repair/context/deployment files still local.
+No commit/push. Preserve boAt headset and deferred optional IR decisions.
+
+## Alternative Uno Q IP discovery - 2026-10-04
+User asks another way to find IP. Official Arduino Debian guide confirms USB
+ADB shell access without network setup; adb shell hostname -I can read addresses.
+Checked PATH and common Arduino/Android install locations: adb.exe not found.
+No downloads/install/license acceptance performed. ARP table contains known S3
+10.153.76.67 (MAC28:84:85:a1:85:ec) and unidentified10.153.76.224; do not label
+unidentified neighbor Uno Q. Current Uno Q IP remains unknown. USB COM20 earlier
+positively identifies Uno Q, not its Wi-Fi address. Next action: use official
+Android Platform Tools (user download/terms) and adb devices; target confirmed
+Uno Q USB serial662499217 explicitly when reading hostname -I. No board/network
+changes, remote deployment or flashing. SSH user arduino user-confirmed.
+
+## Uno Q address verified over USB ADB - 2026-10-04
+User installed/extracted Platform Tools at E:/Platform tools/platform-tools-latest-windows/platform-tools.
+ADB device662499217 connected. Read-only USB shell verified accountarduino,
+hostnametinker, aarch64, Python3.13.5, SSH serviceactive. wlan0 UP at
+172.20.10.2/28, default gateway172.20.10.1. Other172.17/18/19/20.0.1 addresses
+are inactive Docker bridges; do not use as Wi-Fi SSH target.
+Laptop current Wi-Fi10.153.76.189 (plus virtual172.19.192.1); prior known S3
+10.153.76.67. Uno Q and laptop currently use different local subnets. TCP22
+probe to172.20.10.2 did not connect within3s. No SSH login/password requested.
+Exact next action: put Uno Q on the same hotspot as laptop/S3 (or move all onto
+one network), using local interactive nmcli --ask over USB for credentials;
+re-read hostname -I, then verify peer connectivity and Phase5 readiness. Never
+paste passwords into chat/context. Do not change other-session workloads until
+release confirmed. No remote writes, Wi-Fi changes, deployment/install/flash,
+commit/push performed. ADB usable for read-only diagnosis without App Lab.
+
+## Uno Q hotspot rescan - 2026-10-04
+User attempted local nmcli --ask connect Jasil and received SSID not found.
+Read-only diagnosis plus active Wi-Fi rescan over confirmed USB ADB now lists
+Jasil on channel11/2462MHz, signal100, WPA2/WPA3. Network is visible at2.4GHz;
+no hotspot band change needed from this evidence. Uno Q remains connected to
+its earlier network; no connection switch or credentials entered by agent.
+Exact next action: user retries interactive nmcli --ask device wifi connect
+Jasil ifname wlan0 via adb shell -t, then reports hostname -I. No password in
+chat. Windows netsh WLAN query blocked by location permission; do not change
+permissions just for this scan. Remaining phase/hardware acceptance unchanged.
+
+## Uno Q Jasil authentication failure - 2026-10-04
+Jasil remains visible at2.4GHz/signal100. Read-only NetworkManager profile and
+supplicant logs show authenticating->disconnected, repeated AUTH-REJECT
+(auth_type3/status15) before final ssid-not-found. Thus final error is not proof
+that SSID is invisible. Existing Jasil profile wpa-psk has stored secrets; values
+never read/displayed. Root cause not established: security negotiation or saved
+credentials/hotspot access policy remain candidates. Previous known network
+reconnects normally. Agent attempted reversible PMF0->1 profile setting and
+45s connection activation using stored credentials; failed with same rejects.
+Restored PMF0 and verified0; no temporary setting left. No password changed.
+Exact next action: user selects phone hotspot WPA2-Personal only (keep2.4GHz),
+verifies password/access allowance locally, then retries connection; if needed
+use local interactive nmtui over USB to edit saved password without chat/history.
+No hardware flashing, service restart, deploy/install, commit/push. Uno Q cannot
+yet reach laptop/S3 hotspot; Phase5 acceptance remains pending.
+
+## Latest Jasil retry still mixed WPA2/WPA3 - 2026-10-04
+Fresh rescan after user's repeated failure still shows Jasil2462MHz/signal100,
+securityWPA2 WPA3. Supplicant again reports auth_type3/status15 rejection.
+WPA2-only hotspot change has not been verified active; no further blind retry
+performed. nmtui exists at/usr/bin/nmtui; local interactive edit is available
+if saved password needs correction. Current credentials never read/displayed.
+Next action: user changes hotspot to WPA2-Personal only and restarts hotspot,
+then agent rescans to verify advertised security before reconnecting. If phone
+cannot select WPA2-only, obtain that constraint and choose another common
+network for laptop/Uno Q rather than repeat unchanged failing profile.
+No new board/profile mutation, flashing, deploy, commit/push this turn.
+
+## WPA2-only verified; saved password rejected - 2026-10-04
+User confirmed phone change. Fresh ADB scan verifies Jasil2412MHz/signal100/WPA2
+only. Activated existing Jasil profile over USB; now associates but WPA4-way
+handshake fails and supplicant explicitly reports WRONG_KEY/pre-shared key may
+be incorrect. nmcli exits1 requesting secrets; agent cannot prompt/password.
+This distinguishes current saved-password failure from earlier SAE rejection.
+No password read/changed by agent. Next action: user runs local interactive
+adb shell -t nmcli --ask connection up Jasil ifname wlan0, enters current hotspot
+password privately, then reports hostname -I. If prompt cannot replace saved
+key, use installed nmtui edit Jasil password locally. No deploy/flash/commit/push.
+WPA2 network visibility confirmed, connection/IP not yet successful.
+
+## User-requested additional WPA3 retry - 2026-10-04
+User insists on one additional try after switching phone to WPA3-Personal.
+Fresh scan contains Jasil WPA3 at2412MHz/signal100 plus a WPA2 scan entry.
+One existing-profile activation attempted with40s timeout. Supplicant attempts
+current WPA3 AP and again receives auth_type3/status15 AUTH-REJECT. Earlier
+WPA2 attempt explicitly reported WRONG_KEY. Current stored credential has not
+been independently verified; do not conclude Uno Q lacks WPA3 capability.
+No security/profile change or password read here. Need user to replace/verify
+saved hotspot password locally using nmtui before another meaningful attempt.
+No further automatic retries, remote install/deploy, flash or commit/push.
+
+## Uno Q network fixed; Phase5 runtime prepared - 2026-10-04
+After user edited saved hotspot password with nmtui, verified wlan0 UP at
+10.153.76.45/24, gateway10.153.76.224, connected profile Jasil1. Laptop remains
+10.153.76.189. TCP22 reached OpenSSH10.0p2 Debian7. BatchMode SSH command failed
+host-key verification (new address); verification was not bypassed. USB ADB
+serial662499217 used for preparation; accountarduino/hostnametinker/aarch64.
+User chose Prepare it; I'll test later for prompted mock acceptance. No laptop
+camera/microphone/mock/app/gallery/vision benchmark launched in this turn.
+Read existing ~/Vision runtime/packages/models without changing them; no app.main
+process was running. Prepared latest app/tools/deploy source into separate
+/home/arduino/Vision-phase5-20261004 with current-IP config.phase5.yaml. Runtime
+venv symlink points to existing ~/Vision/.venv; no pip/apt installs or service
+restart. Original ~/Vision source/config/photos left unchanged.
+Initial model symlink failed manifest path-containment check; replaced only the
+new test directory's link with a real copy of existing models. Retry preflight
+PASSED exit0:16 model-file checksums, YOLO/Vosk/YuNet loaded, CSRT/KCF created,
+photos writable, Linux/aarch64/Python3.13.5; OpenCVheadless-contrib4.14.0,
+ORT1.30.0/NumPy2.5.3; no torch/ultralytics runtime packages. This is runtime
+readiness, not end-to-end mock/physical/hardware acceptance. Source archive
+SHA25622824cb786efc3ba1e027a8f3de5ab9e83ca822be4b40c77b9f324c2e6581e18.
+Local ignored artifacts/preflight in logs/phase5_usb; models/source transfers
+exclude firmware/secrets/private photos. Existing gallery session not started
+or modified here. No hardware flash, software gate closure, commit/push.
+Exact next action when user ready: confirm current DHCP IPs and boAt input ID,
+start laptop camera mock bound10.153.76.189 and voice mock targeting10.153.76.45,
+run Uno Q app from prepared directory --config config.phase5.yaml --mic udp,
+cue track person/shoot; user checks phone gallery http://10.153.76.45:8080.
+Then stop app and run vision benchmark while laptop mock remains available;
+record numbers/observations. Phase5 incomplete until these acceptance checks;
+S3/F2/real-camera phase and C3/F3 remain pending under their separate gates.
+
+## Phase5 preparation and editor-fix commit - 2026-10-04
+User explicitly requests commit and push. Existing HEAD verified
+3176b5374386035afae7eb9d81eb5c6bf1379fe8.
+Intended message: phase 5: prepare Uno Q deployment and runtime checks.
+Commit includes deploy installer/transfer/packaging/readme/init, runtime preflight,
+LAN bind option for mock camera, tracker selection in app, deployment tests,
+README/.gitattributes, ESP32-S3 editor configuration and firmware editor docs,
+plus shared root and firmware context/status records. Enclosure files are
+unrelated untracked work and excluded; firmware implementation is already pushed.
+Ignored credentials/models/photos/builds/logs are excluded. User's firmware
+ownership override and direct editor-fix request cover the firmware doc records;
+no sketch/pin/contract change in this commit.
+Verification rerun for this commit:full pytest121 passed in6.70s, exit0;
+PowerShell copy script parsed with zero errors; both editor JSON files parsed;
+Uno Q isolated deployment bash -n installer and installer --check-only passed,
+exit0. Runtime validated all3 models/16 checksums, CSRT/KCF, writable photos,
+Linux/aarch64/Python3.13.5, OpenCV4.14/ORT1.30/NumPy2.5.3. No pip/apt install,
+service restart, camera/mic opening or physical test in this commit work.
+Earlier S3 editor repair compile passed984997 program bytes/56656 globals;
+editor diagnostic clearance remains user-observed/pending, not agent visual QA.
+User chose Prepare it; I'll test later. Live mock track-person/shoot, phone
+Uno Q gallery and recorded benchmark remain unrun. Phase5/GateA/Phase6/F2/F3
+are not declared complete. C3 production voice firmware remains deferred.
+Current verified Uno Q10.153.76.45 and laptop10.153.76.189, USB662499217.
+Prepared path/home/arduino/Vision-phase5-20261004; original~/Vision preserved.
+Updated deploy README with current USB-based run/benchmark instructions and
+historical-address clarification. No host-key verification bypass.
+Exact next action after publishing: wait for user's readiness, recheck DHCP
+addresses/headset ID, then run Phase5 mock flow/phone gallery/benchmark and
+record actual acceptance. Do not advance gates or auto-start live tests.

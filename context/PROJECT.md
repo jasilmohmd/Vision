@@ -284,3 +284,40 @@ are pending. C3 production voice firmware/F3 remains deferred. Phase5 Uno Q
 mock-flow/gallery/benchmark and software GateA/Phase6 not advanced.
 No agent commit/push. Next action: complete compile-only verification, review
 explicit staged firmware/context diff, then user commits and pushes this scope.
+
+Phase5 preparation now has isolated Uno Q test path
+/home/arduino/Vision-phase5-20261004, copying models from existing deployment and
+reusing its venv without reinstalling. Runtime checks passed; user deferred live
+mock acceptance. Current DHCP Uno Q10.153.76.45/laptop10.153.76.189; recheck before
+future tests. Original ~/Vision remains separate.
+
+## Phase5 preparation and editor-fix commit - 2026-10-04
+User explicitly requests commit and push. Existing HEAD verified
+3176b5374386035afae7eb9d81eb5c6bf1379fe8.
+Intended message: phase 5: prepare Uno Q deployment and runtime checks.
+Commit includes deploy installer/transfer/packaging/readme/init, runtime preflight,
+LAN bind option for mock camera, tracker selection in app, deployment tests,
+README/.gitattributes, ESP32-S3 editor configuration and firmware editor docs,
+plus shared root and firmware context/status records. Enclosure files are
+unrelated untracked work and excluded; firmware implementation is already pushed.
+Ignored credentials/models/photos/builds/logs are excluded. User's firmware
+ownership override and direct editor-fix request cover the firmware doc records;
+no sketch/pin/contract change in this commit.
+Verification rerun for this commit:full pytest121 passed in6.70s, exit0;
+PowerShell copy script parsed with zero errors; both editor JSON files parsed;
+Uno Q isolated deployment bash -n installer and installer --check-only passed,
+exit0. Runtime validated all3 models/16 checksums, CSRT/KCF, writable photos,
+Linux/aarch64/Python3.13.5, OpenCV4.14/ORT1.30/NumPy2.5.3. No pip/apt install,
+service restart, camera/mic opening or physical test in this commit work.
+Earlier S3 editor repair compile passed984997 program bytes/56656 globals;
+editor diagnostic clearance remains user-observed/pending, not agent visual QA.
+User chose Prepare it; I'll test later. Live mock track-person/shoot, phone
+Uno Q gallery and recorded benchmark remain unrun. Phase5/GateA/Phase6/F2/F3
+are not declared complete. C3 production voice firmware remains deferred.
+Current verified Uno Q10.153.76.45 and laptop10.153.76.189, USB662499217.
+Prepared path/home/arduino/Vision-phase5-20261004; original~/Vision preserved.
+Updated deploy README with current USB-based run/benchmark instructions and
+historical-address clarification. No host-key verification bypass.
+Exact next action after publishing: wait for user's readiness, recheck DHCP
+addresses/headset ID, then run Phase5 mock flow/phone gallery/benchmark and
+record actual acceptance. Do not advance gates or auto-start live tests.

@@ -83,7 +83,7 @@ def run(config, args):
                     if wanted != target:
                         target = wanted
                         tracker = TargetTracker(face if target == 'face' else detector, target,
-                                                config.detect_every_n_frames) if target else None
+                                                config.detect_every_n_frames, preferred=args.tracker) if target else None
                         box, offset = None, None
                         number = -1
                     current, frame, received = stream.latest()
@@ -149,6 +149,7 @@ def main(argv=None):
     parser.add_argument('--mic', choices=('laptop', 'udp'), default='udp')
     parser.add_argument('--device', type=int, help='Laptop input device; used only with --mic laptop')
     parser.add_argument('--models-dir', default='models')
+    parser.add_argument('--tracker', choices=('CSRT', 'KCF'), default='CSRT', help='Prefer KCF only if Uno Q benchmark needs it')
     parser.add_argument('--preview', action='store_true', help='Show crop, tracking box and angles; Q exits')
     parser.add_argument('--seconds', type=float, default=0, help='0 runs until Ctrl+C or Q')
     parser.add_argument('--check-config', action='store_true', help='Validate YAML and exit without opening devices')

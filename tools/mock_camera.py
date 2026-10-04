@@ -128,6 +128,7 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--config', default='config.yaml')
     parser.add_argument('--source', default='0')
+    parser.add_argument('--bind', default='127.0.0.1', help='Bind laptop LAN IP for Uno Q mock testing')
     parser.add_argument('--image')
     parser.add_argument('--synthetic', action='store_true')
     parser.add_argument('--seconds', type=float, default=0)
@@ -137,7 +138,7 @@ def main():
     logging.getLogger('werkzeug').setLevel(logging.ERROR)
     camera = MockCamera(int(args.source) if args.source.isdigit() else args.source, args.image, args.synthetic)
     try:
-        camera.start(control_port=config.camera_http_port, stream_port=config.camera_stream_port)
+        camera.start(host=args.bind, control_port=config.camera_http_port, stream_port=config.camera_stream_port)
         print(f'Mock camera ready: control :{config.camera_http_port}, stream :{config.camera_stream_port}', flush=True)
         camera.stop.wait(args.seconds or None)
     except KeyboardInterrupt:

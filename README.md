@@ -193,3 +193,11 @@ webcam; voice `--silence` avoids microphone access; all three support --seconds.
 The mock HTTP/UDP ports match the shared contract exactly. `--mock` only changes
 camera/light destination addresses to localhost; real board/network integration
 waits for the plan's hardware gates. Firmware is owned by separate Session B.
+
+
+## Phase 5 Uno Q deployment
+
+See [deploy/README.md](deploy/README.md) for source/model transfer, the Linux
+installer, laptop LAN mocks, phone-gallery acceptance and Uno Q benchmark.
+S3/C3 IPs are deferred; this phase uses laptop mocks. Do not run --mock on Uno Q
+when its mock servers are on the laptop; use the separate config.phase5.yaml.

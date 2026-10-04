@@ -784,3 +784,69 @@ builds/toolchain/photos/logs excluded. Existing HEAD64994af remains unchanged.
 No flash, hardware retest, commit or push performed. F2 acceptance still pending.
 User next action: review git diff --cached --stat, commit with intended message
 fw phase 2: implement S3 camera head and servo control, then git push origin main.
+
+## Firmware publication confirmed - 2026-10-04
+User committed3176b53 (fw phase 2: implement S3 camera head and servo control).
+Their initial push failed connecting to GitHub443. Retried the already authorized
+git push origin main successfully:64994af..3176b53 main -> main. Verified local
+HEAD and origin/main ahead0/behind0. All11 firmware implementation/doc/checker
+files and required context from that commit are now published. Separate pending
+software/deployment/enclosure changes remain uncommitted. No new agent commit,
+flash or hardware checks. F2 remains incomplete; C3 production firmware deferred.
+Exact next action: complete remaining F2 camera acceptance with current verified
+S3 network details/exclusive viewer, or resume Phase5 Uno Q acceptance only when
+its other session releases it and current connection details are supplied.
+This publication note is an uncommitted handoff update after the pushed commit.
+
+## Secrets header editor include repair - 2026-10-04
+User requested fixing include errors in secrets.h and confirmed red underlines
+in the editor rather than Arduino compile errors. Verified IPAddress.h exists
+in installed ESP32 core3.3.11; the existing include is valid. No credentials
+printed or changed. User firmware override plus explicit fix request applies.
+Added .vscode/c_cpp_properties.json with matching ESP32-S3 compiler/core/SDK/
+ESP32Servo paths and existing camera compilation database; added settings.json
+Arduino .ino C++ association. Paths use LOCALAPPDATA/workspaceFolder and current
+installed versions (esp-x32 2601/core3.3.11). Documented setup/cache reload and
+version dependency in firmware/camera_head/README.md. JSON parsing and existence
+checks passed for every configured compiler/database/include path. Actual editor
+red-underline disappearance is not agent-observed; user may need editor reload.
+Compile-only check started; final result recorded below when available.
+Existing HEAD3176b5374386035afae7eb9d81eb5c6bf1379fe8, already pushed. No new
+commit/push/flash. All earlier firmware/software acceptance remains unchanged.
+Next action: finish compile check, user reloads editor and confirms diagnostics
+clear; preserve ignored credentials and unrelated pending deployment changes.
+Compile recheck completed exit0:984997 program bytes,56656 globals. Ignored log
+firmware/.build/camera-include-check.log. Firmware behavior/credentials unchanged.
+No staging/commit/push. Remaining action: reload editor window and verify cached
+include diagnostics clear. This editor repair does not close F2 acceptance.
+
+## Phase5 preparation and editor-fix commit - 2026-10-04
+User explicitly requests commit and push. Existing HEAD verified
+3176b5374386035afae7eb9d81eb5c6bf1379fe8.
+Intended message: phase 5: prepare Uno Q deployment and runtime checks.
+Commit includes deploy installer/transfer/packaging/readme/init, runtime preflight,
+LAN bind option for mock camera, tracker selection in app, deployment tests,
+README/.gitattributes, ESP32-S3 editor configuration and firmware editor docs,
+plus shared root and firmware context/status records. Enclosure files are
+unrelated untracked work and excluded; firmware implementation is already pushed.
+Ignored credentials/models/photos/builds/logs are excluded. User's firmware
+ownership override and direct editor-fix request cover the firmware doc records;
+no sketch/pin/contract change in this commit.
+Verification rerun for this commit:full pytest121 passed in6.70s, exit0;
+PowerShell copy script parsed with zero errors; both editor JSON files parsed;
+Uno Q isolated deployment bash -n installer and installer --check-only passed,
+exit0. Runtime validated all3 models/16 checksums, CSRT/KCF, writable photos,
+Linux/aarch64/Python3.13.5, OpenCV4.14/ORT1.30/NumPy2.5.3. No pip/apt install,
+service restart, camera/mic opening or physical test in this commit work.
+Earlier S3 editor repair compile passed984997 program bytes/56656 globals;
+editor diagnostic clearance remains user-observed/pending, not agent visual QA.
+User chose Prepare it; I'll test later. Live mock track-person/shoot, phone
+Uno Q gallery and recorded benchmark remain unrun. Phase5/GateA/Phase6/F2/F3
+are not declared complete. C3 production voice firmware remains deferred.
+Current verified Uno Q10.153.76.45 and laptop10.153.76.189, USB662499217.
+Prepared path/home/arduino/Vision-phase5-20261004; original~/Vision preserved.
+Updated deploy README with current USB-based run/benchmark instructions and
+historical-address clarification. No host-key verification bypass.
+Exact next action after publishing: wait for user's readiness, recheck DHCP
+addresses/headset ID, then run Phase5 mock flow/phone gallery/benchmark and
+record actual acceptance. Do not advance gates or auto-start live tests.

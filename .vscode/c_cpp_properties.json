@@ -1,0 +1,32 @@
+{
+  "configurations": [
+    {
+      "name": "ESP32-S3 N16R8",
+      "compilerPath": "${env:LOCALAPPDATA}/Arduino15/packages/esp32/tools/esp-x32/2601/bin/xtensa-esp32s3-elf-g++.exe",
+      "compileCommands": "${workspaceFolder}/firmware/.build/camera_head/compile_commands.json",
+      "includePath": [
+        "${workspaceFolder}/firmware/camera_head",
+        "${workspaceFolder}/firmware",
+        "${workspaceFolder}/firmware/.toolchain/user/libraries/ESP32Servo/src",
+        "${env:LOCALAPPDATA}/Arduino15/packages/esp32/hardware/esp32/3.3.11/cores/esp32",
+        "${env:LOCALAPPDATA}/Arduino15/packages/esp32/hardware/esp32/3.3.11/variants/esp32s3",
+        "${env:LOCALAPPDATA}/Arduino15/packages/esp32/hardware/esp32/3.3.11/libraries/WiFi/src",
+        "${env:LOCALAPPDATA}/Arduino15/packages/esp32/hardware/esp32/3.3.11/libraries/Network/src",
+        "${env:LOCALAPPDATA}/Arduino15/packages/esp32/tools/esp32s3-libs/3.3.11/qio_opi/include",
+        "${env:LOCALAPPDATA}/Arduino15/packages/esp32/tools/esp32s3-libs/3.3.11/include/**"
+      ],
+      "defines": [
+        "ARDUINO=10607",
+        "ARDUINO_ARCH_ESP32",
+        "ARDUINO_ESP32S3_DEV",
+        "ESP32",
+        "BOARD_HAS_PSRAM",
+        "ARDUINO_USB_MODE=1",
+        "ARDUINO_USB_CDC_ON_BOOT=0"
+      ],
+      "cStandard": "c17",
+      "cppStandard": "c++20"
+    }
+  ],
+  "version": 4
+}
