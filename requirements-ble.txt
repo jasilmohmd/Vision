@@ -1,0 +1,2 @@
+# Optional only: python -m pip install -r requirements-ble.txt
+bleak==3.0.2

@@ -29,6 +29,8 @@ volatile bool capturePending = false;
 volatile bool photoSending = false;
 int targetPan = 90, targetTilt = 90, actualPan = 90, actualTilt = 90;
 uint32_t moveReceivedMs = 0, moveSettledMs = 0;
+volatile uint32_t wifiDisconnects = 0;
+volatile uint16_t wifiDisconnectReason = 0;
 bool moveInProgress = false;
 uint8_t *heldPhoto = nullptr;
 size_t heldLength = 0;
@@ -211,6 +213,7 @@ esp_err_t streamHandler(httpd_req_t *req) {
   const int socket = httpd_req_to_sockfd(req);
   Serial.printf("stream open socket=%d\n", socket);
   uint32_t streamFrames = 0, lastStreamLog = millis();
+  uint32_t maxFrameWaitMs = 0, maxSendWaitMs = 0;
   while (WiFi.status() == WL_CONNECTED) {
     const uint32_t frameCycleStarted = millis();
     // A viewer may close its receive side while queued video is still writable.
@@ -226,6 +229,7 @@ esp_err_t streamHandler(httpd_req_t *req) {
       if (capturePending) continue;
       const uint32_t frameStarted = millis();
       camera_fb_t *frame = esp_camera_fb_get();
+      maxFrameWaitMs = max(maxFrameWaitMs, millis() - frameStarted);
       if (millis() - frameStarted > 1000) Serial.printf("stream frame wait_ms=%lu\n", static_cast<unsigned long>(millis() - frameStarted));
       if (!frame || frame->format != PIXFORMAT_JPEG) {
         if (frame) esp_camera_fb_return(frame);
@@ -247,19 +251,26 @@ esp_err_t streamHandler(httpd_req_t *req) {
     char header[100];
     const int headerLength = snprintf(header, sizeof(header),
       "\r\n--frame\r\nContent-Type: image/jpeg\r\nContent-Length: %u\r\n\r\n", static_cast<unsigned>(length));
+    const uint32_t sendStarted = millis();
     result = httpd_resp_send_chunk(req, header, headerLength);
     if (result == ESP_OK) result = httpd_resp_send_chunk(req, reinterpret_cast<const char *>(copy), length);
+    maxSendWaitMs = max(maxSendWaitMs, millis() - sendStarted);
     if (result != ESP_OK) break;
     ++streamFrames;
     if (millis() - lastStreamLog >= 10000) {
-      Serial.printf("stream socket=%d frames=%lu RSSI=%d\n", socket, static_cast<unsigned long>(streamFrames), WiFi.RSSI());
+      Serial.printf("stream socket=%d frames=%lu RSSI=%d max_frame_wait_ms=%lu max_send_wait_ms=%lu\n",
+                    socket, static_cast<unsigned long>(streamFrames), WiFi.RSSI(),
+                    static_cast<unsigned long>(maxFrameWaitMs), static_cast<unsigned long>(maxSendWaitMs));
+      maxFrameWaitMs = maxSendWaitMs = 0;
       lastStreamLog = millis();
     }
     const uint32_t elapsed = millis() - frameCycleStarted;
     delay(elapsed < STREAM_INTERVAL_MS ? STREAM_INTERVAL_MS - elapsed : 1);
   }
   free(copy);
-  Serial.printf("stream close socket=%d frames=%lu result=0x%x\n", socket, static_cast<unsigned long>(streamFrames), result);
+  Serial.printf("stream close socket=%d frames=%lu result=0x%x max_frame_wait_ms=%lu max_send_wait_ms=%lu\n",
+                socket, static_cast<unsigned long>(streamFrames), result,
+                static_cast<unsigned long>(maxFrameWaitMs), static_cast<unsigned long>(maxSendWaitMs));
   // Force HTTPD to close this streaming session rather than retaining it as an
   // idle keep-alive connection after a half-close.
   return result == ESP_OK ? ESP_FAIL : result;
@@ -269,8 +280,18 @@ bool addRoute(httpd_handle_t server, const char *path, esp_err_t (*handler)(http
   route.uri = path; route.method = HTTP_GET; route.handler = handler;
   return httpd_register_uri_handler(server, &route) == ESP_OK;
 }
+esp_err_t configureHttpSocket(httpd_handle_t, int socket) {
+  const int enabled = 1;
+  if (setsockopt(socket, IPPROTO_TCP, TCP_NODELAY, &enabled, sizeof(enabled)) != 0) {
+    Serial.printf("ERROR TCP_NODELAY socket=%d errno=%d\n", socket, errno);
+    return ESP_FAIL;
+  }
+  return ESP_OK;
+}
 void startServers() {
   httpd_config_t config = HTTPD_DEFAULT_CONFIG();
+  // Control replies and multipart headers should not wait for TCP coalescing.
+  config.open_fn = configureHttpSocket;
   config.server_port = 80; config.stack_size = 12288;
   config.lru_purge_enable = true; config.recv_wait_timeout = 3; config.send_wait_timeout = 15;
   if (httpd_start(&controlServer, &config) != ESP_OK ||
@@ -344,6 +365,10 @@ void setup() {
   if (!strcmp(WIFI_SSID, "REPLACE_LOCALLY") || !strcmp(WIFI_PASS, "REPLACE_LOCALLY"))
     fatal("configure ignored secrets.h Wi-Fi credentials");
   WiFi.persistent(false); WiFi.mode(WIFI_STA); WiFi.setSleep(false); WiFi.setAutoReconnect(true);
+  WiFi.onEvent([](WiFiEvent_t, WiFiEventInfo_t info) {
+    wifiDisconnectReason = info.wifi_sta_disconnected.reason;
+    ++wifiDisconnects;
+  }, ARDUINO_EVENT_WIFI_STA_DISCONNECTED);
 #if !WIFI_USE_DHCP
   if (S3_IP == IPAddress(0, 0, 0, 0) || !WiFi.config(S3_IP, GATEWAY, SUBNET)) fatal("confirmed static IPv4 settings required");
 #endif
@@ -351,6 +376,13 @@ void setup() {
   Serial.printf("Wi-Fi starting; addressing=%s\n", WIFI_USE_DHCP ? "DHCP bench" : "static");
 }
 void loop() {
+  static uint32_t lastDisconnectReport = 0, reportedDisconnects = 0;
+  if (millis() - lastDisconnectReport >= 2000 && wifiDisconnects != reportedDisconnects) {
+    reportedDisconnects = wifiDisconnects;
+    lastDisconnectReport = millis();
+    Serial.printf("Wi-Fi disconnected reason=%u count=%lu\n", wifiDisconnectReason,
+                  static_cast<unsigned long>(reportedDisconnects));
+  }
   static uint32_t lastRetry = 0;
   static int lastWifi = -1;
   const uint32_t now = millis();

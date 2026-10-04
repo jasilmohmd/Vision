@@ -61,7 +61,7 @@ class CameraRecovery:
             self.reported_offline = True
         self.online = False
 
-    def poll(self, fresh):
+    def poll(self, fresh, freshness_check=None):
         from app.io.camera_client import CameraOffline
         if not fresh:
             self.offline('no fresh camera frames')
@@ -76,6 +76,13 @@ class CameraRecovery:
             self.controller.sync(status['pan'], status['tilt'])
         except CameraOffline as error:
             self.offline(str(error))
+            self.next_retry = self.clock() + self.delay
+            self.delay = min(2, self.delay * 2)
+            return False
+        # /status may block long enough that the caller's original frame expires.
+        # Announce recovery only if the stream is still fresh after the request.
+        if freshness_check is not None and not freshness_check():
+            self.offline('no fresh camera frames after status check')
             self.next_retry = self.clock() + self.delay
             self.delay = min(2, self.delay * 2)
             return False

@@ -37,7 +37,11 @@ def run(config, args):
     with ExitStack() as cleanup:
         camera = CameraClient(host, config.camera_http_port)
         cleanup.callback(camera.close)
-        lights = LightClient(light_host, config.light_port)
+        if args.mic == 'ble':
+            from app.voice.ble_source import BleVoiceTransport
+            lights = BleVoiceTransport(args.ble_address)
+        else:
+            lights = LightClient(light_host, config.light_port)
         cleanup.callback(lights.close)
         speaker = Speaker(config.speaker_enabled)
         cleanup.callback(speaker.close)
@@ -46,13 +50,15 @@ def run(config, args):
         detector = YoloDetector(models / 'yolov8n.onnx')
         face = FaceDetector(models / 'face_detection_yunet_2023mar.onnx')
         recognizer = VoiceRecognizer(models / 'vosk-model-small-en-us-0.15', config.vosk_conf_threshold)
-        source = LaptopMicSource(args.device) if args.mic == 'laptop' else UdpAudioSource(port=config.audio_port)
+        source = (lights if args.mic == 'ble' else
+                  LaptopMicSource(args.device) if args.mic == 'laptop' else
+                  UdpAudioSource(port=config.audio_port))
         cleanup.callback(source.close)
         recognizer.calibrate(source)
         state = StateMachine(controller, camera, lights, store, speaker, config)
         cleanup.callback(state.close)
         health = CameraRecovery(camera, controller, lights, speaker)
-        watchdog = AudioWatchdog() if args.mic == 'udp' else None
+        watchdog = AudioWatchdog() if args.mic in ('udp', 'ble') else None
         stream = MjpegStream(f'http://{host}:{config.camera_stream_port}/stream')
         stream.start()
         cleanup.callback(stream.close)
@@ -90,6 +96,10 @@ def run(config, args):
                     failures.append(error)
                     stop.set()
 
+        def camera_frame_fresh():
+            _, current_frame, current_received = stream.latest()
+            return current_frame is not None and monotonic() - current_received < .5
+
         def control():
             tracker, target, number = None, None, -1
             offset, box = None, None
@@ -99,7 +109,14 @@ def run(config, args):
                     current, frame, received = stream.latest()
                     fresh = frame is not None and monotonic() - received < .5
                     previously_online = health.online
-                    online = health.poll(fresh)
+                    online = health.poll(fresh, freshness_check=camera_frame_fresh)
+                    # Recovery can wait on HTTP; consume the latest stream snapshot,
+                    # not the image obtained before that wait.
+                    current, frame, received = stream.latest()
+                    fresh = frame is not None and monotonic() - received < .5
+                    if online and not fresh:
+                        health.offline('no fresh camera frames')
+                        online = False
                     if online and not previously_online:
                         tracker, target, number = None, None, -1
                         box, offset = None, None
@@ -182,7 +199,8 @@ def main(argv=None):
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--config', default=DEFAULT_CONFIG_PATH)
     parser.add_argument('--mock', action='store_true', help='Use localhost camera/light mocks')
-    parser.add_argument('--mic', choices=('laptop', 'udp'), default='udp')
+    parser.add_argument('--mic', choices=('laptop', 'udp', 'ble'), default='udp')
+    parser.add_argument('--ble-address', help='Verified C3 BLE address; required with --mic ble')
     parser.add_argument('--device', type=int, help='Laptop input device; used only with --mic laptop')
     parser.add_argument('--models-dir', default='models')
     parser.add_argument('--tracker', choices=('CSRT', 'KCF'), default='CSRT', help='Prefer KCF only if Uno Q benchmark needs it')
@@ -191,6 +209,10 @@ def main(argv=None):
     parser.add_argument('--check-config', action='store_true', help='Validate YAML and exit without opening devices')
     parser.add_argument('--log-dir', type=Path, help='Daily JSON logs; defaults beside the configured photos directory')
     args = parser.parse_args(argv)
+    if args.mic == 'ble' and not args.ble_address:
+        parser.error('--mic ble requires --ble-address')
+    if args.mic == 'ble' and args.mock:
+        parser.error('--mic ble uses real C3 lights; do not combine with --mock')
     try:
         config = load_config(args.config)
     except (OSError, ValueError) as error:

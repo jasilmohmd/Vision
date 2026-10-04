@@ -7,6 +7,7 @@
 #include <esp_wifi.h>
 #include <freertos/queue.h>
 #include <stdarg.h>
+#include <errno.h>
 #if __has_include("secrets.h")
 #include "secrets.h"
 #else
@@ -106,6 +107,9 @@ void audioTask(void *) {
   size_t collected = 0;
   bool socketReady = false;
   uint32_t sent = 0, failed = 0, lastReport = millis(), lastError = 0;
+  uint32_t sendRetries = 0;
+  int lastSendErrno = 0;
+  const char *lastSendStage = "none";
   while (true) {
     const size_t bytes = microphone.readBytes(reinterpret_cast<char *>(raw + collected),
                                              (SAMPLE_COUNT - collected) * sizeof(int32_t));
@@ -124,28 +128,68 @@ void audioTask(void *) {
       if (socketReady) audioSocket.stop();
       socketReady = false; continue; // Drain mic offline; never replay old audio.
     }
-    if (!socketReady) socketReady = audioSocket.begin(0) != 0;
+    if (!socketReady) {
+      errno = 0;
+      socketReady = audioSocket.begin(0) != 0;
+      if (!socketReady) { lastSendErrno = errno; lastSendStage = "socket"; }
+    }
     for (size_t i = 0; i < SAMPLE_COUNT; ++i) {
       const int32_t value = constrain(raw[i] >> SHIFT, -32768, 32767);
       const uint16_t bits = static_cast<uint16_t>(static_cast<int16_t>(value));
       pcm[2 * i] = bits & 0xff; pcm[2 * i + 1] = bits >> 8;
     }
-    bool ok = socketReady && audioSocket.beginPacket(UNOQ_IP, AUDIO_PORT) != 0;
+    bool ok = socketReady;
     if (ok) {
+      errno = 0;
+      ok = audioSocket.beginPacket(UNOQ_IP, AUDIO_PORT) != 0;
+      if (!ok) { lastSendErrno = errno; lastSendStage = "begin"; }
+    }
+    if (ok) {
+      errno = 0;
       const size_t written = audioSocket.write(pcm, sizeof(pcm));
-      const bool delivered = audioSocket.endPacket() != 0;
+      if (written != sizeof(pcm)) { lastSendErrno = errno; lastSendStage = "write"; }
+      errno = 0;
+      bool delivered = audioSocket.endPacket() != 0;
+      int sendError = delivered ? 0 : errno;
+      const uint32_t retryStarted = millis();
+      // ENOMEM/EAGAIN are network backpressure, not a broken UDP socket.
+      // Retry only a failed send, within16ms; never duplicate a successful send
+      // or retain audio through a disconnection. endPacket preserves its buffer.
+      while (!delivered && written == sizeof(pcm) &&
+             (sendError == ENOMEM || sendError == EAGAIN) &&
+             WiFi.status() == WL_CONNECTED && millis() - retryStarted < 16) {
+        vTaskDelay(max(static_cast<TickType_t>(1), pdMS_TO_TICKS(2)));
+        if (millis() - retryStarted >= 16 || WiFi.status() != WL_CONNECTED) break;
+        ++sendRetries;
+        errno = 0;
+        delivered = audioSocket.endPacket() != 0;
+        sendError = delivered ? 0 : errno;
+      }
+      if (!delivered) { lastSendErrno = sendError; lastSendStage = "send"; }
       ok = written == sizeof(pcm) && delivered;
     }
     if (ok) ++sent;
-    else { ++failed; audioSocket.stop(); socketReady = false; }
+    else {
+      ++failed;
+      if (strcmp(lastSendStage, "send") != 0 ||
+          (lastSendErrno != ENOMEM && lastSendErrno != EAGAIN)) {
+        audioSocket.stop(); socketReady = false;
+      }
+    }
     if (millis() - lastReport >= 10000) {
-      logMessage("audio packets_sent=%lu send_errors=%lu RSSI=%d free_heap=%u\n",
+      logMessage("audio packets_sent=%lu send_errors=%lu RSSI=%d free_heap=%u last_errno=%d stage=%s retries=%lu\n",
                     static_cast<unsigned long>(sent), static_cast<unsigned long>(failed),
-                    WiFi.RSSI(), static_cast<unsigned>(ESP.getFreeHeap()));
+                    WiFi.RSSI(), static_cast<unsigned>(ESP.getFreeHeap()), lastSendErrno, lastSendStage, static_cast<unsigned long>(sendRetries));
       lastReport = millis();
     }
   }
 }
+#ifndef VOICE_TRANSPORT_BLE
+#define VOICE_TRANSPORT_BLE 0
+#endif
+#if VOICE_TRANSPORT_BLE
+#include "ble_transport.h"
+#endif
 void setup() {
   Serial.begin(115200); delay(1500);
   Serial.setTxTimeoutMs(0); // HWCDC core3.3.11: no semaphore/ring-buffer waits.
@@ -160,11 +204,12 @@ void setup() {
   microphone.setPins(4, 5, -1, 6);
   if (!microphone.begin(I2S_MODE_STD, 16000, I2S_DATA_BIT_WIDTH_32BIT,
                         I2S_SLOT_MODE_MONO, I2S_STD_SLOT_LEFT)) fatal("I2S init failed");
-  WiFi.persistent(false); WiFi.mode(WIFI_STA); WiFi.setSleep(false); WiFi.setAutoReconnect(true);
-  // This C3 connected with this cap in the isolated Wi-Fi diagnostic.
-  // Keep it explicit; the board/network cause is not established by that test.
-  if (esp_wifi_set_max_tx_power(34) != ESP_OK) fatal("Wi-Fi TX power configuration failed");
-  logMessage("Wi-Fi TX power cap=8.5dBm\n");
+#if VOICE_TRANSPORT_BLE
+  startBleTransport();
+  return;
+#endif
+  WiFi.persistent(false); WiFi.mode(WIFI_STA); WiFi.setSleep(false); WiFi.setAutoReconnect(false);
+  // Use the SDK default transmit power on the router comparison.
   WiFi.onEvent([](WiFiEvent_t event, WiFiEventInfo_t info) {
     logMessage("Wi-Fi disconnected reason=%u\n", info.wifi_sta_disconnected.reason);
   }, ARDUINO_EVENT_WIFI_STA_DISCONNECTED);
@@ -185,6 +230,10 @@ void setup() {
                 WIFI_USE_DHCP ? "DHCP bench" : "static", UNOQ_IP.toString().c_str(), AUDIO_PORT, LIGHT_PORT);
 }
 void loop() {
+#if VOICE_TRANSPORT_BLE
+  pollBleTransport();
+  return;
+#endif
   static int previous = -1;
   static bool listening = false;
   static uint32_t lastRetry = 0;
@@ -214,7 +263,7 @@ void loop() {
   } else {
     if (listening) lightSocket.stop();
     listening = false; transientActive = false;
-    // Allow an in-progress WPA3 handshake to finish before a manual retry.
+    // Use one bounded manual retry interval; avoid rapid automatic authentication loops.
     if (millis() - lastRetry >= 45000) { lastRetry = millis(); WiFi.reconnect(); }
   }
   updateLight(connected); pollLogs(); delay(5);

@@ -1,5 +1,33 @@
 # Project scope and architecture
 
+## Experimental BLE selection - 2026-10-04
+
+Optional C3 BLE microphone/light transport implemented in the preceding trial;
+UDP remains default and selectable by verified same-partition reflash helper.
+App --mic ble requires explicit verified --ble-address. Optional Bleak3.0.2 on
+Uno Q; deferred import keeps UDP users independent. Four-chunk startup cushion,
+bounded PCM buffer, indexed notifications and padding/gap metrics are included.
+SOFTWARE_PLAN section 2 remains unchanged. Current Session A instructions forbid
+further firmware edits; Session B owns follow-up. Details and limits are in
+[BLE_TRANSPORT.md](BLE_TRANSPORT.md). Current C3 is BLE; latest strict probe fails
+only the 101ms notification-gap limit despite no loss or padding. S3 still times
+out; physical NeoPixel colors and full voice/camera acceptance are pending.
+
+## New-network runtime and ownership exceptions - 2026-10-04
+
+User explicitly allowed Session A network-only firmware updates/uploads and
+Wi-Fi diagnostics/connection fixes for this migration. Other firmware ownership
+and pin/contract boundaries remain in force. S3 now reports disconnect reasons;
+its ineffective transmit-power experiment was removed. Current board addresses
+UnoQ172.20.10.2, C3172.20.10.4, S3172.20.10.5 (DHCP, reverify after restart).
+Hotspot association capacity prevented all three boards plus laptop joining;
+user moved laptop back to previous network. Three boards share new hotspot;
+laptop live view uses USBADB forwarding8080 at http://localhost:8080/live.
+All processing runs on Uno Q. No service activation or stability acceptance;
+measured camera/audio gaps and current app freshness warnings still persist.
+
+---
+
 ## Complete-project publication preparation - 2026-10-04
 
 User explicitly requested update contexts then commit and push EVERYTHING.
@@ -543,3 +571,54 @@ PD-charger description was corrected. Servos share S3 ground and USB power path.
 Current voltage stability/brownout recurrence is untested; cause unresolved.
 No new hardware check or wiring change. Measure under camera/both-servo load
 when testing resumes; do not infer a defective power bank from old reset logs.
+
+## Wi-Fi transport follow-up - 2026-10-04
+
+User explicitly authorized Session A network-only compilation/upload and Wi-Fi
+connection diagnostics/fixes. Latest changes: C3 bounded transient UDP retries,
+S3 TCP_NODELAY and stream timing. Both compiled/flashed with verified hashes.
+C3 1000357/37976 bytes; S3 986425/56664. No pins/acquisition/PCM contract change.
+Final concurrent sample: C3 27.83 packets/s with 0.867s max gap, no malformed or
+kernel UDP errors; S3 2.91FPS, 1.166s max chunk gap, frame wait1ms versus network
+send wait1009/1626ms. Delivery remains unstable; no F2/F3 or software acceptance.
+Uno Q172.20.10.2, C3.4, S3.5; laptop on Jasil using USB localhost:8080/live.
+Runtime stopped, all bounded diagnostics ended; no automatic restart or commit.
+Next controlled access-point comparison requires verified new network settings;
+do not assume changing hotspot alone fixes board RF/power/transport behavior.
+Root HANDOFF/TESTING records contain exact evidence and outstanding acceptance.
+
+## TinkerSpace router migration pending - 2026-10-04
+
+User selected TinkerSpace; Uno Q verified192.168.1.99 and S3192.168.1.122,
+WPA2 2.4GHz. Both ignored credentials updated, C3 audio destination192.168.1.99.
+C3 still fails association; its DHCP address unknown. C3 default TX power and
+manual45s reconnect comparison compiled1000105/37976/flashed verified; S3
+986425/56664/flashed verified. No physical/PCM/capture contract change.
+S3 HTTP probes failed with0frames; no concurrent audio probe/full run possible.
+Runtime stopped; root/runtime config still old hotspot values, DO NOT launch.
+Root HANDOFF/TESTING has exact diagnostics and next steps for Session B/router
+association investigation, verified config completion and metadata retest.
+No commit/push or gate completion; all bounded diagnostics/readers ended.
+
+## Router isolation performed; no successful fix yet - 2026-10-04
+
+User requested find/fix. Read FIRMWARE_NETWORK_ISSUE.md for exact tests/results.
+C3 fails in Wi-Fi-only sketches without microphone/NeoPixel software activity;
+sees router-62/-64dBm but cannot authenticate, even targeted BSSID/channel and
+lower transmit power. Its temporary access point reports started but is absent
+from fresh Uno Q scans. This narrows investigation to radio/driver/calibration,
+RF/power or AP behavior; no board defect or root cause conclusively established.
+S3 b/g and Uno Q powersaveOFF comparisons failed; both experiments reverted.
+User says hotspots off and alternate power/cable ready; post-report probes still
+fail. Do not claim independently verified physical supply changes.
+Temporary C3 diagnostics restored to production1000105/37976; S3 production
+986425/56664 restored. Uploads0/hashesverified. Uno Q router profile restored,
+actualpowersaveON/default0, temporary NM profile/helper removed. All bounded
+readers/probes ended. Vision STOPPED; old runtime config must not launch on
+router until unknown C3 DHCP address is verified and all configs updated.
+User spare-C3 availability question pending. Next: identified spare-board radio
+comparison if available, otherwise Session B driver/PHY and hardware/RF/AP logs.
+No erase/NVS reset, guessed pins, future-phase work, commit or push. Existing
+HEADd64f754f219d4b983a32bd87f740309fc2920e41. Prior136 software tests unchanged;
+full stability/commands/gallery/benchmark and F2/F3 acceptance still pending.
+Update context before every commit and when ending; preserve Session B ownership.

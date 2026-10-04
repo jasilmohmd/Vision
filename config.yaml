@@ -1,7 +1,7 @@
-# Board addresses supplied by user on 2026-10-04. Phase5 uses separate laptop-mock config.
-s3_ip: 10.153.76.67
-c3_ip: 10.153.76.243
-unoq_ip: 10.153.76.45
+# DHCP board addresses verified on new hotspot, 2026-10-04. Phase5 mocks are separate.
+s3_ip: 172.20.10.5
+c3_ip: 172.20.10.4
+unoq_ip: 172.20.10.2
 camera_http_port: 80
 camera_stream_port: 81
 audio_port: 5005

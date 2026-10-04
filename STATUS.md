@@ -1,5 +1,606 @@
 # Project status
 
+## Session publication and resume point - 2026-10-04
+
+User requested context refresh, commit and push of all pending project work.
+Existing HEAD: d64f754f219d4b983a32bd87f740309fc2920e41.
+Intended message: feat: add switchable BLE voice transport and network diagnostics.
+Publication includes the previously implemented runtime freshness fix, network
+migration/diagnostic changes, optional BLE transport and switching tools, tests,
+and durable context. No additional firmware edits or hardware run in this
+publication turn. Ignored credentials, models, logs and private media excluded.
+
+Resume by reading context/README.md, HANDOFF.md, STATUS.md, BLE_TRANSPORT.md and
+FIRMWARE_NETWORK_ISSUE.md. Full app is STOPPED. Current C3 mode BLE; verified
+address44:B1:76:17:F5:7E. Uno Q USB ADB serial662499217, runtime/home/arduino/Vision.
+Uno Q routerIP192.168.1.99; S3 last verified192.168.1.122; C3 Wi-FiIPunknown.
+Root config.yaml retains prior hotspot addresses172.20.10.2/4/5; this is a stale
+configuration snapshot, not current router addressing. Do not run it unchanged.
+
+142 tests passed in9.73s after the final buffer change; diff whitespace check
+passed. Strict final BLE40.019s:16004.26samples/s, no missing samples or padding,
+but maxgap101ms fails <100ms requirement. NeoPixel colors not watched/unverified.
+S3 status/stream timeout;0frames. No complete voice/camera integration acceptance.
+Keep UDP selectable; switching is by reflash, not a live toggle. Shared canonical
+UDP contract unchanged. Session A must not edit firmware under current rules;
+Session B owns S3 connectivity and BLE sender follow-up. Do not advance phases.
+Next action: diagnose S3 connectivity and remaining BLE timing in Session B,
+then repeat strict BLE probe/physical light verification before full integration.
+See the following entry and BLE_TRANSPORT.md for exact commands and measurements.
+
+---
+
+## Switchable BLE trial implemented; acceptance pending - 2026-10-04
+
+User requested BLE while retaining Wi-Fi/UDP selection. Earlier in this work,
+a narrow C3 BLE prototype was implemented/flashed under that request; current
+Session A ownership instructions prohibit further firmware edits. Session B owns
+firmware follow-up. SOFTWARE_PLAN section 2 is unchanged; BLE is experimental,
+not an adopted replacement contract. See context/BLE_TRANSPORT.md for framing,
+files, mode-switch commands and the measured results.
+
+C3 currently runs BLE, address 44:B1:76:17:F5:7E. Uno Q receives INMP441 audio
+and sends NeoPixel states over one connection; no headset/laptop microphone.
+Both modes compile and BLE -> UDP -> BLE reflashing was verified, same partition.
+UDP is still the default build/app mode; switching requires reflash in this trial.
+C3 Wi-Fi authentication remains unresolved; its router DHCP address is unknown.
+Uno Q 192.168.1.99, last verified S3 192.168.1.122. Existing full-system config
+still contains old hotspot addresses: do not launch it unchanged on TinkerSpace.
+
+Latest full local suite: 142 passed in 9.73s; focused BLE suite 6 passed in 0.30s.
+Final serial-closed BLE probe: 40.019s, 640480 samples, 16004.26 samples/s,
+zero missing/invalid/out-of-order samples, buffer drops or playout padding.
+Maximum notification gap 0.101s narrowly exceeds the unchanged strict <0.100s
+gate: report ok=false, transport acceptance PENDING. Prior probe had 272 padded
+samples; startup cushion increased from 3 to 4 chunks (128ms) and eliminated
+padding in this final sample. Earlier 40s loss-free result passed the older gate
+before playout padding was measured; do not treat it as final acceptance.
+Concurrent S3 read-only probe: 0 frames; status/stream timeout, ok=false.
+Light writes requested previously; user says they did not watch NeoPixel, so
+physical colors remain UNVERIFIED. No Vosk/full-command or standalone acceptance
+in this trial. No private media saved. Full Vision app STOPPED; probes ended.
+
+Next: Session B investigate S3 connectivity and remaining BLE timing; then
+repeat strict BLE audio check, visually verify light colors, and run real voice/
+camera integration using verified current config. Do not mark phases/gates done.
+Existing HEAD d64f754f219d4b983a32bd87f740309fc2920e41. User subsequently authorized publication; see the newest publication entry
+for the intended message and existing HEAD. Refresh context before any commit.
+
+---
+
+## Bluetooth alternative discussed - 2026-10-04
+
+User interrupted further driver-report/toolchain inspection to ask about using
+Bluetooth. No spare C3 available, user-reported. Previous temporary diagnostics
+restored to production with verified uploads; Uno Q on TinkerSpace and app stopped.
+No SDK install/downgrade or BLE implementation performed. Bluetooth is currently
+an architectural option only: C3 INMP441 PCM needs32kB/s raw (16kHz16bitmono),
+so BLE audio/light transport needs a measured throughput/reliability prototype;
+camera remains Wi-Fi. C3 Wi-Fi/BLE share antenna, so BLE success cannot be assumed
+if RF/hardware is implicated. Any production BLE transport changes require user
+approval of shared SOFTWARE_PLAN section2 plus coordinated Session A/B work.
+Next: respond to Bluetooth tradeoff, then obtain explicit direction before new
+transport implementation or resume Wi-Fi driver/PHY diagnosis. No phase/gate
+completion, commit/push, or automatic app restart. Existing HEADd64f754.
+
+---
+
+## Router isolation performed; no successful fix yet - 2026-10-04
+
+User requested find/fix. Read FIRMWARE_NETWORK_ISSUE.md for exact tests/results.
+C3 fails in Wi-Fi-only sketches without microphone/NeoPixel software activity;
+sees router-62/-64dBm but cannot authenticate, even targeted BSSID/channel and
+lower transmit power. Its temporary access point reports started but is absent
+from fresh Uno Q scans. This narrows investigation to radio/driver/calibration,
+RF/power or AP behavior; no board defect or root cause conclusively established.
+S3 b/g and Uno Q powersaveOFF comparisons failed; both experiments reverted.
+User says hotspots off and alternate power/cable ready; post-report probes still
+fail. Do not claim independently verified physical supply changes.
+Temporary C3 diagnostics restored to production1000105/37976; S3 production
+986425/56664 restored. Uploads0/hashesverified. Uno Q router profile restored,
+actualpowersaveON/default0, temporary NM profile/helper removed. All bounded
+readers/probes ended. Vision STOPPED; old runtime config must not launch on
+router until unknown C3 DHCP address is verified and all configs updated.
+User spare-C3 availability question pending. Next: identified spare-board radio
+comparison if available, otherwise Session B driver/PHY and hardware/RF/AP logs.
+No erase/NVS reset, guessed pins, future-phase work, commit or push. Existing
+HEADd64f754f219d4b983a32bd87f740309fc2920e41. Prior136 software tests unchanged;
+full stability/commands/gallery/benchmark and F2/F3 acceptance still pending.
+Update context before every commit and when ending; preserve Session B ownership.
+
+---
+
+## TinkerSpace migration partially applied - 2026-10-04
+
+User selected regular Wi-Fi TinkerSpace instead of the phone hotspot and
+confirmed local connection prompt success. Existing network-only firmware
+compile/upload and Wi-Fi-fix authorization persists. No broader firmware scope.
+USB ADB remains available; runtime STOPPED, no automatic restart/commit/push.
+Existing HEAD d64f754f219d4b983a32bd87f740309fc2920e41.
+
+Uno Q initially still on hotspot despite reported success; activated saved
+TinkerSpace UUID aeab9e46-0448-450f-bd4e-fcd105990a37. Verified WPA2 2.4GHz
+2462MHz association and DHCP192.168.1.99/24. S3 joined192.168.1.122,
+MAC28:84:85:a1:85:ec, RSSI-52. C3 router DHCP IP UNKNOWN: do not guess.
+User says both boards are close to router with clear antennas.
+
+Both ignored SSID/password settings synchronized from active Uno Q profile,
+without displaying password; unescaped extraction equality verified for both.
+C3 destination IPAddress192.168.1.99; DHCP retained. Initial script expected a
+macro instead of IPAddress and aborted C3 update; corrected and recompiled
+before upload. Verified COM19 S3 / COM18 C3 chip and MAC identities. S3 compile
+986425/56664 bytes and upload0/hashverified. C3 final1000105/37976 and upload0/
+hashverified. Network-only C3 changes: removed prior8.5dBm transmit cap to SDK
+default; disabled automatic reconnect, retained45s manual retries to avoid rapid
+authentication loop. Neither change established successful router association.
+No pins, capture, audio conversion or shared contract changes.
+
+C3 initial/default-power logs repeatedly disconnect reasons2/201/36. Final50s
+bounded-reconnect sample shows boot and three reason2 events, NO connectedIP.
+No full audio probe run because peer address unknown. S3 initial router probe
+HTTPstatus/stream timeout, 0frames; repeated probe0frames/62bytes, HTTPstatus
+connecttimeout and streamreadtimeout. Captured report logs/router-camera-delivery.json
+ok=false. Uno Q-to-S3 firstping753-904ms; later32-157ms, router53-151ms:
+variable latency, not proof of a single AP or power cause. S3 connection succeeds
+but usable HTTP stream not verified. All bounded serial readers/probes ended.
+
+Root config.yaml and real runtime config still hold prior hotspot addresses:
+DO NOT launch them on this network. Only ignored camera diagnostic config was
+prepared using verified router IPs; no inferred C3 address. Complete all address
+updates once C3 connects, then copy verified runtime config to Uno Q.
+Next: resolve C3 WPA2 association (coordinate Session B/router administrator for
+isolated association diagnostics), verify S3 HTTP recovery, then repeat concurrent
+metadata delivery with C3 serial closed. Only after usable board connectivity
+restart unrestricted user-command run. No phase/gate acceptance or stability
+pass; prior136 software tests unchanged, not rerun for network-only work.
+Secrets/helpers/builds/reports remain ignored; no private media saved to context.
+Update handoff before every commit and when ending, preserving both sessions.
+
+---
+
+## Latest transport results; runtime stopped - 2026-10-04
+
+Supersedes earlier pending-build and active-run records below. User reported
+freshness interruptions again on the new hotspot. Vision remains STOPPED:
+ADB pgrep app.main found no process. No automatic restart, commit or push.
+Existing HEAD d64f754f219d4b983a32bd87f740309fc2920e41; no commit requested.
+
+Under the user's explicit Session A Wi-Fi diagnostic/fix exception, compiled
+and flashed both boards successfully (exit 0, flash hashes verified). C3 build
+1000357 program / 37976 global bytes includes bounded ENOMEM/EAGAIN send retries
+and preserved socket on transient failure. S3 build 986425 / 56664 includes
+TCP_NODELAY on accepted HTTP sockets and bounded frame/send timing diagnostics.
+Pins, camera acquisition/quality, microphone conversion and shared contract
+unchanged. Secrets stay ignored. No media or credentials recorded here.
+
+Final concurrent metadata-only sample with C3 serial CLOSED:
+- C3: 842 valid packets / 30.260s = 27.83/s (expected 31.25), max gap 0.867s,
+  20 gaps >100ms; zero malformed/other-peer packets and kernel UDP errors.
+- S3: 74 frames / 25.427s = 2.91 FPS, maximum chunk gap 1.166s;
+  status response 0.272s, RSSI -27. Report ok=true means finite HTTP delivery
+  succeeded, NOT tracking stability acceptance.
+- S3 timing while stream open: max camera frame wait 1ms, max network send wait
+  1009ms then 1626ms. Closing sample showed 2524ms / result 0xb006; client was
+  deliberately finite, so do not attribute that closing failure independently.
+This separates camera acquisition from observed transport stalls. C3 previously
+reported send-stage errno12/ENOMEM. Retry samples improved average delivery,
+but remaining stalls prevent declaring the issue fixed or F2/F3 acceptance.
+
+Uno Q powersave-OFF comparison did not improve delivery; actual radio restored
+ON and saved profile to original default0. IPs: Uno Q172.20.10.2, C3172.20.10.4,
+S3172.20.10.5. Laptop on Jasil; USB ADB forwards localhost:8080 to Uno Q gallery.
+All bounded probes/readers ended. Prior software suite136 passed remains the
+last result; not rerun for these network-only changes. Full19-command/features,
+physical lights, smooth tracking, photo flow, phone gallery, benchmark, power
+under load and standalone stability remain pending; no phase advanced.
+
+Evidence: ignored logs/new-network-camera-final-timing.json,
+logs/new-network-c3-final-timing.json, logs/new-network-s3-final-timing.log,
+and final firmware compile/upload logs. Next: controlled comparison on a
+non-phone 2.4GHz access point, with board destinations verified and the same
+metadata probes; distinguish AP/transport behavior from board RF/power causes.
+Do not silently change SSIDs or flash broader firmware. Restart freeform Vision
+only when requested, with no timer and user-selected commands. Update context
+before every commit; coordinate any further firmware work with Session B.
+
+---
+
+## New-network retry ended; deeper transport diagnosis - 2026-10-04
+
+User reported same freshness interruptions. Verified PID14195 absent, UDP5005
+listener absent, freeform result exit0. Runtime is STOPPED; no automatic restart.
+Earlier active-run handoff is historical. User authorization for Session A Wi-Fi
+diagnostics/fixes continues for this repair, with pins/capture/PCM contract fixed.
+
+Uno Q NetworkManager permissions allow profile changes without sudo. Live
+reapply of Wi-Fi powersave was unsupported; temporary saved-profile disable +
+reconnect worked. Power-OFF concurrent sample: C3525/40.033s=13.11/s,maxgap3.126s;
+camera36frames/21.366s=1.68FPS,maxchunkgap1.854s,status1.360s,readtimeout. No
+improvement. Restoring profile default did NOT restore actual radio ON; corrected
+by enabling3/reconnecting, then resetting saved profile to original default0.
+Verified iw Power save ON and original profile default. No persistent power fix.
+
+Precise C3 diagnostics exposed last_errno12/ENOMEM at stage send while receiver
+active and no camera stream. Before retry:596/40.240s=14.81/s,maxgap1.092s,
+0malformed/kernel receive errors; sender failures grew at UDPsend. Implemented
+bounded transient ENOMEM/EAGAIN retry: failed sends only,2ms waits within16ms,
+no duplicate after success,no offline replay; preserve existing socket for these
+transient errors. Other errors still reset socket. Raw1024byte/16kHz/512sample
+contract and microphone conversion untouched; producer log remains zero-wait.
+Compile1000357 program/37976globals; upload0/hashesverified. Post retry sample
+1120/40.495s=27.66/s,maxgap1.158s,0malformed/kernel errors. Send errors/retries
+still occur. Improvement in this sample,NOT full audio stability or F3 pass.
+Reader open during both errno/retry samples; serial-closed acceptance still needed.
+
+Now compiling S3 network TCP_NODELAY accepted-socket experiment plus bounded
+10s frame-wait/send-wait maxima to separate camera wait from transport delay.
+No frame size,quality,sensor,servo,pin,endpoint or shared contract change.
+This S3 build is NOT YET deployed/verified. Next: complete compile/upload and
+40s metadata-only concurrent delivery + S3 timing capture; retain changes only
+if measured useful. Latest verified board IPs UnoQ172.20.10.2,C3.4,S3.5. Laptop
+previous hotspot,USB live URLlocalhost:8080/live; runtime remains stopped.
+No commit/push,serviceactivation or full hardware acceptance. Update context
+before every commit and when ending; preserve Session B records.
+
+---
+
+## New-network real-component run active; lag persists - 2026-10-04
+
+User requested migration, all IP updates and another unrestricted real run.
+User explicitly authorized two Session A exceptions: network-only secret/settings
+build/upload, then Wi-Fi diagnostics/connection fixes. This does not authorize
+unrelated firmware features/pins/contract edits or future phases. Corrected both
+ignored SSIDs to verified laptop network, preserved user-entered passwords,
+set C3 UNOQ_IP172.20.10.2, retained DHCP. Secrets remain ignored, not printed.
+Verified chip/MAC/ports before upload. C3 final compile999979/37976 bytes,
+S3 final compile986161/56664; final uploads exit0 with verified flash hashes.
+
+S3 initially could not join. Added bounded disconnect reason/count reporting
+(13 source lines; callback only updates counters, main reports at most2s).
+Temporary S3 TX8.5dBm cap did NOT solve association; removed and flashed final
+build with original transmit power. No other sketch behavior/pins/capture/audio
+conversion/lights changed. New reporting revealed reason5 (ASSOC_TOOMANY,
+access point unable to handle associated clients). Controlled test disconnected
+ONLY Uno Q Wi-Fi while USB remained: S3 immediately joined172.20.10.5, whereas
+Uno Q then failed rejoin. User says only laptop/UnoQ/C3 were connected. This
+supports hotspot capacity in this observed setup, not a universal iPhone limit.
+User moved laptop back to Jasil after Windows location policy blocked CLI switch.
+Uno Q then rejoined successfully; all three board MACs reachable on new network.
+
+Current verified board IPs: Uno Q172.20.10.2/28, C3172.20.10.4, S3172.20.10.5;
+gateway172.20.10.1. Root config.yaml AND remote root/full-system config updated.
+Laptop is on previous network and does not occupy new-hotspot slot. USBADB
+662499217 forward tcp8080 -> UnoQ tcp8080 provides http://localhost:8080/live.
+Application computation still entirely Uno Q; USB/laptop only console/live view.
+Direct gallery on new network http://172.20.10.2:8080 (phone access unconfirmed).
+ADB forwarding must be recreated after disconnect/device restart; no auto-start.
+
+New-network delivery checks, serial monitors CLOSED, no capture/move/light:
+Initial C3-only40.132s:388 valid packets,9.67/s,maxgap9.517s; not repaired.
+After three boards could join, concurrent40s C3 + camera: C3993/40.010s,
+24.82/s vs31.25expected,maxgap.639s,0malformed/kernel receive errors. Camera
+20frames over13.065s,1.53receivedFPS,maxchunkgap1.197s,status1.106s; requested40s
+ended early with2s readtimeout. Diagnostic okfalse. Changing network has NOT
+eliminated delivery issues; these are network measurements, not CPU benchmark.
+No claim of exact loss, smooth motion, WAV clarity, colours or full acceptance.
+
+Requested app launched successfully, actual PID14195, UDP5005 owned by app,
+--mic udp --seconds0 and real full-system config. USB /live and /live/frame.jpg
+HTTP200; browser opened localhost live URL. Startup/calibration and camera sync
+completed; repeated freshness warnings still observed. Accepted camera up at
+08:04:15(board log clock); physical action not yet confirmed. No guided commands,
+voice injection or automatic tracking; user chooses commands. Run continues
+until user stops, no expiry or service activation. All diagnostics/readers ended.
+
+Ignored logs retain final builds/uploads, serial association evidence, new-
+network-camera-delivery.json and new-network-c3-delivery.json. Configuration
+validation passed locally and on Uno Q. Prior136 software-test result unchanged;
+not rerun for this firmware/network-only work. No commit/push requested. Existing
+HEADd64f754; firmware/STATUS/context records updated under explicit exception.
+Pending: user live feedback, residual stream/audio diagnosis, power under load,
+full19-command/features/phone gallery acceptance, CPUbenchmark and standalone
+acceptance. Next: observe freeform results or stop exact owned app on request;
+never label network migration a stability pass. Refresh context before any commit.
+
+---
+
+## New-network uploads completed; S3 connection blocker - 2026-10-04
+
+User explicitly authorized this Session A to compile/upload EXISTING sketches
+and update network addresses only, overriding the normal Session B boundary
+for this narrow task. No sketch implementation changed. Verified chips/MACs
+before writing: C3 COM18 ESP32-C3 AZrev1.1/44:b1:76:17:f5:7c; S3 COM19
+ESP32-S3 rev0.2/28:84:85:a1:85:ec. User-edited secrets initially did not match
+laptop SSID exactly. Corrected SSID in both ignored headers to the observed
+network, preserved user passwords, set C3 UNOQ_IP172.20.10.2. Both passwords
+compared equal without printing values. DHCP1 retained; no guessed static IPs.
+
+Both final builds succeeded: C3 999979 program/37976 globals; S3 984997/56656.
+Both final uploads exited0, flash hashes verified and boards reset. Pins,
+servo/camera/microphone conversion/light behavior/shared contract unchanged.
+Source diff confirms neither sketch edited. Secret headers still Git-ignored.
+One earlier successful upload had the nonmatching SSID; final uploads replace it.
+
+Uno Q now on new iPhone network, DHCP172.20.10.2/28, gateway172.20.10.1;
+laptop172.20.10.3. Uno Q fell back to old network once during uploads; manually
+reactivated verified new profile and rechecked it remains new. Do not assume
+future reconnections keep this DHCP destination; verify before later uploads.
+C3 joined172.20.10.4; MAC confirmed by neighbour and serial boot. LightUDP5006
+ready, audio destination172.20.10.2:5005. Ping averaged24ms in3 probes, but
+sustained serial-CLOSED receiver40.132s got only388 packets (9.67/s), max gap
+9.517s, zero malformed/other-peer/kernel receive errors. New network has NOT
+resolved audio delivery. Source sender/network causal attribution still pending.
+
+S3 has NOT joined; no confirmed new IP. Serial repeated Wi-Fi state changes
+and E wifi:Set status to INIT after upload and after one authorized restart.
+Camera/PSRAM/OV3660 initialization succeeds; latest boot reset_reason1 is
+explicit tool reset, not a new inferred spontaneous brownout. No fresh BOD
+message captured. User says iPhone Maximize Compatibility already enabled;
+scan reports hotspot2437MHz. Password equality alone does not identify fault.
+No extra connection behavior change authorized under network-only exception.
+Asynchronous question asks user to authorize Wi-Fi diagnostics/connection fixes
+here or hand remaining firmware issue back to Session B. Await decision.
+
+Root config.yaml and ignored full-system config have UnoQ172.20.10.2 and
+C3172.20.10.4. S3 field still OLD10.153.76.67; NOT ready for full runtime.
+Launch console URL updated172.20.10.2:8080/live; app remains STOPPED, no full
+new-network run or camera comparison claimed. Local config validation passed;
+prior136 software tests not rerun for configuration/build-only changes.
+Ignored logs hold build/upload/serial and new-network-c3-delivery.json metadata;
+no speech WAV/media or credentials included in handoff. Serial readers closed.
+
+No commit/push or service activation. Existing HEADd64f754. All physical
+acceptance/CPUbenchmark pending. Exact next action: resolve Wi-Fi diagnostic
+ownership, diagnose S3 association and C3 gaps, verify S3 IP by MAC/status,
+finish runtime config/deployment, then run requested unrestricted live test.
+Respect user no guided voice sequence and no time limit. Update context before
+any future commit; preserve both sessions' records.
+
+---
+
+## New-network migration waiting for ESP32 uploads - 2026-10-04
+
+User changed S3/C3 secrets and laptop network, requested Uno Q migration,
+IP updates and retry. User explicitly confirms ONLY secrets files changed;
+neither board uploaded. Old firmware therefore still runs old network settings.
+No new S3/C3 address can be inferred from the edited files or old firmware.
+
+Moved Uno Q using its existing saved new-network profile over USB ADB662499217.
+Activation succeeded; actual DHCP address172.20.10.2/28, gateway172.20.10.1.
+Laptop actual address172.20.10.3/28. Network identified from laptop connection
+profile, no stored passwords read. Initial Unicode profile-name command failed;
+retry using verified connection UUID succeeded. App already absent before switch.
+Read-only discovery .4 through .14 found no confirmed S3/C3 MAC. C3 COM18 counters
+continue from prior firmware. Serial reader bounded and closed after check.
+
+Updated only Uno Q address in config.yaml and ignored full-system config;
+launcher live URL is now http://172.20.10.2:8080/live. Existing S3/C3 fields still
+contain OLD network addresses and are NOT migration-ready; do not run app yet.
+No firmware files modified or uploaded. Session A ownership exception requested
+asynchronously: either user authorizes network-only updates/build/upload of
+existing sketches, or Session B performs them. C3 UNOQ_IP must be172.20.10.2.
+New IPs must be verified by board MAC/boot output before runtime config update.
+
+Vision remains STOPPED. No lag comparison or full acceptance run on new network.
+No service activation, commit or push. Existing HEAD d64f754. Software freshness
+fix and prior136-test result unchanged. Exact next action: resolve firmware
+upload ownership, upload updated network configuration to both boards, discover
+actual S3/C3 IPs, update and deploy runtime config, measure both delivery paths,
+then launch real-component/freeform live run with no time limit. No guided voice
+commands; preserve Session B shared records and mandatory pre-commit context.
+
+---
+
+## User-requested real-component restart - 2026-10-04
+
+User said run again. Verified no active app or Wi-Fi comparison and UDP5005
+free; Uno Q power saving remains ON. Prior sudo comparison ended before the
+off comparison, so no repair or comparison success is inferred. Restarted
+existing freeform real-board runner over USB ADB662499217 with UDP microphone,
+S3 camera and C3 lights, seconds0 (no expiry). Actual app PID13298; audio UDP5005
+listener owned by that process. Live page HTTP200; browser opened at
+http://10.153.76.45:8080/live. No guided commands or injected voice/movement.
+C3 logging repair is flashed per Session B; sender/network delivery issues from
+previous measurements remain unresolved. Software freshness race fix deployed.
+No firmware edits, service activation, commit or push. Earlier 136-test result
+unchanged, not rerun for launch. Full physical acceptance/benchmark pending.
+Next: review user's freeform results or stop app when requested. Update context
+before any commit; preserve separate Session B records.
+
+---
+
+## Camera and microphone repair investigation - 2026-10-04
+
+User authorized fixing delivery issues. Vision remains stopped; no movement,
+capture, light command, firmware modification, flash or service activation.
+Session A ownership remains in force. Latest Session B handoff confirms the C3
+queued-logging repair WAS FLASHED successfully on COM18. Earlier Session A
+notes saying unflashed are superseded. User confirms hotspot close and awake,
+battery saver off. Uno Q remains 10.153.76.45, S3 .67, C3 .243; MACs verified
+through Uno Q neighbours. ADB serial 662499217; C3 COM18 is present again.
+
+Actual stopped-app measurements after repair:
+- C3 serial-closed 20.081s: 601 valid packets, 29.93/s, max gap 1.070s,
+  zero malformed/other-source/kernel receive or checksum errors.
+- S3 stream-only 21.095s: 87 frames, 4.12 received FPS, max chunk gap .937s,
+  status latency .534s, RSSI -39, uptime 788s. No HTTP errors. Diagnostic ok
+  means delivery occurred, not stable tracking or physical acceptance.
+- C3 active receiver + serial open 40.057s: 1036 valid packets, 25.86/s,
+  max gap 1.420s, zero malformed or kernel receive errors. Sender counters
+  increased from sent15353/errors6147 to sent16076/errors6363 across three
+  10-second reports, then sent16389/errors6363 on the next report. Send failures
+  persist with an active destination; not simply a missing receiver or old
+  blocking producer logging. Their exact stage/errno remains unknown.
+- Uno Q ping averages: C3 380ms (max1072), S3 373ms (max829), hotspot130ms.
+  Laptop also sees C3 delays up to1119ms and one timeout in five probes.
+  Strong RSSI does not establish a responsive path. Network/firmware attribution
+  still unresolved; no power problem inferred solely from these measurements.
+
+Temporary Wi-Fi comparison launched in a local console; sudo authentication
+is pending. No power setting changed yet. Baseline 633/20.011s =31.63/s,
+max gap .620s, zero receive errors. It will test power saving off and restore
+original ON through an EXIT trap; no permanent profile edits. First attempt
+failed due to CRLF in an ignored script; corrected LF and restarted. Existing
+result JSON from first attempt is stale while new test waits. No secrets saved.
+
+Evidence is metadata under ignored logs/: c3-repair-receiver.json,
+c3-repair-sender.log, repair-camera-baseline.json, unoq-wifi-repair-console.log.
+Software freshness race fix from preceding turn remains deployed; 136 tests
+passed then, not rerun here because production source is unchanged this turn.
+Current HEAD d64f754f219d4b983a32bd87f740309fc2920e41. No commit/push requested.
+Acceptance and benchmark remain pending. Next: complete authenticated network
+comparison, evaluate measured effects, and report any remaining sender firmware
+fault to user for Session B. Do not increase freshness/buffer limits to hide gaps.
+
+---
+
+## Camera-ready freshness race fixed; runtime remains stopped - 2026-10-04
+
+User asked what's happening after repeatedready/unavailable logs and^C.
+Explained .5sfreshness cutoff andgenuine deliverygaps;Voskloadmessages normal.
+Found software race:control computedfresh beforeCameraRecovery.poll,which can
+blockon/status;poll thenannouncedready andcontrolused pre-waitframe/boolean.
+SlowHTTP can make that oldsnapshot stale before recoveryannouncement/movement.
+
+Fixed only SessionAsoftware:CameraRecovery acceptsoptional freshness_check,
+revalidates aftersuccessful/status beforeonline/ready;failedfreshness backs off
+andretainsreconnect. Mainpasses currentstreamfreshness callback andrereads latest
+frame afterpoll beforetracking/control;immediatelyblocks staleframes. Original
+.5s cutoff and networktimeouts unchanged. No firmware,gain,confidencechange.
+Two regressions cover slowstatus withexpiredframe(no ready) andcontinuingnew
+frames(legitimate recovery). Full136 pytest pass in11.22s. This is softwarefix,
+not proof hardware/networkdelivery repaired. Genuine longgaps still causeoffline.
+
+Verified priorrun exited0 andno appactive;deployed onlyapp/main.py andapp/runtime.py
+viaUSBADB662499217 to/home/arduino/Vision,remote py_compile passed. No apprestart
+or physicalmovement/capture triggered. Latest activeJSON nowstopped,lastPID12664.
+Next user's authorized retry can exercisefreeformcommands;review whether false
+ready/stale alternation improved andactual frame/audio stability. C3repairnot
+flashed,S3load/restart issue,all19physicalacceptance/CPUbenchmark remainpending.
+No commit/push requested for thisfix;source/context dirty. Mustupdatecontext before
+any futurecommit. Preserve SessionBfirmwareandsharedrecords;no guidedtestcommands.
+
+---
+
+## User-requested retry running - 2026-10-04
+
+User said lets try again after faileddeliverymeasurements. Confirmed UnoQUSB
+662499217,no existing runtime/audio diagnostic;archived priorconsolelog and
+restarted existing realcomponent/freeformrun withseconds0. ActualPID12664,
+/liveHTTP200;opened browserliveview. Camera synchronization/recovery logged but
+freshnesswarningsalreadyrecurring. No firmware/power/network/sourcefix applied;
+this is retry,not evidence underlyingissuesresolved. No commandsequence/instructions
+imposed. No serialreader workaround available unlessESPUSBconnectionsreturn.
+CurrentknownIP/configunchanged;C3repairstillnotflashed;physicalacceptance,
+standalone,CPUbenchmark remainpending. Await user's results/stop request.
+No commit/push;mandatorycontext refreshed;Session A nevereditsfirmware.
+
+---
+
+## Reported live outage investigated; test remains stopped - 2026-10-04
+
+User supplied sustainedS3connecttimeout from07:13:40..07:15:44(boardclock),then
+rapidfreshnessoutage/recovery and missingC3audio>5s at07:16:45;runended^C.
+Verified appabsent,resultexit0;no restart made. User explicitly confirmed NO
+boardunplug/restart orhotspotchange;they stayedpowered. S3/status later200,
+uptime146/reset_reason1 confirms recent spontaneousrestart. Historicalbrownouts
+exist,but currentcause cannot be confirmed withoutfreshSerial. S3USB/C3USB ports
+stillabsent;UnoQUSB662499217/wlan0IP10.153.76.45 available.
+
+Ran read-only camera andC3UDP diagnostics concurrently onUnoQ withappstopped,
+no motion/capture/ACK/light commands. Camera93frames/21.463s,4.33receivedFPS,
+maxchunkgap1.671s,statuslatency1.338s,RSSI-41,uptime186,errors[]. Its oktrue means
+finiteHTTP/streamdelivery,NOTstabletracking;gaps exceed .5sfreshnesswindow.
+C3only38validpackets/20.351s,1.87/s vs31.25expected,maxgap14.374s,0malformed,
+0otherpeer,0kernelreceive/checksum/buffererrors. This is severe delivery failure;
+not voicegrammar or exactpacketlossmeasurement. Concurrentradio streams mean
+network/firmware/power causal attribution stillrequires controlled evidence.
+Stored ignoredlogs/real-s3-outage-check.json,c3-after-outage.json andconsoles.
+
+C3compiled nonblockingloggingrepair remainsUNFLASHED per latestSessionBhandoff.
+No firmwarechanges/flash performed bySessionA. Updated issuehandoffs withlatest
+evidence. Nextdependency:SessionBrepairdeployment andnewclosed-monitorpacket
+acceptance,plus S3reset/power/network diagnosis withfreshSerial andloadmeasurement.
+Do not increasefreshness/readtimeout orweakenacceptance to maskfaults. No full
+19command/features acceptance claimed;CPUbenchmark/standalone gates pending.
+Honoruserfreelychosencommands/no guidedsequence oncehardwaredeliveryready.
+Context updated;no newsourcechange/tests/commit/push;current softwared64f754.
+
+---
+
+## Freeform runtime restarted and verified - 2026-10-04
+
+User said lets run again. Confirmed priorapp absent and USBUnoQ662499217 active,
+archived prior consolelog,launched same realboard/freeformmanualstoprunner.
+First startup receivedCtrl+C during Voskmodel loading and exited130;trace's
+Voskdestructor _handle error was after interruptedconstruction,not missingmodel.
+Verified model files present. Retriedonce;actual app nowrunningPID11568 with
+app.main/full-systemconfig/UDPmic/seconds0. Gallery/live HTTP200;camera-ready
+control synchronization seen,with recurring shortfreshness interruptions.
+No sourcechange or firmwareflash;no serialreaders(activeESPUSBports stillabsent).
+Do not confuse stale freeform-result130 from firstattempt with actualactivePID;
+ignoredlogs/freeform-active.json records latestactivecheck. Not a stability pass.
+User chooses commandsfreely;no instructions/guidedsequence. Existingcoverage,
+power/load/C3repairflash/physicalacceptance/benchmark pending states preserved.
+No commit/push;context refreshed. Nextreview user's results or stop request.
+
+---
+
+## Freeform test stopped at user request - 2026-10-04
+
+User said stop. Matched exact owned full-system appPID10145 and sentSIGINT;
+verified process absent and gallery8080/audio5005listeners gone. Serialstopmarker
+written;no ESP32serialreaders were active thisrun. No restart authorized.
+Freeform result/console logs ignored;physicalacceptance stillunconfirmed.
+Accepted uniquecommands observed:camera stop tracking, camera track person, camera centre.
+Savedphotoevents:none.
+Commandevents alone do not prove physicalactions or full19-commandacceptance.
+Camera freshness interruptions occurred;currentcause notconfirmedwithoutSerial.
+Latest source from committedrecoveryversion deployed;C3repairstillnotflashed,
+powerload/standalone/fullacceptance andCPUbenchmark remainpending.
+Next:review user's feedback before any further run;respect no guidedcommands.
+No source/firmwarechanges,commit/push. Context refreshed before ending.
+
+---
+
+## User-directed full-system test running - 2026-10-04
+
+User requested all commands/features but explicitly NO instructions or guided
+sequence;user will choose commands freely. Honor this preference. No expiry.
+Read newest appended cross-session handoff:powerbank feeds S3USB,servos from
+S35V/GND;this supersedes older laptop-only topology. C3logging repair is compiled
+but NOT flashed;service prepared/inactive;134test/syntheticrecovery evidence
+was from the other session,not rerun by Session A here. CurrentHEADd64f754.
+
+Verified UnoQUSBADB662499217,wlan0IP10.153.76.45;S3/status200 at10.153.76.67,
+90/90,idle,uptime2905,RSSI-49. C3neighbour10.153.76.243 REACHABLE and actual
+spoken command later accepted. COM18/19 are currently absent;only UnoQCOM20
+present. No serial reader workaround could start;no guessedport or firmwareflash.
+User reauthorized physical test;powerload/newC3firmware acceptance not inferred.
+
+Deployed latest committed SOFTWARE app/*.py and gallerytemplates only to
+/home/arduino/Vision over trustedUSB (ignored freeform-app.tar.gz21KB). No models,
+photos,firmware,serviceactivation or secrets touched. Remoteconfigcheck passed.
+Opened Vision - freeform full system test;existing runner executes app.main
+UDPmic/realboards/seconds0. Current appPID10145. Opened browserlive URL
+http://10.153.76.45:8080/live;page/frame200. Latestsoftware toleratescamera outage;
+voice/gallery running,control synchronization/recovery logged repeatedly.
+
+Early observation:camera freshness warnings14 with quickcamera-ready recoveries;
+do NOT call currentrun stable or infer brownout without newSerialevidence.
+Accepted camera stop tracking07:04:16.598(boardclock),1of19unique supported
+commands observed in initialcapture;no newphoto yet. Remaining commands are
+unrun/unobserved,notfailures. Coverage saved ignoredlogs/freeform-command-
+observations.json;consolelogfreeform-vision-console.log records events/errors.
+No user's commandorder imposed,no automaticmoves/shoot/voiceinjection.
+App staysrunning while usertests;no timer or serviceautostart introduced.
+Next:review user's failures/results and evolvingcommandcoverage;record physical
+servomotion/NeoPixel/photo/phonegallery observations separately. Completeall19
+onlywhenactuallyobserved;standalone/benchmark/gates stillpending. No commit/push
+thisturn;context refreshed. Session A nevereditsfirmware under renewedinstructions.
+
+---
+
 ## Complete-project publication preparation - 2026-10-04
 
 User explicitly requested update contexts then commit and push EVERYTHING.
@@ -2548,3 +3149,26 @@ Exact next action after publication: when user is ready, confirm C3 connection,
 flash the repair, then use tools/prototype_acceptance.md; measure the corrected
 S3 power-bank arrangement before sustained motion/recovery checks. Keep hardware
 deferred until the user resumes it. Preserve existing session records.
+
+
+## C3 logging repair flashed - 2026-10-04
+User explicitly requested “flash c3”. Arduino discovery found COM18 ESP USB;
+esptool identified ESP32-C3 AZrev1.1,4MB,MAC44:b1:76:17:f5:7c before writing.
+Uploaded the previously compiled999975-byte repair using esp32:esp32:esp32c3:
+CDCOnBoot=cdc. Upload exited0, written hashes verified, hard reset completed.
+Startup confirmed mic4/5/6,pixel7,SHIFT14,IR omitted,TX8.5dBm,DHCP IP
+10.153.76.243,RSSI -50dBm,audio destination10.153.76.45:5005,light listener5006.
+Brief serial checks showed packets_sent98/167/192 but send_errors118/362/650:
+send failures are increasing, so delivery is NOT established and this is NOT
+F3 acceptance. No receiver, speech/LED observation or >=40s closed-monitor
+delivery test was run. Root cause of send errors is unverified; confirm Uno Q
+destination availability/network path when user resumes hardware testing.
+Serial readers closed after checks; S3/Uno Q not flashed or controlled and
+service not enabled. Hardware remains deferred except this requested upload.
+Ignored logs:firmware/.build/voice-unit-nonblocking-upload.log and startup.log
+(full startup filename:voice-unit-nonblocking-startup.log).
+Existing HEAD d64f754f219d4b983a32bd87f740309fc2920e41 is published on origin/main.
+No new commit/push requested for this flash. Exact next action: diagnose C3 UDP
+send failures with the verified destination available, then closed-monitor
+sustained delivery and speech/light checks; measure S3 power-bank feed under
+servo load before combined physical acceptance. Preserve pending gates.

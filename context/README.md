@@ -73,3 +73,11 @@ User confirms C/C++1696 header error cleared and requests commit/push. Explicit
 SDK flags/paths and mapped original sketches replace the earlier incomplete
 response-file configuration. See latest HANDOFF/TESTING for checks, existing
 HEAD c78803f and intended editor-fix message. Hardware acceptance remains pending.
+
+## Latest resume point - 2026-10-04
+
+Read the newest HANDOFF publication entry plus BLE_TRANSPORT.md and
+FIRMWARE_NETWORK_ISSUE.md. C3 currentlyBLE, fullappSTOPPED. KeepUDP selectable;
+S3 connectivity, strictBLE timing and physicalNeoPixel confirmation are pending.
+Rootconfig has stalehotspotIPs. No phase completion. Current Session A forbids
+furtherfirmware edits; Session B owns follow-up.

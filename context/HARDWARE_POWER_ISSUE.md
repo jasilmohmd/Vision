@@ -35,3 +35,10 @@ PD-charger description was corrected. Servos share S3 ground and USB power path.
 Current voltage stability/brownout recurrence is untested; cause unresolved.
 No new hardware check or wiring change. Measure under camera/both-servo load
 when testing resumes; do not infer a defective power bank from old reset logs.
+
+## Later power topology and spontaneous restart - 2026-10-04
+Latest user correction in shared handoff:powerbank feedsS3USB,servos fromS35V/GND.
+Latest freeform outage endedafterminutes;user denies unplug/restart/hotspotchange.
+Subsequentuptime146/reset_reason1 confirmsrestart,butfreshSerial unavailable
+(S3COM19absent). Existingbrownoutevidence is historical,not proof of this reset
+cause. Stopped-app stream4.33FPS/maxgap1.671s;notstabletrackingacceptance.

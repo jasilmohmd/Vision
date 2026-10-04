@@ -117,3 +117,39 @@ def test_json_logs_rotate_and_preserve_exception(tmp_path):
     finally:
         logging.getLogger().removeHandler(handler)
         handler.close()
+
+
+def test_slow_status_does_not_announce_recovery_with_expired_frame(caplog):
+    now = [0.0]
+    camera, controller, lights, speaker = Mock(), Mock(), Mock(), Mock()
+    def slow_status():
+        now[0] += 1.3
+        return {'pan': 70, 'tilt': 85}
+    camera.status.side_effect = slow_status
+    recovery = CameraRecovery(camera, controller, lights, speaker, clock=lambda: now[0])
+    with caplog.at_level(logging.INFO):
+        assert not recovery.poll(True, freshness_check=lambda: now[0] < .5)
+    assert not recovery.online
+    speaker.say.assert_not_called()
+    lights.set_reconnecting.assert_called_with(True)
+    assert not any('Camera ready' in entry.message for entry in caplog.records)
+    # Back off before requesting status again rather than hammering the board.
+    assert not recovery.poll(True, freshness_check=lambda: True)
+    assert camera.status.call_count == 1
+
+
+def test_slow_status_can_recover_when_new_frames_keep_arriving():
+    now = [0.0]
+    camera, controller, lights, speaker = Mock(), Mock(), Mock(), Mock()
+    received = [0.0]
+    def slow_status():
+        now[0] += 1.3
+        received[0] = now[0] - .05
+        return {'pan': 70, 'tilt': 85}
+    camera.status.side_effect = slow_status
+    recovery = CameraRecovery(camera, controller, lights, speaker, clock=lambda: now[0])
+    assert recovery.poll(True, freshness_check=lambda: now[0] - received[0] < .5)
+    assert recovery.online
+    controller.sync.assert_called_once_with(70, 85)
+    lights.set_reconnecting.assert_called_once_with(False)
+    speaker.say.assert_called_once_with('Camera ready')
