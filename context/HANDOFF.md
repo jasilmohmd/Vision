@@ -1277,3 +1277,77 @@ voice/context files, reviews staged diff/check, commits with intended message.
 After commit, inspect actual new hash and remaining working-tree changes; never
 invent future hash or include unrelated work. Retain boAt, preserve separate
 Session B firmware ownership. No model/media/secrets/log artifacts in commit.
+
+## Resume after voice commit - 2026-10-04
+Verified HEAD 64994afafbb4265f00685a32b6cc66c15b8809f4,
+fix voice: finalise commands on bounded silence. User requested next work.
+Voice/context commit is present; separate deployment and Session B firmware
+working-tree changes remain. No staging, commit, push or firmware edits here.
+Read current software plan and ownership review: Phase 5 Uno Q mock-flow,
+phone gallery and recorded vision benchmark acceptance remain outstanding.
+Do not start Phase 6 or declare Gate A/F2 complete from manual voice movement.
+Locally reviewed deployment handoff and reran tests/test_deployment.py:
+6 passed in 0.14s. This checks packaging/config validation, not Uno Q runtime.
+Requested whether Uno Q is available from its other session and its current
+IP/SSH username. Earlier addresses are not assumed current after hotspot change.
+No remote connection, service restart, install or camera/microphone test run.
+Exact next action: obtain Uno Q availability/current connection details, then
+resume Phase 5 against laptop mocks and record full flow/phone gallery/benchmark.
+Keep boAt microphone preference. If Uno Q remains occupied, leave its runtime
+untouched and keep Phase 5 acceptance pending. Shared historical records retained.
+
+## Firmware publication audit - 2026-10-04
+User flagged firmware missing from remote. Fetched origin successfully: HEAD
+64994afafbb4265f00685a32b6cc66c15b8809f4 equals origin/main (ahead0/behind0).
+Firmware changes are uncommitted:7 modified tracked files and4 untracked files,
+including camera_head.ino, camera_pins.h, firmware/tools/check_camera.py and docs.
+The voice-only commit intentionally excluded firmware; a push cannot publish
+these working-tree files. No firmware change/staging/commit/push in this audit.
+Firmware handoff last records final S3 flash but not subsequent software voice
+movement observations; full F2 remains pending. Session A ownership currently
+forbids editing firmware/, including its handoff. Next action: Session B prepares
+and reviews a scoped firmware commit with current context, or user explicitly
+authorizes this session to handle that firmware commit and its context updates.
+Preserve separate deployment/enclosure changes and exclude secrets/build/media.
+Phase5 remote acceptance remains pending; no Uno Q operation performed.
+
+## Firmware commit preparation under user override - 2026-10-04
+User explicitly said overide after the Session A firmware ownership restriction
+was explained. This authorizes preparing the pending firmware commit and its
+context here; it does not authorize future-phase implementation or Uno Q work.
+Existing HEAD64994afafbb4265f00685a32b6cc66c15b8809f4, voice fix, equals fetched
+origin/main. Intended message: fw phase 2: implement S3 camera head and servo control.
+Scope: camera_head.ino/camera_pins.h/README, tools/check_camera.py/tools README,
+secrets.example.h DHCP toggle, TODO optional IR deferral, TEAM_TESTING/AGENTS,
+firmware STATUS/context handoff and mandatory shared root context/status.
+Preserve unrelated software/deployment/enclosure changes. Do not include ignored
+secrets, toolchain, builds, private photos or logs. Shared contract unchanged.
+Reviewed implementation has OV3660/OPI PSRAM initialization; panGPIO1/tiltGPIO2;
+HTTP80 control and81 QVGA MJPEG at10fps; retained higher-resolution capture until
+ack; separate camera/servo mutexes and dedicated bounded2degree/20ms slew task;
+commanded-movement diagnostics and exclusive-viewer endpoint checker.
+Corrected stale camera pin comment to reflect earlier OV3660PID0x3660 boot.
+Prior final compile/upload logs inspected:984997 program bytes,56656 globals,
+upload written-data hash verified. Prior boot and software live tests provide
+hardware evidence: user confirmed all four directions and smooth centre with
+boAt after separate voice fix. These are historical observations, not new tests.
+Checker py_compile and --help rerun successfully now; ignored credentials/build/
+toolchain exclusion verified with git check-ignore. Compile-only recheck started;
+its final result will be recorded separately. No flash or physical test here.
+F2 remains IN PROGRESS: intermittent MJPEG timeouts, final-build full checker/
+capture-ack-stream recovery, prolonged stability and remaining integration tests
+are pending. C3 production voice firmware/F3 remains deferred. Phase5 Uno Q
+mock-flow/gallery/benchmark and software GateA/Phase6 not advanced.
+No agent commit/push. Next action: complete compile-only verification, review
+explicit staged firmware/context diff, then user commits and pushes this scope.
+
+### Final firmware commit verification - 2026-10-04
+Compile-only recheck exited0:984997 program bytes,56656 globals, confirmed S3
+OPI PSRAM/16MB profile. Ignored log firmware/.build/camera-commit-compile.log.
+Checker syntax/help passed; staged whitespace check passed. Explicitly staged
+all11 pending firmware files plus7 shared root context/status files (18 total).
+Unrelated deployment/software/enclosure changes remain unstaged; ignored secrets,
+builds/toolchain/photos/logs excluded. Existing HEAD64994af remains unchanged.
+No flash, hardware retest, commit or push performed. F2 acceptance still pending.
+User next action: review git diff --cached --stat, commit with intended message
+fw phase 2: implement S3 camera head and servo control, then git push origin main.

@@ -1,5 +1,10 @@
 # F1 bench firmware: hardware team handoff
 
+Prototype scope update (2026-10-04): user deferred optional IR to TODO.md.
+IR physical testing is skipped for this version. Servo, NeoPixel and microphone
+checks are required. The exact original gate below is preserved for reference;
+its optional IR item is omitted under this user direction.
+
 These are actual standalone firmware sketches. Test each part before camera/
 voice integration. All Serial output uses 115200 baud. Boot logs show numeric
 ESP reset reason; Wi-Fi is intentionally disabled and there is no bench IP.

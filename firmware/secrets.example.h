@@ -6,6 +6,8 @@
 // All addresses below are placeholders; confirm the hotspot subnet at F0.
 #define WIFI_SSID "REPLACE_LOCALLY"
 #define WIFI_PASS "REPLACE_LOCALLY"
+// Production default is static; user approved DHCP for the initial camera test.
+#define WIFI_USE_DHCP 0
 const IPAddress S3_IP(0, 0, 0, 0);
 const IPAddress C3_IP(0, 0, 0, 0);
 const IPAddress UNOQ_IP(0, 0, 0, 0);

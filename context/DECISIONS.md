@@ -399,3 +399,33 @@ deployment edits. Context history shared with Session B included as required.
 Intended message fix voice: finalise commands on bounded silence; existing
 HEAD08fabad4fff50b1d9172bef0119a24e9fb70b8cb. Agent did not stage actual index,
 commit or push. Isolated code snapshot115 tests passed; mixed tree121 earlier.
+
+## Firmware commit preparation under user override - 2026-10-04
+User explicitly said overide after the Session A firmware ownership restriction
+was explained. This authorizes preparing the pending firmware commit and its
+context here; it does not authorize future-phase implementation or Uno Q work.
+Existing HEAD64994afafbb4265f00685a32b6cc66c15b8809f4, voice fix, equals fetched
+origin/main. Intended message: fw phase 2: implement S3 camera head and servo control.
+Scope: camera_head.ino/camera_pins.h/README, tools/check_camera.py/tools README,
+secrets.example.h DHCP toggle, TODO optional IR deferral, TEAM_TESTING/AGENTS,
+firmware STATUS/context handoff and mandatory shared root context/status.
+Preserve unrelated software/deployment/enclosure changes. Do not include ignored
+secrets, toolchain, builds, private photos or logs. Shared contract unchanged.
+Reviewed implementation has OV3660/OPI PSRAM initialization; panGPIO1/tiltGPIO2;
+HTTP80 control and81 QVGA MJPEG at10fps; retained higher-resolution capture until
+ack; separate camera/servo mutexes and dedicated bounded2degree/20ms slew task;
+commanded-movement diagnostics and exclusive-viewer endpoint checker.
+Corrected stale camera pin comment to reflect earlier OV3660PID0x3660 boot.
+Prior final compile/upload logs inspected:984997 program bytes,56656 globals,
+upload written-data hash verified. Prior boot and software live tests provide
+hardware evidence: user confirmed all four directions and smooth centre with
+boAt after separate voice fix. These are historical observations, not new tests.
+Checker py_compile and --help rerun successfully now; ignored credentials/build/
+toolchain exclusion verified with git check-ignore. Compile-only recheck started;
+its final result will be recorded separately. No flash or physical test here.
+F2 remains IN PROGRESS: intermittent MJPEG timeouts, final-build full checker/
+capture-ack-stream recovery, prolonged stability and remaining integration tests
+are pending. C3 production voice firmware/F3 remains deferred. Phase5 Uno Q
+mock-flow/gallery/benchmark and software GateA/Phase6 not advanced.
+No agent commit/push. Next action: complete compile-only verification, review
+explicit staged firmware/context diff, then user commits and pushes this scope.

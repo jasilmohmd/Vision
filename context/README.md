@@ -48,3 +48,9 @@ silence. Existing HEAD08fabad4fff50b1d9172bef0119a24e9fb70b8cb. Scoped code
 snapshot115 tests pass; mixed working tree121 previously. Four manual directions
 and centre user-confirmed; full integration remains pending. See latest handoff
 for selective patch/staging; no commit/push by agent and no firmware edits.
+
+## Latest pending firmware publication - 2026-10-04
+Voice commit64994af is pushed. User explicitly overrode the Session A firmware
+edit restriction to prepare the pending S3 firmware commit and refresh its
+handoff. F2 remains incomplete; no C3/F3 or Uno Q work authorized by this override.
+See the latest HANDOFF/TESTING records for exact scope and verification.
