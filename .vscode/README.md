@@ -3,7 +3,10 @@
 The C/C++ profiles use a shared generated compile database so original S3 and
 C3 `.ino` files resolve to their own board compiler settings. Arduino's normal
 database describes generated `.ino.cpp` files instead. Headers without a mapped
-translation unit use the selected board profile and its SDK response files.
+translation unit use the selected board profile and its explicit SDK paths,
+defines and compiler flags. The refresher expands Arduino's response files and
+prefix includes so IntelliSense can resolve them directly. SDK paths in the
+tracked configuration use LOCALAPPDATA rather than a developer's username.
 
 After compiling firmware, refresh the editor database from repository root:
 

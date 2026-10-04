@@ -67,3 +67,9 @@ User requested all pending changes committed/pushed after context refresh.
 See newest HANDOFF/TESTING entries for verified checks,publication scope and
 unresolved brownout/USB logging issues. See HARDWARE_POWER_ISSUE.md and
 FIRMWARE_AUDIO_ISSUE.md before any new hardware run. No full acceptance pass.
+
+## Latest editor repair commit preparation - 2026-10-04
+User confirms C/C++1696 header error cleared and requests commit/push. Explicit
+SDK flags/paths and mapped original sketches replace the earlier incomplete
+response-file configuration. See latest HANDOFF/TESTING for checks, existing
+HEAD c78803f and intended editor-fix message. Hardware acceptance remains pending.

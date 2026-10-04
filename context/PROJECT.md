@@ -498,3 +498,31 @@ reduced-power queued diagnostic obtained DHCP10.153.76.243, and restored voice
 firmware was reachable at that IP with matching C3 MAC. Root hardware cause is
 not proven; do not generalize to all C3 boards/WPA3. DHCP addresses may change.
 F3 audio/colour/receiver/voice acceptance still pending; no contract changes.
+
+## Final IntelliSense repair and commit preparation - 2026-10-04
+User confirms the C/C++1696 include error is gone after final editor changes and
+explicitly requests context update, commit and push. Clearance is user-observed;
+no agent GUI verification claimed. Initial mapping/response-file configuration
+was insufficient. Final helper expands GCC response files and -iprefix /
+-iwithprefixbefore into explicit SDK include paths/defines/architecture flags,
+normalizes compiler entries to existing .exe files and writes the generated
+compile database atomically. Profiles use explicit fallback paths; SDK paths
+are portable LOCALAPPDATA placeholders rather than developer-specific values.
+Resolved include paths remain identical after portability cleanup. Temporary
+C_Cpp Debug logging removed; normal error reporting stays enabled.
+Validation: refresher maps3 sketches; each original source exists, appears once
+in its arguments, compiler exists, no @response args remain in editor database.
+C3 and S3 IPAddress header syntax-only checks both pass with final explicit
+fallback settings. Windows rejected direct long probe command lines; probes
+were rerun via ignored response files and both returned exit0. JSON and git
+diff --check pass. User-observed editor clearance completes this editor fix,
+not pending F2/F3/Phase5 hardware or software integration acceptance.
+Current existing HEAD c78803fb4a18e66b569a1ebbdf2a662225390e55, already origin/main,
+contains prior firmware/live tracking/enclosure publication from another commit.
+Only final .vscode fix/docs and this shared context maintenance are in the next
+commit; no firmware source, app, enclosure, credentials, media or build outputs
+changed by this commit preparation. Intended message:
+fix editor: resolve firmware header include diagnostics
+Exact next action: commit explicit reviewed editor/context paths, push origin
+main, verify remote HEAD. Then resume pending C3 receiver/mic/light checks when
+user is ready; no acceptance or future phase is inferred from editor success.
