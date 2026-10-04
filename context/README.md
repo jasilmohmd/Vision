@@ -41,3 +41,10 @@ information that cannot be verified. Preserve explicit user instructions.
 
 Session A never edits firmware/. Session B has independent F0-F5 phases.
 User authorized Session B shared-context maintenance; preserve both sessions' records.
+
+## Latest commit preparation - 2026-10-04
+Session A voice fix: intended message fix voice: finalise commands on bounded
+silence. Existing HEAD08fabad4fff50b1d9172bef0119a24e9fb70b8cb. Scoped code
+snapshot115 tests pass; mixed working tree121 previously. Four manual directions
+and centre user-confirmed; full integration remains pending. See latest handoff
+for selective patch/staging; no commit/push by agent and no firmware edits.

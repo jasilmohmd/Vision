@@ -53,12 +53,17 @@ def main():
         parser.error('--checklist requires --mic laptop for Phase 2 acceptance')
     if args.report and not args.checklist:
         parser.error('--report requires --checklist')
+    source = None
     try:
         config = load_config(args.config)
         recognizer = VoiceRecognizer(args.model, config.vosk_conf_threshold)
         source = (LaptopMicSource(args.device) if args.mic == 'laptop'
                   else UdpAudioSource(port=config.audio_port))
+        print('Keep quiet for two seconds while the microphone starts.', flush=True)
+        recognizer.calibrate(source)
     except Exception as error:
+        if source is not None:
+            source.close()
         parser.exit(1, f'Voice setup failed: {error}\n')
     if args.mic == 'laptop':
         import sounddevice as sd
@@ -112,7 +117,7 @@ def main():
             except KeyboardInterrupt:
                 pass
             finally:
-                recognizer.flush()
+                recognizer.discard_pending()
                 consume()
     except Exception as error:
         parser.exit(1, f'Voice input failed: {error}\n')

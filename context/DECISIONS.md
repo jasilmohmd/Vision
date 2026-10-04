@@ -1,5 +1,58 @@
 # Decisions and constraints
 
+## Enclosure prototype choices - 2026-10-04
+
+User explicitly requested OpenSCAD code and supplied external enclosure prompts
+as reference material. Deliver one self-contained .scad with a selector for all
+parts, without implementing software/firmware phases. Typical dimensions remain
+assumptions. Mechanical corrections include a deeper camera rear bay, larger
+horn mounts/yoke, clearance for servo head projection, a taller/wider pan bearing
+ring and an offset vertical clamp. Lens hood is optional/off for flat printing;
+labels are engraved. Pod is enlarged. README discloses these deviations, support
+requirements, longer screws and unverified hardware fit. Network/pin/protocol
+contracts and all existing phase gates are unchanged. No commit authorized here.
+
+---
+
+## Phase 5 choices - 2026-10-04T04:37:24+05:30
+
+User done/next-phase instruction authorizes progression from accepted Phase3 and
+revised Gate0; S3/C3 addresses deferred until later real-board gates. Use user
+UnoQ192.168.29.199 and verified laptop192.168.29.58; SSH username arduino provided.
+No guessed board IP/pins. Separate generated config.phase5.yaml points both mock
+clients at laptop; normal config.yaml/examples preserved. App on UnoQ omits --mock
+because localhost means UnoQ. Camera bind stays127.0.0.1 by default, explicit LAN
+--bind for Phase5; voice destination/bind flags were already supported.
+Runtime/models copied explicitly with manifest verification, not whole workspace.
+No PyTorch/Ultralytics or multiple cv2 packages in the UnoQ venv. Laptop export
+packages allowed locally. Binary OpenCV/ORT/NumPy installs avoid compiling heavy
+runtime packages on board. KCF remains opt-in only after measured CSRT benchmark.
+Keep host-key verification; passwords entered only into user SSH/sudo terminal.
+No auto-login/key setup/service enablement/firmware implementation in Phase5.
+
+---
+
+Earlier records are historical; this software update takes precedence.
+
+## User network/gate clarification - 2026-10-04T03:57:11+05:30
+
+User confirms hotspot setup and UnoQ hotspot/SSH reachability are done, and
+says the UnoQ IP was already supplied. Previously supplied external LAN IPv4:
+192.168.29.199 (alongside internal bridge/IPv6 addresses). Retain it for upcoming
+SSH verification; do not ask user to repeat the address or claim an agent SSH test.
+User explicitly defers S3/C3 static IPs until the firmware plan is finished.
+That deferral overrides Gate0 item4 for laptop-mock deployment: Phase5 only needs
+UnoQ and laptop mock connectivity. Require real board IPs before their respective
+integration gates; no guessed firmware IP/pin changes. No config changes here.
+Phase3 live acceptance is still awaiting team results. No Phase5 implementation
+or deployment started in this clarification turn. No formal GATE 0 DONE received;
+do not demand S3/C3 addresses now. Next software work after Phase3 acceptance is
+Phase5 UnoQ deployment against laptop mocks while firmware proceeds separately.
+
+---
+
+Earlier gate descriptions are superseded by this user clarification.
+
 ## User-authorized team handoff - 2026-10-04T02:07:20+05:30
 
 User states laptop has no NeoPixel and physical hardware testing belongs to team.
@@ -260,3 +313,89 @@ Existing HEAD:5194c5ed39c02b2bcc91bfaef899492f5788838c. Intended testing commit:
 fw phase 1: add bench sketches for hardware testing. No staging/commit/push here.
 Next action: user commits/pushes actual bench firmware/context; team flashes on
 identified boards and returns Gate F1 observations/F1 DONE. Fix failures within F1.
+
+## Prototype scope: IR deferred to future TODO - 2026-10-04
+
+User explicitly requests putting IR into future-feature TODO and skipping it in
+this prototype. Added firmware/TODO.md. Optional C3 GPIO1 head/cheek shoot trigger
+is deferred; future prototype voice firmware must default USE_IR=0. Retain
+compiled ir_test for future validation, with hardware polarity/placement untested.
+Current prototype uses voice-triggered shooting. No shared contract change.
+Required F1 real-part checks passed: NeoPixel colours/patterns user-confirmed,
+mic synchronized speech response ~5x quiet with no clipping, servo smoothness/
+neutral return user-confirmed with minimum rail5.05V. IR explicitly omitted;
+it is no longer an outstanding prototype acceptance item. F1 DONE not received.
+User's earlier wait pauses further physical operations; this is documentation
+maintenance only, not authorization to start F2. No motion/upload/test rerun.
+Current S3 COM19 retains both-servo bench, C3 COM18 retains mic_level.
+Existing HEAD08fabad4fff50b1d9172bef0119a24e9fb70b8cb. No commit/push performed;
+intended docs message if requested: fw docs: record bench results and defer IR.
+Next action when user resumes: obtain F1 DONE, refresh context before commit,
+then start F2 only under user direction. Preserve Session A records and scope.
+
+## Firmware F2 bench addressing and scope - 2026-10-04
+User acknowledged F1 DONE and explicitly approved DHCP for first S3 camera
+check; production static IPs remain to be chosen after connectivity. Credentials
+are locally configured in ignored firmware/camera_head/secrets.h, never recorded
+here. Camera GPIO signal mapping is supplied-image/core matched; unlabeled
+PWDN/RESET=-1 remain hardware-init acceptance. Servo boot centre assumes F1
+aligned neutral, without physical position feedback. IR stays future TODO.
+Uno Q installation belongs to another active session; do not operate it here.
+
+## Camera bench integration decisions - 2026-10-04
+DHCP benchS3IP192.168.29.231 observed; productionstaticIP still deferred. Camera
+map/OV3660/PSRAM init physically verified; user-confirmed pan/tilt motion passed
+under camera firmware. Chunked JPEG transfer and video pause during photo send
+preserve JPEG/endpoint contract. Diagnostics distinguish targets from position.
+Use laptop app with real S3 and selected boAt microphone for F2 diagnostic;
+C3 remains bench, lights local-only, no Uno Q work. Temporary config/wrapper and
+private images remain ignored under firmware/.build. Voice shoot check awaits
+user readiness and timely explicit Speak now cue. F2 reliability is not complete.
+
+## F2 responsiveness fix - 2026-10-04
+User reported delayed voice movement and no physical up movement despite HTTP
+ACK. Keep F2 open. Separate servo target/PWM locking from camera frame locking
+and cap MJPEG at10fps; capture still freezes servo motion. New build compiles
+but is not flashed/tested. Preserve GPIO1 pan/GPIO2 tilt, clamps and existing
+angle signs. Diagnose physical directions during retest before changing any
+invert setting. User requested build first, tests afterward; no F3 advancement.
+
+## F2 S3-only coding scope and task isolation - 2026-10-04
+User clarified S3 fixes only and hardware tests after coding is complete; C3
+phase stays deferred. Use dedicated servo task with20ms minimum spacing and
+capture freeze, independent camera lock and Wi-Fi loop. Timing diagnostics
+report command/PWM stages only; do not imply mechanical feedback or prove
+speech latency fixed. Final code compiles but is not flashed; latest physical
+voice movement report is failed/pending despite automated checker passes.
+
+## User replaced ownership instructions - 2026-10-04
+This session now follows Session A ownership: never edit firmware/. Existing
+S3 firmware can be exercised diagnostically at integration, with private logs/
+config/test media under ignored root logs/. Firmware fixes are handed to user
+for separate Session B. Hardware/physical acceptance remains evidence based;
+latest voice up observation failed and direct repeat observation is pending.
+
+## Speech diagnostic finding; no production change - 2026-10-04
+User retains boAt mic. Silence-separated diagnostic with exact wake phrase and
+confidence0.7 accepted both mic-only commands and physically moved S3 upward.
+Temporary10degree step and measured baseline581.5 are test parameters only;
+do not ship fixed thresholds or weaken grammar from this limited evidence.
+Original app unchanged; production phrase separation and remaining live
+acceptance pending. Loud live calibration was discarded before speaking cue.
+
+## Production bounded phrase separation - 2026-10-04
+User authorized implementing the successful diagnostic approach in software.
+Use bounded startup calibration, short pre-roll and0.7s quiet/8s maximum
+phrases; preserve exact wake word and confidence0.7. Stop discards unfinished
+commands. No fixed headset581.5 baseline shipped. Normal4degree directions and
+centre now user-confirmed with boAt; this is manual control acceptance only.
+Use Space-started visible prompts in ignored bench helpers when user misses
+chat-timed cues; no change to the normal app's product UI. Stream stalls remain.
+
+## Scoped voice commit decision - 2026-10-04
+User requests commit commands. Isolate voice hunks in mixed app/main.py and
+README.md via prepared ignored logs/voice-commit.patch; preserve pending tracker/
+deployment edits. Context history shared with Session B included as required.
+Intended message fix voice: finalise commands on bounded silence; existing
+HEAD08fabad4fff50b1d9172bef0119a24e9fb70b8cb. Agent did not stage actual index,
+commit or push. Isolated code snapshot115 tests passed; mixed tree121 earlier.

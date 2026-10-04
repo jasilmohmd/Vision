@@ -101,6 +101,14 @@ requires the leading wake word and confidence at or above config.vosk_conf_thres
 for every word, including "camera". Empty/[unk] results are ignored; other rejected
 non-empty results emit low_confidence. Partial "camera" emits heard once per utterance.
 
+Keep quiet for the two-second startup microphone sample, then wait for Ready.
+Speech is separated after about 0.7 seconds of quiet, retaining a short lead-in
+so the wake word is not cut off. Say one complete command at a time and pause
+for its response. Commands still require the full wake phrase and word
+confidence threshold. Closing the app discards unfinished speech rather than
+turning it into a command. Loud startup samples are bounded; actual headset,
+quiet speech and background-chatter reliability still need live checks.
+
 Run the guided acceptance check from 0.5-1 m away:
 
 ```powershell

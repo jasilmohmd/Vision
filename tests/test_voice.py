@@ -1,3 +1,4 @@
+from array import array
 from collections import deque
 import json
 from queue import Empty
@@ -10,6 +11,8 @@ import pytest
 from app.voice.audio_source import SILENCE, LaptopMicSource, UdpAudioSource
 from app.voice.commands import COMMAND_PHRASES, GRAMMAR, Command, parse
 from app.voice.recognizer import VoiceRecognizer
+
+SPEECH = array('h', [5000] * 512).tobytes()
 
 
 @pytest.mark.parametrize('phrase', COMMAND_PHRASES)
@@ -61,6 +64,10 @@ class FakeEngine:
     def FinalResult(self):
         return json.dumps(self.final)
 
+    def Reset(self):
+        self.current = None
+        self.final = {'text': ''}
+
 
 def result(text, conf=1):
     return {'text': text, 'result': [{'word': word, 'conf': conf} for word in text.split()]}
@@ -81,14 +88,14 @@ def test_heard_once_per_utterance_then_confident_command():
     rec = VoiceRecognizer(engine=engine)
     assert engine.words_enabled is True
     for _ in range(4):
-        rec.process_chunk(SILENCE)
+        rec.process_chunk(SPEECH)
     received = events(rec)
     assert [event.kind for event in received] == ['heard', 'command']
     assert received[-1].command == Command('shoot')
     assert received[-1].confidence == 1
     engine.partials.append('camera')
-    rec.process_chunk(SILENCE)
-    rec.process_chunk(SILENCE)
+    rec.process_chunk(SPEECH)
+    rec.process_chunk(SPEECH)
     assert [event.kind for event in events(rec)] == ['heard', 'command']
 
 
@@ -102,7 +109,7 @@ def test_heard_once_per_utterance_then_confident_command():
 ])
 def test_low_confidence_and_incomplete_word_evidence(payload):
     rec = VoiceRecognizer(engine=FakeEngine([payload]))
-    rec.process_chunk(SILENCE)
+    rec.process_chunk(SPEECH)
     assert [event.kind for event in events(rec)] == ['low_confidence']
 
 
@@ -110,7 +117,7 @@ def test_threshold_inclusive_and_ignored_empty_unknown():
     rec = VoiceRecognizer(engine=FakeEngine([result('camera shoot', .7),
                                              {'text': ''}, {'text': '[unk]'}]))
     for _ in range(3):
-        rec.process_chunk(SILENCE)
+        rec.process_chunk(SPEECH)
     output = events(rec)
     assert len(output) == 1 and output[0].kind == 'command'
 
@@ -125,7 +132,7 @@ def test_flush_filters_the_last_result():
         VoiceRecognizer(confidence_threshold=float('nan'), engine=FakeEngine())
 
 
-def test_worker_consumes_audio_and_flushes():
+def test_worker_does_not_dispatch_audio_received_after_stop():
     stop = Event()
     class Source:
         def read_chunk(self):
@@ -133,7 +140,7 @@ def test_worker_consumes_audio_and_flushes():
             return SILENCE
     rec = VoiceRecognizer(engine=FakeEngine([result('camera shoot')]))
     rec.run(Source(), stop)
-    assert events(rec)[0].kind == 'command'
+    assert events(rec) == []
 
 
 def wait_packets(source, count):

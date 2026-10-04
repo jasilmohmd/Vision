@@ -1,5 +1,42 @@
 # Project scope and architecture
 
+## CAD artifact map - 2026-10-04
+
+enclosure/vision_enclosures.scad is a standalone parametric model for seven
+enclosure designs, with nine individual part selections plus layout and assembly
+previews. enclosure/README.md explains usage, measurements and prototype limits.
+enclosure/check_meshes.py validates ASCII exports; enclosure/validation/ contains
+nine STL prototypes, render logs, preview PNGs and the mesh report. No dependency
+on the app or firmware, and no phase acceptance is changed by these artifacts.
+
+---
+
+## Verified Uno Q runtime - 2026-10-04T05:19:45+05:30
+
+Installed into /home/arduino/Vision on Linux aarch64, Python3.13.5. Headless
+contrib4.14.0/ORT1.30.0/NumPy2.5.3; no torch/Ultralytics in that runtime.
+Mock endpoints both laptop192.168.29.58; app/gallery on UnoQ192.168.29.199:8080.
+16 model checksums matched; all models/CSRT/KCF load and photos directory writable.
+No service enabled, no firmware dependency used. Live/benchmark checks pending.
+
+## Phase 5 deployment map - 2026-10-04T04:37:24+05:30
+
+Deploy scripts are functional: package_unoq.py emits explicit source/model tarballs
+and mock config; copy_to_unoq.ps1 performs interactive SSH/scp/extract/install;
+install_unoq.sh handles Linux apt/venv/requirements and tools.check_runtime verifies
+loaded models, checksums, trackers/storage and versions. deploy/README.md has exact
+network, install, mock/phone-gallery and benchmark commands. photo-rig.service
+remains untouched Phase8 placeholder. Root config preserved; generated config,
+archives/reports are ignored logs/. Tests/test_deployment.py covers transfer safety.
+Source/models land in user ~/Vision, preserving photos and normal config.yaml.
+Camera mock --bind exposes exact same contract on selected laptop LAN address.
+UDP light/audio protocol and firmware ownership unchanged. Main optional --tracker
+supports KCF for Phase5 tuning; default CSRT unchanged. No board pin changes.
+
+---
+
+Earlier records are historical; this software update takes precedence.
+
 ## Phase 3 runtime map - 2026-10-04T01:38:42+05:30
 
 app/main.py now runs devices/workers; --check-config validates without devices.
@@ -158,3 +195,62 @@ Existing HEAD:5194c5ed39c02b2bcc91bfaef899492f5788838c. Intended testing commit:
 fw phase 1: add bench sketches for hardware testing. No staging/commit/push here.
 Next action: user commits/pushes actual bench firmware/context; team flashes on
 identified boards and returns Gate F1 observations/F1 DONE. Fix failures within F1.
+
+## Prototype scope: IR deferred to future TODO - 2026-10-04
+
+User explicitly requests putting IR into future-feature TODO and skipping it in
+this prototype. Added firmware/TODO.md. Optional C3 GPIO1 head/cheek shoot trigger
+is deferred; future prototype voice firmware must default USE_IR=0. Retain
+compiled ir_test for future validation, with hardware polarity/placement untested.
+Current prototype uses voice-triggered shooting. No shared contract change.
+Required F1 real-part checks passed: NeoPixel colours/patterns user-confirmed,
+mic synchronized speech response ~5x quiet with no clipping, servo smoothness/
+neutral return user-confirmed with minimum rail5.05V. IR explicitly omitted;
+it is no longer an outstanding prototype acceptance item. F1 DONE not received.
+User's earlier wait pauses further physical operations; this is documentation
+maintenance only, not authorization to start F2. No motion/upload/test rerun.
+Current S3 COM19 retains both-servo bench, C3 COM18 retains mic_level.
+Existing HEAD08fabad4fff50b1d9172bef0119a24e9fb70b8cb. No commit/push performed;
+intended docs message if requested: fw docs: record bench results and defer IR.
+Next action when user resumes: obtain F1 DONE, refresh context before commit,
+then start F2 only under user direction. Preserve Session A records and scope.
+
+## Firmware F2 bench addressing and scope - 2026-10-04
+User acknowledged F1 DONE and explicitly approved DHCP for first S3 camera
+check; production static IPs remain to be chosen after connectivity. Credentials
+are locally configured in ignored firmware/camera_head/secrets.h, never recorded
+here. Camera GPIO signal mapping is supplied-image/core matched; unlabeled
+PWDN/RESET=-1 remain hardware-init acceptance. Servo boot centre assumes F1
+aligned neutral, without physical position feedback. IR stays future TODO.
+Uno Q installation belongs to another active session; do not operate it here.
+
+## Camera bench integration decisions - 2026-10-04
+DHCP benchS3IP192.168.29.231 observed; productionstaticIP still deferred. Camera
+map/OV3660/PSRAM init physically verified; user-confirmed pan/tilt motion passed
+under camera firmware. Chunked JPEG transfer and video pause during photo send
+preserve JPEG/endpoint contract. Diagnostics distinguish targets from position.
+Use laptop app with real S3 and selected boAt microphone for F2 diagnostic;
+C3 remains bench, lights local-only, no Uno Q work. Temporary config/wrapper and
+private images remain ignored under firmware/.build. Voice shoot check awaits
+user readiness and timely explicit Speak now cue. F2 reliability is not complete.
+
+## Current F2 implementation addition - 2026-10-04
+firmware/camera_head now has a dedicated20ms servo task with separate mutex,
+10fps stream pacing, capture freeze and additive commanded-movement timing
+status fields. firmware/tools/check_camera.py checks responsiveness under
+streaming and prints PWM settle timing. No endpoint or confirmed pin changes.
+New source compiled; new flash/physical acceptance deferred at user request.
+
+## Voice path addition - 2026-10-04
+app/voice/endpoint.py now owns bounded monoPCM speech segmentation; recognizer
+uses it before unchanged command/confidence parsing. app/main.py and standalone
+voice demo calibrate input before Ready. tests/test_voice_endpoint.py covers
+endpointing and shutdown regressions. No network/interface-contract changes,
+no dependencies added, no firmware responsibility moved to Session A.
+
+## Voice commit boundary - 2026-10-04
+Prepared voice-only commit includes endpoint module, recognizer and demo,
+calibration integration hunk, regression tests and voice docs plus required
+shared context/status. Deployment/tracker and all firmware implementation
+remain separate pending work. Normal app directions physically validated;
+full integration/video acceptance still pending.

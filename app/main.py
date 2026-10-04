@@ -48,6 +48,7 @@ def run(config, args):
         recognizer = VoiceRecognizer(models / 'vosk-model-small-en-us-0.15', config.vosk_conf_threshold)
         source = LaptopMicSource(args.device) if args.mic == 'laptop' else UdpAudioSource(port=config.audio_port)
         cleanup.callback(source.close)
+        recognizer.calibrate(source)
         state = StateMachine(controller, camera, lights, store, speaker, config)
         cleanup.callback(state.close)
         stream = MjpegStream(f'http://{host}:{config.camera_stream_port}/stream')
