@@ -2363,3 +2363,164 @@ fix editor: resolve firmware header include diagnostics
 Exact next action: commit explicit reviewed editor/context paths, push origin
 main, verify remote HEAD. Then resume pending C3 receiver/mic/light checks when
 user is ready; no acceptance or future phase is inferred from editor success.
+
+## C3 microphone/light and sustained delivery test - 2026-10-04
+User requests running the test after e0d66c4 was committed/pushed. Current HEAD
+e0d66c4; initial working tree clean. Verified Uno Q wlan0 10.153.76.45 and C3
+10.153.76.243 ping response57ms. Uno Q UDP5005/5007 free and no app.main found.
+Ran unchanged canonical firmware/tools/check_voice_unit.py on the Uno Q through
+trusted USB ADB because production already targets Uno Q10.153.76.45:5005;
+no firmware destination, payload/port, app/service or source changes. This is
+receiver-side testing on Uno Q, not a claim that the plan's laptop/reflash bench
+sequence was performed. User got a Speak now cue for5seconds near INMP441.
+Checker exit0:166packets,0malformed,5.00s observed/5.31s PCM, RMS151.4, peak1443,
+0.0%estimated rate shortfall (no sequence numbers, not exact packet loss).
+Sent all8 light states and restored ready;0IR shoot messages, IR omitted.
+Private WAV pulled to ignored logs/c3_f3_test/check.wav and played once through
+Windows default output (playback completed); user audibility/clarity and actual
+physical light patterns remain awaiting confirmation. No voice recognition or
+servo movement tested by this PCM/light check. No claim of physical acceptance.
+Then ran40seconds UDP metadata-only with serial monitor CLOSED, no payload saved:
+40.033s,1072packets,0malformed,26.78packets/s,max gap2.513s,12gaps over250ms.
+This reproduces sustained pauses despite short checker PASS; stand-alone audio
+robustness/F3 acceptance remains unpassed. Existing USB status logging hypothesis
+in FIRMWARE_AUDIO_ISSUE is supported by this reproduction, not proven by a new
+open/closed comparison (none run this turn). No firmware fix or flash this turn.
+Transient checker/metadata processes completed; ports should be released.
+Ignored evidence: logs/c3_f3_test/delivery-serial-closed.json and private check.wav.
+Exact next action: collect user speech/light observation; firmware Session B
+should make producer/status logging nonblocking and rerun sustained delivery
+with serial CLOSED, then mic/light checks. Do not claim Gate F3 DONE or begin
+future phases while that acceptance remains pending. No commit/push requested
+for this test turn; shared handoff refreshed. Preserve other sessions' records.
+
+## Requested C3 short-test repeat - 2026-10-04
+User says start the test. Rechecked Uno Q10.153.76.45 with free UDP5005/5007;
+C3 10.153.76.243 ping37ms. Ran the same unmodified canonical checker on Uno Q
+with serial monitor closed; Speak now cue issued for5seconds near INMP441.
+Exit0:154packets,0malformed,5.00seconds observed,4.93secondsPCM,RMS593.2,
+peak3999,estimated rate shortfall1.5% (no exact packet-loss measurement).
+All8 light-state commands sent, restored ready;0IR shoot messages (IR omitted).
+Private repeat WAV copied to ignored logs/c3_f3_test/repeat.wav and played once
+through default Windows audio output. Playback operation completed; user speech
+clarity and physical colour/pattern confirmation pending via two UI questions.
+No voice-command recognition, servo movement, firmware change/flash, or new
+40second run. Earlier max-gap2.513second sustained failure remains unresolved;
+short-test PASS does not close F3 or long-run audio acceptance. Exact next action:
+record user's observations, repeat only missed/failed physical checks as needed,
+then firmware-owned nonblocking logging fix and sustained closed-serial retest.
+HEAD e0d66c4; no commit/push requested/performed. Shared context updated; earlier
+uncommitted test records preserved. Private WAV remains ignored and unpublished.
+
+## Prototype coding completeness audit - 2026-10-04
+User reports only tracking commands working and asks whether software/firmware
+coding remains, excluding testing. Read-only source/plan audit; no app start,
+recording, firmware edit/flash or new acceptance test. All19 exact camera-prefixed
+phrases exist in app/voice/commands.py, with handlers in app/state.py: track
+person/face/dog/cat,stop tracking,4directions and4small nudges,centre,shoot,burst,
+timer,sleep,wake. Photo jobs implement3-shot burst and3second timer, storage/ACK,
+gallery and live preview are implemented. Recent canonical microphone/light
+checks do NOT run app.main or execute voice control; clarify that distinction.
+Manual move leaves TRACKING mode active; later tracking ticks can counter the
+nudge. Use camera stop tracking before isolated manual direction checks. No
+claim that this explains every user-reported missed command; recognition/audio
+and hardware failures also remain unresolved.
+Remaining coding: C3 producer/debug Serial logging needs nonblocking fix (actual
+40s closed-monitor gaps2.513s persist). Software planned Phase8 service remains
+placeholder; no daily rotating file logs, no explicit >5s voice-unit absence
+warning, and required camera-offline reconnect-light handling is incomplete
+(stream retries/backoff already implemented). Phase9 --demo flag/confidence
+margin/latest-photo fullscreen presentation and demo checklist not implemented.
+Later firmware F4 boot-reset NeoPixel indication not implemented (reset reason
+Serial logging and S3 status already exist); optional soak tool absent. IR is
+explicitly deferred and optional TTS is already implemented but disabled, so
+neither is counted as missing prototype core work. Phase8/9 and F4 remain gated;
+this audit does not authorize implementing them ahead of hardware acceptance.
+S3 brownouts documented in HARDWARE_POWER_ISSUE are a separate hardware power
+blocker, not a missing software command. Core S3 camera/servo/capture endpoints
+are implemented; physical integration is not claimed complete.
+Exact next action: finish the authorized firmware audio robustness repair in
+firmware-owned scope, address S3 power with hardware team, then resume full-app
+command acceptance. Do not label all coding/testing complete from parser support.
+Existing HEAD e0d66c4; earlier uncommitted test context retained; no commit/push.
+
+
+## Combined C3 logging repair and software robustness — 2026-10-04
+User requested C3 firmware and software robustness together, then explicitly
+selected “Finish coding and automated checks; I’ll test hardware later”. This
+targeted combined request was used for the C3 logging repair and Phase8 software
+tasks; no shared interface contract, pin maps, IR or Phase9 feature changed.
+S3 is powered but not connected to the laptop. Supply topology/shared ground and
+correction of the previously observed brownouts are NOT confirmed.
+
+C3 producer/event logging now queues bounded messages without waiting; only the
+main loop writes when USB has space, with CDC TX timeout zero. Queue overflow
+drops debug messages rather than blocking audio. ESP32 core3.3.11 compile passed
+for esp32:esp32:esp32c3:CDCOnBoot=cdc:999975 program bytes/37976 global bytes.
+Build log: ignored firmware/.build/voice-unit-nonblocking-compile.log. NOT FLASHED;
+connected C3 still has previous999841-byte build. Sustained closed-monitor audio
+acceptance remains pending; no claim that the physical delivery issue is fixed.
+
+Software: new app/runtime.py provides camera recovery/position synchronization,
+retained-target tracker recreation, reconnect light masking, a >5second actual
+UDP packet-arrival watchdog, and daily UTC JSON logs with7 rotated backups.
+Generated silence does not hide missing C3 packets. Sleep keeps LEDs off during
+reconnect. Camera absence no longer prevents normal app startup/gallery access.
+deploy/photo-rig.service is a concrete arduino-user unit with network ordering,
+Restart=always and current runtime paths; installation/activation documented.
+tools/prototype_acceptance.md contains the later combined19-command and recovery
+hardware checklist. No service installed/enabled and no production app launched.
+
+Automated evidence: full local pytest134 passed in9.01s after final code edits.
+Synthetic local-only full-app smoke loaded actual models, started without camera,
+served gallery HTTP200 during outage, recovered camera twice, warned for missing
+audio and reported its recovery, then exited0. No physical webcam/microphone or
+board control used; isolated TCP22080/22081/28080 and UDP25005/25006/25007.
+Ignored evidence: logs/robustness-smoke/result.json and console.log. On Uno Q over
+trusted USBADB662499217, systemd-analyze verify /tmp/photo-rig.service exited0
+without diagnostics after setting file mode644. Only a temporary unit copy was
+validated; runtime source/service were not deployed or activated.
+
+Acceptance remains open: C3 new-build flash and40second closed-serial retest,
+speech/light observation, S3 brownout/power correction, all19 actual spoken
+commands/physical servo/photo/gallery observations, live tracking recovery and
+three-board boot-order auto-start within~60seconds. Existing phase/gate pending
+states are preserved. Earlier test records remain; IR deferred. No Phase9/demo
+work. Exact next action: when user returns ready for hardware, first confirm S3
+power fix and C3 USB connection, flash the compiled C3 repair, then follow
+tools/prototype_acceptance.md. Do not enable auto-start ahead of acceptance.
+Existing HEAD e0d66c4de5ef7077ed989d67b7e0a89690482db5. No commit or push requested
+or performed in this turn. If later requested, intended message:
+fix: prevent C3 logging stalls and add runtime recovery
+Refresh/review context before that commit; no private media or credentials included.
+
+
+## Power topology correction and commit preparation - 2026-10-04
+User corrected the supply description: POWER BANK (not PD charger) feeds the
+S3 USB port; both servos are powered from S3 5V/GND pins, sharing that power path
+and ground. This is user-reported topology, not an electrical measurement.
+Earlier logged brownouts remain valid historical evidence. Whether the current
+power-bank setup still resets under simultaneous servo/camera load is UNTESTED;
+do not call the power bank defective or the issue resolved. Earlier 5.05V sweep
+measurement does not establish the cause of later resets. When hardware testing
+resumes, monitor resets and supply voltage under load; investigate feed/cable/
+connections and a suitable separate regulated servo feed with common ground if
+resets recur. No wiring changes or physical tests were performed in this turn.
+
+User explicitly requested context update, commit and push of prepared work.
+Commit includes C3 queued logging repair, software recovery/watchdog/rotating
+logs, prepared inactive systemd service, automated tests and acceptance checklist,
+plus prior uncommitted test records. Recorded checks remain:134 pytest passed,
+C3 compile passed999975 program/37976 globals, synthetic full-app recovery smoke
+passed, Uno Q systemd unit verification passed. Only documentation changed since
+those checks; no claim of new hardware acceptance. C3 remains unflashed; service
+remains inactive. IR/Phase9 deferred; all pending physical gates remain pending.
+Pre-commit HEAD:e0d66c4de5ef7077ed989d67b7e0a89690482db5.
+Intended commit message:fix: prevent C3 logging stalls and add runtime recovery
+Target:origin/main. Review explicit staged paths; exclude ignored secrets,
+toolchains, generated builds, logs and private media. Push outcome is reported
+after Git returns; this record does not predict a future commit hash or success.
+Exact next action after publication: when user is ready, confirm C3 connection,
+flash the repair, then use tools/prototype_acceptance.md; measure the corrected
+S3 power-bank arrangement before sustained motion/recovery checks. Keep hardware
+deferred until the user resumes it. Preserve existing session records.

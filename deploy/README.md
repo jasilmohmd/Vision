@@ -1,5 +1,38 @@
 # Phase 5: Uno Q against laptop mocks
 
+## Prepared robustness service (2026-10-04)
+
+The requested robustness implementation includes `photo-rig.service`.
+It runs the UDP microphone app from `/home/arduino/Vision` as `arduino`, waits
+for network startup and restarts after exit. It is prepared, not installed or
+enabled: hardware acceptance and the S3 power correction remain pending.
+Use the real-board `config.yaml`, verified current addresses, models and venv.
+Do not use `config.phase5.yaml` for the service.
+
+When hardware acceptance permits activation, on the Uno Q:
+
+```bash
+cd /home/arduino/Vision
+.venv/bin/python -m app.main --config config.yaml --check-config
+systemd-analyze verify deploy/photo-rig.service
+sudo install -m 644 deploy/photo-rig.service /etc/systemd/system/photo-rig.service
+sudo systemctl daemon-reload
+sudo systemctl enable --now photo-rig.service
+systemctl status photo-rig.service
+journalctl -u photo-rig.service -n 50 --no-pager
+```
+
+Stop any manually launched app first so its UDP/gallery ports are released.
+If using another directory or user, update the unit paths before installation.
+To stop auto-start: `sudo systemctl disable --now photo-rig.service`.
+The app writes JSON lines to `logs/vision.jsonl`, rotates at UTC midnight and
+keeps seven rotated files. `--log-dir` overrides the destination. Camera outages
+mask the normal light state with `reconnect`; recovery synchronizes servo
+positions and recreates the tracker for the retained target. Missing valid C3
+packets for over five seconds warns once per outage without stopping the app.
+Generated silence does not count as incoming C3 audio. Sleep keeps the light off.
+See `tools/prototype_acceptance.md` for the later combined hardware check.
+
 This phase deploys the Linux software and models and measures Uno Q performance.
 No S3/C3 addresses, firmware flashing or systemd service are required. Physical
 integration begins only at later gates. Service/autostart work belongs to Phase8.

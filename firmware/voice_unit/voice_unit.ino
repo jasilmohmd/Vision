@@ -5,6 +5,8 @@
 #include <Adafruit_NeoPixel.h>
 #include <esp_system.h>
 #include <esp_wifi.h>
+#include <freertos/queue.h>
+#include <stdarg.h>
 #if __has_include("secrets.h")
 #include "secrets.h"
 #else
@@ -20,10 +22,34 @@ static_assert(SHIFT >= 0 && SHIFT <= 31, "SHIFT must be 0..31");
 // Optional IR is deliberately omitted from this prototype.
 constexpr size_t SAMPLE_COUNT = 512;
 constexpr uint16_t AUDIO_PORT = 5005, LIGHT_PORT = 5006;
+enum class Light { Ready, Heard, Tracking, NoSubject, Saved, Error, Reconnect, Sleep };
+struct LogLine { char text[192]; };
+QueueHandle_t logQueue = nullptr;
+
+// Producers never call USB Serial or wait for a host to consume debug output.
+void logMessage(const char *format, ...) {
+  if (!logQueue) return;
+  LogLine line;
+  va_list args;
+  va_start(args, format);
+  vsnprintf(line.text, sizeof(line.text), format, args);
+  va_end(args);
+  xQueueSend(logQueue, &line, 0); // Drop logs when full; never backpressure audio.
+}
+
+void pollLogs() {
+  if (!Serial) return;
+  LogLine line;
+  for (unsigned i = 0; i < 4 && xQueuePeek(logQueue, &line, 0) == pdTRUE; ++i) {
+    const size_t length = strlen(line.text);
+    if (Serial.availableForWrite() < static_cast<int>(length)) return;
+    xQueueReceive(logQueue, &line, 0);
+    Serial.write(reinterpret_cast<const uint8_t *>(line.text), length);
+  }
+}
 I2SClass microphone;
 Adafruit_NeoPixel pixel(1, 7, NEO_GRB + NEO_KHZ800);
 WiFiUDP lightSocket;
-enum class Light { Ready, Heard, Tracking, NoSubject, Saved, Error, Reconnect, Sleep };
 Light steady = Light::Ready, transient = Light::Ready;
 bool transientActive = false;
 uint32_t transientStarted = 0, steadyStarted = 0, rendered = UINT32_MAX;
@@ -32,9 +58,9 @@ void show(uint32_t colour) {
   if (colour != rendered) { rendered = colour; pixel.setPixelColor(0, colour); pixel.show(); }
 }
 void fatal(const char *message) {
-  Serial.printf("FATAL %s; correct configuration and reset\n", message);
+  logMessage("FATAL %s; correct configuration and reset\n", message);
   show(pixel.Color(255, 0, 0));
-  while (true) delay(1000);
+  while (true) { if (logQueue) pollLogs(); delay(1000); }
 }
 bool parseLight(const char *name, Light &result) {
   const char *names[] = {"ready", "heard", "tracking", "nosubject", "saved", "error", "reconnect", "sleep"};
@@ -86,7 +112,7 @@ void audioTask(void *) {
     if (!bytes || bytes % sizeof(int32_t)) {
       collected = 0;
       if (millis() - lastError >= 2000) {
-        Serial.printf("ERROR I2S bytes=%u code=%d\n", static_cast<unsigned>(bytes), microphone.lastError());
+        logMessage("ERROR I2S bytes=%u code=%d\n", static_cast<unsigned>(bytes), microphone.lastError());
         lastError = millis();
       }
       vTaskDelay(pdMS_TO_TICKS(10)); continue;
@@ -113,7 +139,7 @@ void audioTask(void *) {
     if (ok) ++sent;
     else { ++failed; audioSocket.stop(); socketReady = false; }
     if (millis() - lastReport >= 10000) {
-      Serial.printf("audio packets_sent=%lu send_errors=%lu RSSI=%d free_heap=%u\n",
+      logMessage("audio packets_sent=%lu send_errors=%lu RSSI=%d free_heap=%u\n",
                     static_cast<unsigned long>(sent), static_cast<unsigned long>(failed),
                     WiFi.RSSI(), static_cast<unsigned>(ESP.getFreeHeap()));
       lastReport = millis();
@@ -122,8 +148,11 @@ void audioTask(void *) {
 }
 void setup() {
   Serial.begin(115200); delay(1500);
+  Serial.setTxTimeoutMs(0); // HWCDC core3.3.11: no semaphore/ring-buffer waits.
+  logQueue = xQueueCreate(16, sizeof(LogLine));
   pixel.begin(); pixel.setBrightness(40); show(0);
-  Serial.printf("voice_unit boot reset_reason=%d; mic4/5/6 pixel7 SHIFT=%d IR omitted\n",
+  if (!logQueue) fatal("debug queue allocation failed");
+  logMessage("voice_unit boot reset_reason=%d; mic4/5/6 pixel7 SHIFT=%d IR omitted\n",
                 static_cast<int>(esp_reset_reason()), SHIFT);
   if (!strcmp(WIFI_SSID, "REPLACE_LOCALLY") || !strcmp(WIFI_PASS, "REPLACE_LOCALLY"))
     fatal("configure ignored secrets.h locally");
@@ -135,9 +164,9 @@ void setup() {
   // This C3 connected with this cap in the isolated Wi-Fi diagnostic.
   // Keep it explicit; the board/network cause is not established by that test.
   if (esp_wifi_set_max_tx_power(34) != ESP_OK) fatal("Wi-Fi TX power configuration failed");
-  Serial.println("Wi-Fi TX power cap=8.5dBm");
+  logMessage("Wi-Fi TX power cap=8.5dBm\n");
   WiFi.onEvent([](WiFiEvent_t event, WiFiEventInfo_t info) {
-    Serial.printf("Wi-Fi disconnected reason=%u\n", info.wifi_sta_disconnected.reason);
+    logMessage("Wi-Fi disconnected reason=%u\n", info.wifi_sta_disconnected.reason);
   }, ARDUINO_EVENT_WIFI_STA_DISCONNECTED);
 #if !WIFI_USE_DHCP
   if (C3_IP == IPAddress(0, 0, 0, 0) || !WiFi.config(C3_IP, GATEWAY, SUBNET))
@@ -152,7 +181,7 @@ void setup() {
     fatal("Wi-Fi start failed");
   if (xTaskCreate(audioTask, "audio_udp", 6144, nullptr, 2, nullptr) != pdPASS)
     fatal("audio task allocation failed");
-  Serial.printf("Wi-Fi starting addressing=%s; audio destination=%s:%u; lights UDP%u\n",
+  logMessage("Wi-Fi starting addressing=%s; audio destination=%s:%u; lights UDP%u\n",
                 WIFI_USE_DHCP ? "DHCP bench" : "static", UNOQ_IP.toString().c_str(), AUDIO_PORT, LIGHT_PORT);
 }
 void loop() {
@@ -162,13 +191,13 @@ void loop() {
   const int state = WiFi.status();
   const bool connected = state == WL_CONNECTED;
   if (state != previous) {
-    Serial.printf("Wi-Fi state=%d\n", state); previous = state;
-    if (connected) Serial.printf("Wi-Fi connected IP=%s RSSI=%d\n", WiFi.localIP().toString().c_str(), WiFi.RSSI());
+    logMessage("Wi-Fi state=%d\n", state); previous = state;
+    if (connected) logMessage("Wi-Fi connected IP=%s RSSI=%d\n", WiFi.localIP().toString().c_str(), WiFi.RSSI());
   }
   if (connected) {
     if (!listening) {
       listening = lightSocket.begin(LIGHT_PORT) != 0;
-      if (listening) Serial.printf("Light UDP%u ready\n", LIGHT_PORT);
+      if (listening) logMessage("Light UDP%u ready\n", LIGHT_PORT);
     }
     for (unsigned i = 0; listening && i < 8; ++i) {
       const int length = lightSocket.parsePacket();
@@ -179,8 +208,8 @@ void loop() {
       if (length > 16 || received != length || received < 0 || memchr(name, 0, received)) continue;
       name[received] = '\0';
       Light light;
-      if (parseLight(name, light)) { acceptLight(light); Serial.printf("light %s\n", name); }
-      else Serial.println("Ignored unknown light state");
+      if (parseLight(name, light)) { acceptLight(light); logMessage("light %s\n", name); }
+      else logMessage("Ignored unknown light state\n");
     }
   } else {
     if (listening) lightSocket.stop();
@@ -188,5 +217,5 @@ void loop() {
     // Allow an in-progress WPA3 handshake to finish before a manual retry.
     if (millis() - lastRetry >= 45000) { lastRetry = millis(); WiFi.reconnect(); }
   }
-  updateLight(connected); delay(5);
+  updateLight(connected); pollLogs(); delay(5);
 }

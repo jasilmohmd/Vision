@@ -82,6 +82,7 @@ class UdpAudioSource(AudioSource):
         self.packets = deque()
         self.received_packets = self.invalid_packets = self.dropped_packets = self.silence_chunks = 0
         self.first_received = None
+        self.last_received = None
         self.next_playout = None
         self.failure = None
         self.socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
@@ -112,13 +113,20 @@ class UdpAudioSource(AudioSource):
                     self.invalid_packets += 1
                     continue
                 self.received_packets += 1
+                self.last_received = monotonic()
                 if self.first_received is None:
-                    self.first_received = monotonic()
+                    self.first_received = self.last_received
                 if len(self.packets) >= self.max_packets:
                     self.packets.popleft()
                     self.dropped_packets += 1
                 self.packets.append(packet)
                 self.condition.notify_all()
+
+    @property
+    def last_received_at(self):
+        # Generated playout silence must never hide a disconnected voice unit.
+        with self.condition:
+            return self.last_received
 
     def read_chunk(self) -> bytes:
         with self.condition:

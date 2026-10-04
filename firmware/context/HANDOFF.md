@@ -961,3 +961,53 @@ Exact next action: when user is ready, verify receiver packet delivery and run
 F3 mic/light checks with confirmed destination, then obtain actual acceptance.
 If using laptop bench checker, destination must be changed from Uno Q to the
 confirmed laptop10.153.76.189 first; do not run it against the wrong receiver.
+
+
+## Combined C3 logging repair and software robustness — 2026-10-04
+User requested C3 firmware and software robustness together, then explicitly
+selected “Finish coding and automated checks; I’ll test hardware later”. This
+targeted combined request was used for the C3 logging repair and Phase8 software
+tasks; no shared interface contract, pin maps, IR or Phase9 feature changed.
+S3 is powered but not connected to the laptop. Supply topology/shared ground and
+correction of the previously observed brownouts are NOT confirmed.
+
+C3 producer/event logging now queues bounded messages without waiting; only the
+main loop writes when USB has space, with CDC TX timeout zero. Queue overflow
+drops debug messages rather than blocking audio. ESP32 core3.3.11 compile passed
+for esp32:esp32:esp32c3:CDCOnBoot=cdc:999975 program bytes/37976 global bytes.
+Build log: ignored firmware/.build/voice-unit-nonblocking-compile.log. NOT FLASHED;
+connected C3 still has previous999841-byte build. Sustained closed-monitor audio
+acceptance remains pending; no claim that the physical delivery issue is fixed.
+
+Software: new app/runtime.py provides camera recovery/position synchronization,
+retained-target tracker recreation, reconnect light masking, a >5second actual
+UDP packet-arrival watchdog, and daily UTC JSON logs with7 rotated backups.
+Generated silence does not hide missing C3 packets. Sleep keeps LEDs off during
+reconnect. Camera absence no longer prevents normal app startup/gallery access.
+deploy/photo-rig.service is a concrete arduino-user unit with network ordering,
+Restart=always and current runtime paths; installation/activation documented.
+tools/prototype_acceptance.md contains the later combined19-command and recovery
+hardware checklist. No service installed/enabled and no production app launched.
+
+Automated evidence: full local pytest134 passed in9.01s after final code edits.
+Synthetic local-only full-app smoke loaded actual models, started without camera,
+served gallery HTTP200 during outage, recovered camera twice, warned for missing
+audio and reported its recovery, then exited0. No physical webcam/microphone or
+board control used; isolated TCP22080/22081/28080 and UDP25005/25006/25007.
+Ignored evidence: logs/robustness-smoke/result.json and console.log. On Uno Q over
+trusted USBADB662499217, systemd-analyze verify /tmp/photo-rig.service exited0
+without diagnostics after setting file mode644. Only a temporary unit copy was
+validated; runtime source/service were not deployed or activated.
+
+Acceptance remains open: C3 new-build flash and40second closed-serial retest,
+speech/light observation, S3 brownout/power correction, all19 actual spoken
+commands/physical servo/photo/gallery observations, live tracking recovery and
+three-board boot-order auto-start within~60seconds. Existing phase/gate pending
+states are preserved. Earlier test records remain; IR deferred. No Phase9/demo
+work. Exact next action: when user returns ready for hardware, first confirm S3
+power fix and C3 USB connection, flash the compiled C3 repair, then follow
+tools/prototype_acceptance.md. Do not enable auto-start ahead of acceptance.
+Existing HEAD e0d66c4de5ef7077ed989d67b7e0a89690482db5. No commit or push requested
+or performed in this turn. If later requested, intended message:
+fix: prevent C3 logging stalls and add runtime recovery
+Refresh/review context before that commit; no private media or credentials included.

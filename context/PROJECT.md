@@ -526,3 +526,20 @@ fix editor: resolve firmware header include diagnostics
 Exact next action: commit explicit reviewed editor/context paths, push origin
 main, verify remote HEAD. Then resume pending C3 receiver/mic/light checks when
 user is ready; no acceptance or future phase is inferred from editor success.
+
+
+## Runtime robustness modules — 2026-10-04
+app/runtime.py owns rotating JSON logging, camera recovery and audio watchdog;
+main.py integrates these with the existing state machine/tracker. UDP source
+exposes last valid packet time; LightClient masks normal states during reconnect.
+deploy/photo-rig.service is prepared but inactive; tools/prototype_acceptance.md
+is the deferred combined hardware checklist. C3 logging repair is compile-only.
+Shared ports/payloads unchanged. Hardware acceptance and boot-order gate pending.
+
+
+## Confirmed supply description correction - 2026-10-04
+User reports power bank -> S3 USB -> S3 5V/GND -> both servos. The initial
+PD-charger description was corrected. Servos share S3 ground and USB power path.
+Current voltage stability/brownout recurrence is untested; cause unresolved.
+No new hardware check or wiring change. Measure under camera/both-servo load
+when testing resumes; do not infer a defective power bank from old reset logs.

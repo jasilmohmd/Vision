@@ -8,6 +8,7 @@ from threading import Event, Lock, Thread
 from time import monotonic
 
 from app.config import DEFAULT_CONFIG_PATH, load_config
+from app.runtime import AudioWatchdog, CameraRecovery, configure_logging
 
 
 def run(config, args):
@@ -42,8 +43,6 @@ def run(config, args):
         cleanup.callback(speaker.close)
         store = PhotoStore(config.photos_dir)
         controller = Controller(camera, config)
-        status = camera.status()
-        controller.sync(status['pan'], status['tilt'])
         detector = YoloDetector(models / 'yolov8n.onnx')
         face = FaceDetector(models / 'face_detection_yunet_2023mar.onnx')
         recognizer = VoiceRecognizer(models / 'vosk-model-small-en-us-0.15', config.vosk_conf_threshold)
@@ -52,6 +51,8 @@ def run(config, args):
         recognizer.calibrate(source)
         state = StateMachine(controller, camera, lights, store, speaker, config)
         cleanup.callback(state.close)
+        health = CameraRecovery(camera, controller, lights, speaker)
+        watchdog = AudioWatchdog() if args.mic == 'udp' else None
         stream = MjpegStream(f'http://{host}:{config.camera_stream_port}/stream')
         stream.start()
         cleanup.callback(stream.close)
@@ -95,11 +96,25 @@ def run(config, args):
             while not stop.is_set():
                 began = monotonic()
                 try:
+                    current, frame, received = stream.latest()
+                    fresh = frame is not None and monotonic() - received < .5
+                    previously_online = health.online
+                    online = health.poll(fresh)
+                    if online and not previously_online:
+                        tracker, target, number = None, None, -1
+                        box, offset = None, None
+                    if watchdog:
+                        watchdog.poll(source.last_received_at)
                     while True:
                         try:
                             event = recognizer.events.get_nowait()
                         except Empty:
                             break
+                        if (not online and event.command is not None
+                                and event.command.action in {'move', 'centre', 'shoot', 'burst', 'timer'}):
+                            logging.warning('Camera command unavailable while reconnecting: %s', event.command.action)
+                            lights.send('error')
+                            continue
                         state.handle_event(event)
                     wanted = state.tracking_target
                     if wanted != target:
@@ -108,21 +123,18 @@ def run(config, args):
                                                 config.detect_every_n_frames, preferred=args.tracker) if target else None
                         box, offset = None, None
                         number = -1
-                    current, frame, received = stream.latest()
-                    fresh = frame is not None and monotonic() - received < .5
-                    if fresh and current != number:
+                    if online and fresh and current != number:
                         number = current
                         box, offset = tracker.update(frame) if tracker else (None, None)
-                    if not fresh:
+                    if not online or not fresh:
                         offset, box = None, None
                     state.tick(offset)
                     with display_lock:
-                        display.update(frame=frame, box=box, offset=offset, fresh=fresh,
+                        display.update(frame=frame, box=box, offset=offset, fresh=online and fresh,
                                        mode=state.mode.value, pan=controller.pan,
                                        tilt=controller.tilt, target=state.tracking_target)
                 except CameraOffline as error:
-                    logging.warning('%s', error)
-                    lights.send('error')
+                    health.offline(str(error))
                 except Exception as error:
                     logging.exception('Control worker stopped')
                     failures.append(error)
@@ -133,7 +145,7 @@ def run(config, args):
                    Thread(target=control, name='control-loop', daemon=True)]
         for worker in workers:
             worker.start()
-        logging.info('Ready. Say "camera track person", then "camera shoot". Gallery http://localhost:%s', config.gallery_port)
+        logging.info('Voice and gallery running. All camera-prefixed commands supported; camera control waits for connection. Gallery http://localhost:%s', config.gallery_port)
         started = monotonic()
         try:
             while not stop.is_set() and (not args.seconds or monotonic() - started < args.seconds):
@@ -177,6 +189,7 @@ def main(argv=None):
     parser.add_argument('--preview', action='store_true', help='Show crop, tracking box and angles; Q exits')
     parser.add_argument('--seconds', type=float, default=0, help='0 runs until Ctrl+C or Q')
     parser.add_argument('--check-config', action='store_true', help='Validate YAML and exit without opening devices')
+    parser.add_argument('--log-dir', type=Path, help='Daily JSON logs; defaults beside the configured photos directory')
     args = parser.parse_args(argv)
     try:
         config = load_config(args.config)
@@ -187,13 +200,16 @@ def main(argv=None):
     if args.check_config:
         print(f'Configuration valid. Photo directory: {config.photos_dir}')
         return 0
-    logging.basicConfig(level=logging.INFO, format='%(asctime)s %(levelname)s %(message)s')
+    file_handler = configure_logging(args.log_dir or config.photos_dir.parent / 'logs')
     logging.getLogger('werkzeug').setLevel(logging.ERROR)
     try:
         return run(config, args)
     except Exception:
         logging.exception('App could not continue')
         return 1
+    finally:
+        logging.getLogger().removeHandler(file_handler)
+        file_handler.close()
 
 if __name__ == '__main__':
     raise SystemExit(main())

@@ -38,3 +38,21 @@ monitor testing is diagnostic only; standalone robustness remains unpassed.
 Evidence (private ignored logs): c3-hotspot-awake.json,c3-udp-serial-open.json,
 c3-udp-serial-closed.json,c3-synchronized-sender.log and associated console logs.
 No firmware file edited/reflashed by Session A during this diagnosis.
+
+## Fresh receiver-side reproduction - 2026-10-04
+User requested testing after e0d66c4. Unchanged canonical5second checker on Uno Q
+passed format/rate threshold:166packets,0malformed,RMS151.4,peak1443. Private WAV
+played; user clarity and light observation pending. With serial monitor closed,
+new40.033second metadata-only sample received1072packets/26.78persecond,
+0malformed,max gap2.513seconds,12gaps over250ms. No payloads saved for long check.
+This reproduces the pauses; no logging fix/flash or fresh serial-open comparison
+performed. Firmware B action and standalone closed-monitor acceptance above
+remain pending. See ignored logs/c3_f3_test/delivery-serial-closed.json.
+
+
+## Repair prepared, not yet hardware-verified — 2026-10-04
+voice_unit now queues logs with zero-wait enqueue and drains only in main loop
+when USB has space; CDC timeout0. Compile passed999975 program/37976 globals.
+Not flashed under user's hardware deferral. The previous2.513s gap remains the
+last sustained physical evidence. Next: flash with confirmed board connection,
+then repeat >=40s delivery with serial CLOSED before claiming resolution.

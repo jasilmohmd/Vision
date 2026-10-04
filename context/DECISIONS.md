@@ -709,3 +709,21 @@ fix editor: resolve firmware header include diagnostics
 Exact next action: commit explicit reviewed editor/context paths, push origin
 main, verify remote HEAD. Then resume pending C3 receiver/mic/light checks when
 user is ready; no acceptance or future phase is inferred from editor success.
+
+
+## Targeted robustness work and deferred hardware — 2026-10-04
+User requested combined C3 logging repair/software robustness, then deferred
+physical testing. Keep the shared wire contract unchanged. Queue/drop diagnostic
+logs rather than blocking the C3 audio producer; validate on hardware later.
+Prepare the service without activating it. UTC daily JSON rotation keeps7
+backups; reconnect masking retains the requested normal light state and sleep.
+Actual valid packet arrival drives audio health, including silent PCM packets.
+S3 power correction remains unconfirmed; no future Phase9 or optional IR work.
+
+
+## Confirmed supply description correction - 2026-10-04
+User reports power bank -> S3 USB -> S3 5V/GND -> both servos. The initial
+PD-charger description was corrected. Servos share S3 ground and USB power path.
+Current voltage stability/brownout recurrence is untested; cause unresolved.
+No new hardware check or wiring change. Measure under camera/both-servo load
+when testing resumes; do not infer a defective power bank from old reset logs.

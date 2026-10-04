@@ -27,3 +27,11 @@ failure. Existing software source129tests pass, physical acceptance now failed.
 Runtime already ended with Ctrl+C/exit0 when checked; app/8080/5005 absent.
 Signaled owned serial readers to stop; no background auto-restart configured.
 C3 standalone USB logging issue is separate in FIRMWARE_AUDIO_ISSUE.md.
+
+
+## Confirmed supply description correction - 2026-10-04
+User reports power bank -> S3 USB -> S3 5V/GND -> both servos. The initial
+PD-charger description was corrected. Servos share S3 ground and USB power path.
+Current voltage stability/brownout recurrence is untested; cause unresolved.
+No new hardware check or wiring change. Measure under camera/both-servo load
+when testing resumes; do not infer a defective power bank from old reset logs.

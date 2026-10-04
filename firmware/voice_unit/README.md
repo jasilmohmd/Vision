@@ -78,3 +78,13 @@ This is an observed working setting for this board/network, not proof of an
 antenna/power fault or a universal fix. Production connectivity and F3 audio/
 light acceptance must be checked separately. Diagnostic source is preserved
 under ../bench/wifi_diagnostic; credentials remain ignored.
+
+
+## Nonblocking diagnostic logging — prepared 2026-10-04
+Audio/event tasks enqueue bounded debug messages without waiting. Main loop
+drains only when USB has capacity; CDC TX timeout is zero. Full queues drop logs
+instead of delaying PCM delivery. Compile passed on core3.3.11:999975 program
+bytes/37976 globals. This repair is NOT flashed yet; hardware testing is deferred.
+After confirmed flashing, run sustained delivery with serial monitor CLOSED for
+at least40seconds, measure rate/max gaps, then verify speech and light patterns.
+See ../../tools/prototype_acceptance.md. IR remains omitted.
