@@ -2,7 +2,7 @@
 [CmdletBinding()]
 param(
     [Parameter(Mandatory=$true)][ValidatePattern('^[A-Za-z_][A-Za-z0-9_.-]*$')][string]$User,
-    [string]$UnoqIp = '192.168.29.199',
+    [string]$UnoqIp = '10.153.76.45',
     [Parameter(Mandatory=$true)][string]$LaptopIp,
     [ValidatePattern('^[A-Za-z0-9][A-Za-z0-9_.-]*$')][string]$RemoteDirectory = 'Vision',
     [switch]$SkipInstall

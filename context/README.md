@@ -61,3 +61,9 @@ fix. Full local suite121 passed; Uno Q runtime/model preflight passed. Current
 DHCP Uno Q10.153.76.45/laptop10.153.76.189; isolated prepared deployment path
 /home/arduino/Vision-phase5-20261004. User deferred live tests; no phase/gate
 completed. Latest HANDOFF/TESTING records define exact scope and next action.
+
+## Complete-project publication - 2026-10-04
+User requested all pending changes committed/pushed after context refresh.
+See newest HANDOFF/TESTING entries for verified checks,publication scope and
+unresolved brownout/USB logging issues. See HARDWARE_POWER_ISSUE.md and
+FIRMWARE_AUDIO_ISSUE.md before any new hardware run. No full acceptance pass.

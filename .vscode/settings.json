@@ -1,5 +1,6 @@
 {
   "files.associations": {
-    "*.ino": "cpp"
+    "*.ino": "cpp",
+    "*.h": "cpp"
   }
 }

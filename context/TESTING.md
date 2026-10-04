@@ -1,5 +1,526 @@
 # Verification and runnable commands
 
+## Complete-project publication preparation - 2026-10-04
+
+User explicitly requested update contexts then commit and push EVERYTHING.
+This authorizes publication of all existing software,deployment,firmware,CAD,
+editor and context changes; no new firmware implementation or future phases.
+Existing HEAD before this commit:bf898850ed1fe0a0fc68a9f5c0e6a6a948f1087b
+Intended commit message:feat: publish live tracking, C3 firmware and enclosure models
+Do not invent the resulting commit hash;Git log is authoritative after publish.
+
+Scope:read-only live annotated /live + /live/frame.jpg using UnoQ's existing
+tracking snapshot,gallery link;new gallery tests;Phase5 network diagnostic and
+quote-safe runner/current-IP deployment docs;user board config;existing C3
+voice_unit and Wi-Fi diagnostic/checker/docs/context;ESP32C3/S3 editor setup;
+enclosure OpenSCAD,9 STL exports,previews and validation;durable issue handoffs.
+Root context records below preserve separate firmware/CAD histories. Root current
+handoff supersedes older firmware notes claiming no receiver tests had yet run.
+No credentials,private media,model/toolchain archives or ignored runtime logs.
+
+Editor publication also includes .vscode/README.md and refresh_firmware_intellisense.py;
+refresh ran successfully and mapped3original sketches to their actual compiler commands.
+Generated database stays ignored;no credential contents read.
+
+Fresh commit checks:129 pytest tests pass (7.56s);bash syntax for Phase5 runner
+passes;normal Git diff --check passes. C3 production sketch compiled999841bytes
+program/37976globals;Wi-Fi diagnostic953875program/36152globals,exit0 for both,
+no hardware upload. All9 existing STL meshes pass standard-library validation.
+No credential scan matches;both ignored secrets.h and private WAV/JPEG confirmed
+excluded. HEAD/origin main synchronized before commit. Source tests/compilation
+are not physical hardware acceptance;no phase/gate declared complete.
+
+Latest live run is STOPPED:app log ends^C,result exit0,no app process found via
+USB;owned serial reader26616 absent. User said everything powered from laptop.
+Current known IPs S3 10.153.76.67,UnoQ 10.153.76.45,C3 10.153.76.243;reverify DHCP
+before future run. Full application runs on UnoQ;live URLhttp://10.153.76.45:8080/live.
+Manual run has no timer;Ctrl+C stops it. Runtime-local launch scripts are ignored,
+not part of reproducible firmware fix;README documents normal runtime command.
+
+Confirmed blockers:repeated S3brownouts after servo motion (power topology and
+under-load voltage need hardwareteam);C3 USB logging suspected to stall audio
+when serial reader closed (open31.41packets/s vsclosed2.265s gap). See
+HARDWARE_POWER_ISSUE.md and FIRMWARE_AUDIO_ISSUE.md. Original five-second C3
+checker failed42.4% rate shortfall. All8 light states were sent but physical
+colour/clear-WAV confirmation not received. Live direction/track/shoot accepted,
+photosIMG_0001/0002 saved in actual logs;phone-new-photo/fullmotion smoothness
+unconfirmed. Spoken camera stop tracking accepted at least once after initial
+recognition complaints. Network14.45FPS is NOT CPU benchmark;UnoQ benchmark
+still unrun. Full mock/hardware acceptance remains pending despite publication.
+
+Next resume:read this handoff and issue docs;resolve S3power and nonblocking C3
+logging through hardwareteam/SessionB;verify gates,then full real-component
+tracking/photo/physicallights/phone-gallery and actualCPUbenchmark. Do not
+restart automatically or implement later phases merely because commit pushed.
+Update context before every future commit;preserve other sessions' work.
+
+---
+
+## Laptop-powered restart explicitly requested - 2026-10-04
+
+User confirmed everything powered from laptop and explicitly requested run again
+after brownout finding. Restart is an authorized diagnostic continuation,not
+hardware power acceptance or a fix. No supply/firmware/threshold change.
+Confirmed UnoQ USBADB662499217,no existing app receiver. S3/status returned200:
+90/90,idle,uptime84,reset_reason1,RSSI-44 after recent reboot. Actual S3 USBCOM19
+absent;COM20 PnPVID2341/PID0078 is UnoQ,not guessed S3 replacement.
+Initial both-port reader PID28116 failed opening missingCOM19 and disposed C3.
+Ignored serial helper now requires confirmedC3COM18 and optionally opensCOM19
+only if present. New readerPID26616 successfully openedCOM18 only;no timeout.
+
+Started existing no-time-limit real-component UnoQ app. Actual Ready06:05:35.476
+boardclock,backgroundRMS42.6,accepted camera up06:05:39.694. Verified live page200
+and frame200;opened http://10.153.76.45:8080/live. StartsIDLE unless user commands
+tracking;no automatic track command injected. Ctrl+C in Vision console stops
+app and signals reader. Keep C3USB attached for current logging workaround.
+
+Confirmed S3brownout issue remains unresolved;laptopeverything supply does not
+establish adequate servo load power. Cap installation/under-load voltage still
+unmeasured. If resets recur,report hardwareteam;do not claim standalone/full
+acceptance. Latest source129tests unchanged;only ignored runtime helper adjusted.
+No commit/push or firmware changes. Context refreshed with user override/state.
+
+---
+
+## S3 brownout confirmed; runtime stopped, hardware power check required - 2026-10-04
+
+User reported recurring camera stream/move timeouts. Read actual S3 COM19 log:
+repeated E BOD:Brownout detector was triggered immediately after streaming/moves,
+followed by ROM boots and camera/WiFi reinitialization. Laptop /status timed out.
+This confirms low-supply resets; specific source/cable/connection/load cause
+requires measurement. Espressif official fatal-error docs checked; diagnostic
+handoff context/HARDWARE_POWER_ISSUE.md created with evidence and Gate A checks.
+Don't mask brownout by disabling protection or extending network timeouts.
+
+Uno Q app had already exited:log^C,result exit0,no Pythonapp or8080/5005listener.
+Wrote serial stop marker;reader PID5200 also no longer present after cleanup.
+No restart,no firmware/application/power-setting changes. Prior live page could
+show stale camera frame while reconnecting; do not infer camera alive from200.
+Voice recognized track person;end-to-end camera tracking failed under load.
+Earlier hardware readiness confirmation superseded by actual failed power test.
+
+Asked actual S3/servo power source,USB cable,servo5V topology and470uF capacitor
+installation. Await user/hardware-team reply,then correct feed and measure S3
+5V under both-servoload (project~4.6V criterion),repeat controlled reset-free
+camera test before tracking. Sharedground/freebracket/polarity checks per plan.
+No new automated test needed (source unchanged),latest129pass. Hardware full
+acceptance/benchmark and C3 standalone logging fix still pending. No commit/push.
+Context refreshed; preserve firmware/CAD/editor changes.
+
+---
+
+## Vision restarted at user request - 2026-10-04
+
+User said lets run it again. Confirmed USB ADB662499217 connected,no existing
+app/audio diagnostic,COM18/COM19 present. Archived prior run log/result files
+under ignored timestamped logs. Cleared stop marker,restarted owned persistent
+serial reader PID5200 (COM18C3+COM19S3,both opened),then existing no-time-limit
+UnoQ app with real-board full-system config and live annotated gallery.
+
+Actual Ready05:55:01.317(board clock),backgroundRMS48.8,accepted camera track
+person05:55:05.435. Verified /live200,/live/frame.jpg200 image/jpeg;opened
+http://10.153.76.45:8080/live in user's browser. No timer. Ctrl+C in Vision -
+RUNNING until Ctrl+C stops app and marks serial readers to exit. Keep USB attached
+for logging workaround. No firmware/application changes,new tests,commit/push.
+Earlier full129tests remain latest source verification. Standalone logging issue,
+user-observed complete acceptance and CPU benchmark remain pending. Previous
+run did accept camera stop tracking at least once. Context updated before ending.
+
+---
+
+## Vision stopped at user request - 2026-10-04
+
+User explicitly said stop process. Identified exact owned Uno Q app PID6107,
+validated command line app.main/full-system config/UDP/seconds0,then sent SIGINT
+for graceful cleanup. Wrote ignored logs/vision-stop-serial.request so owned
+serial workaround exits. Reader PID22888 had already exited; its result reported
+ReadExisting port closed. No serial reader remains; do not claim this runtime
+was stable after USB disconnection. No other app/service/board stopped/reflashed.
+
+Verified appPID absent and listeners inspected after shutdown;gallery8080 and
+appUDP5005 confirmed closed;app result exit0. No restart authorized. Keep live page/source changes
+and photos; no commit/push. Next session reads stopped state,addresses/current
+hardware again before launching. Shutdown review found accepted "camera stop tracking" at05:46:18.586(board
+clock);recognition did succeed at least once. User-observed stop behaviour and
+standalone logging issue remain unverified;camera timeouts recurred before stop.
+Hardware full acceptance/CPU benchmark remain pending.
+Local full129tests passed for live view previously. Context refreshed; preserve
+firmware/CAD/editor changes and before-every-commit maintenance rule.
+
+---
+
+## Live annotated browser view deployed and verified - 2026-10-04
+
+User requested visible live camera/tracking and reported no response to spoken
+stop tracking. Correct exact phrase remains "camera stop tracking". Existing
+logs had no accepted stop command; no voice threshold/gain change or speech fix
+claimed. Existing state test covers transition to IDLE when command accepted.
+User then requested restart with live visual; implemented requested view only.
+
+Added /live browser page and /live/frame.jpg to existing Uno Q gallery8080.
+Uses read-only callback from the existing control/display snapshot,without
+opening another S3 stream or running detection on laptop. JPEG includes green
+box,mode,pan/tilt,dx/dy,search/stopped/reconnect indication. Page polls one request
+at a time every250ms,backs off when hidden,retries unavailable camera. Routes
+return404 without provider,503 while no frame,no-store caching. Gallery root
+links live view. No browser control/movement route added.
+Files:app/main.py,app/gallery/server.py,templates/index.html,templates/live.html;
+new tests/test_live_gallery.py. Full129 tests pass (7.49s),remote py_compile passed.
+
+Prior manual-stop app/monitor had already ended (no Python receiver or owned
+reader present); cause not established. Preserved prior app log, deployed only
+runtime source/templates over verified USB ADB,then restarted no-time-limit app
+and serial workaround. New monitor PID22888,COM18/C3+COM19/S3. Same stop marker
+and Ctrl+C console cleanup;no app/monitor timeout. No firmware changes.
+Actual remote Ready05:40:53.796,accepted track person05:40:57.713. Live page200,
+JPEG200,image/jpeg,decoded320x240. Visually inspected actual frame:greenperson
+box,TRACKING,pan43/tilt93,dx-0.04/dy-0.12. Opened user's browser to
+http://10.153.76.45:8080/live. Also accessible on phone same network.
+Image/private evidence ignored logs/vision-live-preview-{check.jpg,result.json}.
+
+Next: user says camera stop tracking,pause;watch IDLE and box disappear. If no
+recognition,response remains voice issue; don't claim it fixed from visual UI.
+Original user physical full-test/phone-new-photo confirmation,CPU benchmark and
+standalone USB-logging fix remain pending. App continues until user Ctrl+C in
+Vision - RUNNING until Ctrl+C. ExistingHEADbf89885;no commit/push. Context updated
+before ending and must be refreshed before every future commit. Preserve separate
+firmware/CAD/editor work and shared records.
+
+---
+
+## Vision running without time limit; manual stop only - 2026-10-04
+
+User explicitly requested Vision keep running until they shut it down. Replaced
+timed600s live launcher with ignored logs/run_vision_until_stopped.sh using
+--seconds0; same real-board config,app executes on Uno Q via USB ADB662499217.
+No startup service or future-phase implementation. Prior app had already ended
+(no Python receiver/process found); old owned C3 serial reader PID27744 stopped.
+
+New owned hidden serial monitor PID20228 opens COM18(C3) and COM19(S3),drains
+both logs without a time limit; DTR/RTS false. S3 added because earlier live
+app recorded stream/move timeouts and firmware stream handler also prints
+periodically. This is a diagnostic workaround,not a proven S3 firmware fix.
+No firmware changes/flash. C3 suspected blocking logging remains Session B issue.
+Reader loops until ignored logs/vision-stop-serial.request exists. Visible app
+console Vision - RUNNING until Ctrl+C writes that marker in finally on app exit.
+App and serial readers have NO elapsed-time expiry. Manual Ctrl+C in that console
+is the requested stop action; force-closing windows may bypass cleanup,so verify
+remote process/monitor if shutdown uncertain. Keep USB cables attached for this
+workaround. No headset/laptop microphone/camera mocks used.
+
+Actual app log:Ready05:32:23.656(board clock),backgroundRMS20.0;recognized camera
+track person05:32:25.766. C3 actual Serial:ready,heard,tracking; packet send counters
+96942->97255,send_errors7151 unchanged. S3 Serial:10.153.76.67,HTTP ready,stream
+open socket55,move accepted pan90/tilt89. This proves startup/command delivery and
+control request,not user-observed smooth tracking/photo/full acceptance.
+Ports and board config unchanged:UnoQ10.153.76.45,C310.153.76.243,S310.153.76.67,
+galleryhttp://10.153.76.45:8080. Private logs ignored:vision-until-stopped-app,
+vision-COM18/COM19,monitor-result and app-result. No timed watchdog introduced.
+Next: user uses app,tests shoot/new phone photo and other commands; assistant
+reviews reported errors/logs. CPU benchmark/full standalone acceptance remain
+pending. No commit/push;HEADbf89885. Context refreshed before ending.
+
+---
+
+## Full real-component app Ready on Uno Q - 2026-10-04
+
+User explicitly requested all-components full test now. Started existing app on
+Uno Q via verified USB ADB662499217; no SSH password needed. Uses ignored remote
+logs/config.full-system.yaml:real S310.153.76.67,real C310.153.76.243,UDP5005 mic,
+UDP5006 NeoPixel,normal remote/home/arduino/Vision/photos,gallery8080. No mocks,
+laptop mic or Bluetooth headset. User hardware readiness previously confirmed.
+App logged calibrated backgroundRMS86.7 and Ready at05:27:42 board clock.
+C3 Serial reports light ready and313successful sends between10s reports with
+send_errors7151 unchanged in sampled startup. Light receipt does not confirm
+physical colour. Actual voice/actions/photo acceptance remains pending.
+
+Disclosed temporary workaround:owned hidden PowerShell serial reader PID27744
+holds COM18 open/drains status logs,DTR/RTS false,no reset/flash. Bounded1200s.
+Visible console Vision - ALL REAL COMPONENTS on Uno Q runs app600s; its finally
+stops owned monitor after app ends. Logs/full-system-live-usb-{app,result},
+serial-monitor log/result are ignored. Ctrl+C in visible console ends early.
+Do not force-close window without checking app/monitor cleanup. No standalone
+pass while serial-reader workaround required; Session B logging fix remains.
+
+Asked user to test track person with movement,shoot/new photo from phone,
+stop tracking/manual left/right/up/down/centre,burst,timer,sleep/wake and report
+physical light behaviour. User response pending. Laptop gallery read-only check
+recorded separately in logs/full-system-gallery-readonly.json; it does not prove
+phone access or a new capture. CPU benchmark still pending; no phase completed.
+No firmware edits,no gain/threshold changes,no commit/push. ExistingHEADbf89885.
+Context updated before ending; preserve firmware/CAD/editor work.
+
+---
+
+## Serial-open/closed comparison identifies likely audio stall - 2026-10-04
+
+User said ready with hotspot awake and nearby.20s result533packets/20.02s,
+26.62/s,maxgap2.374s; not reliable. Then concurrent40s receiver+C3 serial
+capture:1258packets/40.056s,31.41/s,maxgap0.555s,0malformed/kernelerrors;
+C3 counters increased313every10s,send_errors7026 unchanged. Serial reader
+closed after capture and port disposed. Repeat closed:576packets/20.024s,
+28.77/s,maxgap2.265s. This open/closed difference strongly suggests USB status
+logging stalls the audio task. Source review finds audioTask Serial.printf
+counter report every10s and installedHWCDC write can wait20x100ms under host
+backpressure. Root cause inference needs firmware fix+controlled retest to confirm.
+Open-monitor maxgap0.555s still exceeds normal32ms playout and does not establish
+speech clarity/full acceptance. No gain/confidence/buffer changes.
+
+Created context/FIRMWARE_AUDIO_ISSUE.md with exact evidence and Session B action:
+nonblocking USB logging independent of audio delivery; preserve shared contract;
+compile/upload workflow and closed-monitor/power-only acceptance. No firmware
+edits or flash. Asked user whether to continue full hardware diagnostic with
+serial monitor open temporarily or have firmware session fix first. Await reply
+before dependent live test. Both are pending; don't claim standalone pass.
+Original UnoQ powersaveON remains restored. All measurement JSON/private logs
+ignored. No mock mic/headset used. No new lights/capture during these checks.
+ExistingHEADbf89885;no commit/push. Context refreshed.
+
+---
+
+## Uno Q power-save comparison did not fix delivery - 2026-10-04
+
+USB diagnostic completed exit0; iw was installed for inspection. Actual baseline
+power-save ON:506valid packets/20.03s,25.26/s,maxgap2.494s. Temporary OFF:508valid/
+20.011s,25.39/s,maxgap2.121s. Both had zero malformed and UDP receive/checksum/
+buffer errors. Difference does not resolve delivery gaps; don't claim a fix.
+Baseline/off saved ignored logs/c3-udp-power-{baseline,off}.json. Original setting
+restored by trap and independently verified /usr/sbin/iw:Power save:on. No saved
+profile/service/firmware changes. Private earlier WAV remains ignored.
+
+Read-only iw link/station:Uno Q associated to Jasil on2412MHz,signal-38dBm,
+average-36dBm,72.2Mbps reported RX,connected3990s,beacon_loss0,rx_drop_misc309
+cumulative. Cumulative counters do not prove current gap cause. Collected25s iw
+events to logs/unoq-wifi-events.log; outcome must be reviewed, not inferred.
+Next controlled test requested from user:keep hotspot phone awake with settings
+visible and place phone beside Uno Q/C3; reply ready before receiver retest.
+This tests hotspot/location conditions without firmware/credential changes.
+Full app remains stopped; voice/light/full-system acceptance and CPU benchmark
+still pending. Do not loosen rate threshold or treat camera success as full pass.
+No commit/push; context refreshed; preserve firmware/CAD work.
+
+---
+
+## Receiver gaps confirmed; Wi-Fi comparison opened - 2026-10-04
+
+User completed20s receiver diagnostic; local logs/c3-udp-diagnostic.json confirms
+502valid packets in20.41s (24.6/s vs31.25expected),0malformed/other-source,
+max gap2.402s,28gaps>100ms,two1s bins withzero arrivals,RMS172.85,peak728.
+Kernel UDP InErrors/RcvbufErrors/InCsumErrors/MemErrors all0; NoPorts3 during
+this interval is not a receive-buffer error. Board load0.07/0.10/0.09,no existing
+UDP5005 owner shown. Data supports delays/loss before application UDP receipt;
+Wi-Fi/driver/hotspot buffering is a hypothesis, not proven root cause. Raw packets
+lack sequence numbers; exact loss unavailable. Full integration still blocked.
+Private earlier WAV downloaded under ignored logs/full-system-mic.wav; clarity
+and physical light behaviour still require actual user observation.
+
+Verified existing USB ADB target662499217 is connected,accountarduino,hosttinker,
+wlan0IP10.153.76.45. iw utility absent from PATH and normal sbin candidates;
+sudo requires local password. No profile/network changed by read-only checks.
+Opened Vision - Uno Q Wi-Fi comparison via USB (logs/unoq-wifi-power-console.ps1).
+Script installs only iw if missing using local sudo entry, reports link/power
+state,measures20s baseline. ONLY if power save is on, temporarily disables it,
+measures20s comparison and restores on via EXIT trap. No profile persistence,
+service restart,firmware change,movement,lights,new audio recording or app run.
+If interrupted forcefully before trap executes, check actual power state; do
+not assume restore. Bash syntax passed. Outcome pending local console completion.
+Next user action: Linux sudo password in that console only, then inspect pulled
+baseline/off JSON and log; do not infer improvement before actual comparison.
+Keep original full-system checker acceptance thresholds; don't mask delivery gaps
+by increasing jitter buffering. No commit/push; HEADbf89885. Context refreshed.
+
+---
+
+## Full-system audio check failed; targeted diagnosis running - 2026-10-04
+
+User supplied actual C3 checker failure:90valid packets,0malformed over5.00s,
+2.88s PCM,RMS126.2,peak416,estimated rate shortfall42.4% (>20% fails). All8
+light commands were sent; physical colours and recording clarity are still
+unconfirmed. The full app did NOT launch. Receiver arrival failure means real
+voice acceptance/Gate B testing remains incomplete despite hardware readiness.
+Camera automated checks passed previously; whole-system pass must not be claimed.
+
+Read production C3 Serial on confirmed COM18 with DTR/RTS false; no flash/reset,
+closed/disposed port afterward. Counters65412,65725,66038,66351,66664:313successful
+sends between each10s firmware report (expected31.25/s). send_errors6011 unchanged
+throughout; historic errors exist but none newly observed in this capture.
+RSSI-44..-46. Successful UDP send is not proof of receiver delivery; these samples
+were later than failed5s check and do not establish its cause. Serial saved in
+ignored logs/c3-audio-sender-counters.log. No firmware edits or gain changes.
+
+Opened Vision - C3 audio rate diagnostic (ignored logs/c3-network-diagnostic-
+console.ps1). User authenticates locally with strictly verified board host key.
+Uploads20s read-only receiver checker: counts valid/malformed/other-source,
+per-second rates,arrival gaps,RMS/peak,kernel UDP counters and receiver load.
+Refuses concurrent app/demo_voice. No raw recording,new photos,lights or movements.
+Copies summary and already-created private WAV back to ignored laptop logs.
+Next: user enters passwords,speaks near INMP441; inspect summary to distinguish
+sender/network/receiver behaviour. Do not weaken packet-rate acceptance or
+confidence threshold to bypass failure. Firmware bugs go to Session B/user.
+No application changes,no commit/push; HEADbf89885. Context refreshed.
+
+---
+
+## Full hardware acceptance launched - 2026-10-04
+
+User answered "yeah all good" to the explicit Gate A/B hardware and F2/F3 readiness
+question. Treat this as affirmative user hardware confirmation, not agent-run
+physical evidence. Earlier waiting-for-gate entry is superseded for this requested
+test. No firmware modifications or future-phase implementation.
+
+Existing firmware camera checker ran against real S3 10.153.76.67 and exited0:
+status,85-95degree pattern/readback,QVGA,servo responsiveness while streaming,
+2048x1536 capture141451bytes,identical held retry,ACK release,same stream survival
+and fresh stream all PASS. Capture10.96s,retry5.81s; these latencies are recorded,
+not a throughput benchmark. Restored90/90. Physical smoothness/image quality
+still user-observed pending. JPEGs private/ignored logs/full-system-camera.
+C3-only UDP recognition diagnostic ended exit0; audio levels observed, command
+recognition remains unconfirmed from existing logs.
+
+Opened logs/full-system-console.ps1 (Vision - full hardware acceptance). It
+uploads only ignored diagnostic/config files to remote Vision/logs, uses strict
+trusted SSH and local password entry, refuses an existing app/audio diagnostic.
+First existing C3 checker records5s WAV and cycles all8 NeoPixel states, then
+copies WAV privately to ignored laptop logs for playback. User must type PASS
+locally only if voice clear and physical colours match. On PASS launches app
+for600s: real S3 10.153.76.67,C3 10.153.76.243,UnoQ10.153.76.45,UDP mic,normal
+remote photos dir; no laptop camera/microphone in this live path.
+Next user actions: authenticate; speak during5s recording/watch colours; listen
+and report physical result; after Ready test directions/centre,track person,
+shoot and phone gallery http://10.153.76.45:8080. Ctrl+C stops. App/voice logs and
+physical-result JSON ignored. Actual full-system acceptance and CPU benchmark
+remain pending; no phase declared complete. Optional IR omitted.
+Launcher PowerShell parse,bash syntax and YAML validation passed. Latest full
+suite126 previously passed; no application change requiring rerun. Existing
+HEAD bf89885; no commit/push. Context refreshed before ending this turn.
+
+---
+
+## Full-component test requested; hardware confirmation pending - 2026-10-04
+
+User requested a proper test of all components, using real INMP441/C3 (no
+Bluetooth/laptop mic), S3 camera/servos, NeoPixel and Uno Q/gallery. Prepared
+sequence: stop microphone diagnostic before binding UDP5005; verify camera
+endpoints/motion/capture/ACK/stream recovery, verify C3 PCM clarity and all eight
+physical light states, then run existing app on Uno Q with real-board config,
+check voice directions/centre, tracking, shoot, photo gallery from phone and
+stream recovery; record actual CPU benchmark separately. Optional IR is omitted
+in current firmware; do not claim it tested. No firmware implementation changes.
+
+Read-only real S3 /status at10.153.76.67 succeeded:pan/tilt and actual positions
+90/90, move_in_progress=false,held_photo=false,RSSI-34,uptime7639s.
+Saved logs/full-system-readonly-preflight.json. This is not a motion/capture pass.
+Current C3-only remote log reports Listening UDP0.0.0.0:5005 and varying audio
+levels; no recognized command evidence found yet. Some zero levels observed;
+packet stability and microphone clarity remain unverified. No audio file saved.
+
+SOFTWARE_PLAN.md requires Gate A DONE and Gate B DONE before physical integrated
+checks. Latest firmware handoff still marks F2/F3 acceptance pending. Asked user
+whether hardware team confirmed camera servo power/capacitors/common ground/free
+movement and INMP441/NeoPixel wiring/production firmware plus F2/F3 checks.
+Wait for their explicit gate readiness reply before motion/light/capture tests;
+do not infer pass from reachability, upload or this request. No full app launched,
+no real movements, light commands or photos this turn. Existing Phase5 mock-flow
+and CPU benchmark remain pending; user-requested test is recorded without marking
+phases complete. Existing HEAD bf89885; no commit/push. Context refreshed.
+
+---
+
+## Current update: C3 microphone selected - 2026-10-04
+
+User explicitly requested INMP441 on ESP32-C3 Super Mini; do not use Bluetooth
+headset or laptop microphone. This supersedes earlier boAt preference.
+Laptop voice mock has exited with PortAudio channel error; it is not supplying
+audio. Firmware handoff confirms production C3 10.153.76.243 sends 16kHz mono
+s16le, 512 samples/1024 bytes to Uno Q 10.153.76.45:5005. No firmware edits.
+Opening ignored logs/check-c3-mic-console.ps1: password entered only locally,
+strict verified host key; uploads diagnostic shell, refuses concurrent app,
+then existing tools.demo_voice --mic udp --levels --seconds 180 on Uno Q.
+This check recognizes commands only; no camera requests, photos or light commands.
+Receiver delivery, speech clarity and acceptance remain pending actual output.
+Next: authenticate in C3 console; wait for Listening, say camera track person,
+pause, then camera shoot. Review levels/events. Keep camera on laptop mock for
+Phase5; do not switch to real S3 or declare firmware gates complete.
+
+Remote source refresh/preflight subsequently succeeded (older failure notes
+below are historical): all three models, CSRT/KCF,16 checksums passed.
+User's 60s UnoQ-to-laptop read-only stream diagnostic passed:875frames,
+60.569s,14.45 received FPS,max chunk gap1.011s,errors[],ok=true,SSH exit0.
+PowerShell NativeCommandError on normal SSH connection-close text was cosmetic.
+Received FPS is network delivery, not CPU inference benchmark.
+Quote-safe deploy/run_phase5.sh and read-only check_mock_network.py added;
+latest local full suite126 passed, bash syntax passed. Phase5 full flow,
+phone gallery and UnoQ CPU benchmark still pending; no commit/push this update.
+Laptop camera mock PID11448 remains active (no automatic expiry); stop owned
+mock after acceptance or user stop. Firmware/CAD/editor work preserved.
+Context must be refreshed before every commit. Current known HEAD bf89885;
+no intended commit yet while acceptance pending.
+
+---
+
+## SSH copy interruption and retry - 2026-10-04T10:13:30+05:30
+
+User reported SCP connection closed by10.153.76.45 after password prompt;
+old192.168.29.199 prompt came from our HostKeyAlias. Source refresh did not reach
+extraction; no new-runtime success claimed. Cause of disconnect remains unknown.
+Strict SSH handshake at currentIP matches previously trusted ED25519 board key;
+BatchMode fails only authentication because no passwordless login configured.
+Created ignored project logs/phase5-known-hosts from the THREE already trusted
+board public keys, mapped to currentIP. Global user SSH settings unchanged.
+StrictHostKeyChecking remains yes; no unknown key accepted or verification bypass.
+Opened Vision - Phase5 connection retry console: first interactive read-only SSH
+must print SSH_LOGIN_OK; then normal SFTP copy, optional SCP -O fallback only if
+copy fails after successful SSH login; finally source extraction/check-only/live app.
+Prompts now use actual arduino@10.153.76.45. User enters passwords locally, never chat.
+Script/result/logs are ignored logs/phase5-{connection-retry,retry-*}; login/copy/
+app outcome pending. Script parser passed; no application code changes or new
+hardware acceptance. Laptop mocks still use10.153.76.189, headset5.
+Next: inspect user reply/result/log. If login fails diagnose SSH before file work;
+if app ready resume spoken/phone-gallery test then stop app for UnoQ benchmark.
+Phase5 acceptance and benchmark pending. No commit/push; firmware/CAD preserved.
+
+---
+
+## Updated network and Phase5 restart - 2026-10-04T10:04:50+05:30
+
+User supplied updated board addresses: S3 camera10.153.76.67, UnoQ10.153.76.45,
+C310.153.76.243. Laptop Wi-Fi currently10.153.76.189, gateway10.153.76.224.
+These supersede old192.168.29.* addresses and example192.168.43.* board addresses.
+UnoQ new TCP22 reachable, oldUnoQ192.168.29.199 timed out. Board IPs are user-supplied;
+no real S3/C3 endpoint or hardware acceptance performed by Session A.
+
+Updated root config.yaml with real user board addresses (ports unchanged). Phase5
+must still use generated config.phase5.yaml: s3_ip and c3_ip BOTH10.153.76.189
+(laptop mocks), unoq_ip10.153.76.45, photos relative. No real-board integration
+started or firmware edits. Updated copy helper's default UnoQ and deploy runbook.
+Both config checks pass;21 config/deployment tests pass. Latest HEADbf89885
+contains Phase5 prep; later-current voice code includes64994af bounded-silence fix.
+
+Previous bounded mocks/app expired; no old Python/SSH sessions found before restart.
+Headset boAt MME ID is now5 (ID4 now AMD array); confirmed inventory and selected5.
+New camera/headset mocks launched on currentLAN for30min. Camera/status verified
+ready; voice mock announces audio->10.153.76.45:5005 and listens10.153.76.189:5006.
+Interactive new-network source-copy/live console opened. User supplies SSH passwords
+there. Reuses previous trusted UnoQ host key via temporary HostKeyAlias192.168.29.199,
+StrictHostKeyChecking=yes; new-address handshake passes key check but BatchMode
+cannot authenticate without password. No trust disabled or credentials stored.
+
+Current package includes runtime source/new mock config/latest voice fix, excludes
+firmware/CAD/private media/secrets. Only source archive is recopied; installed models
+and photos remain. Remote check-only verifies16 model hashes, then starts app for10min.
+This source update and new-network app readiness are pending user authentication;
+do not claim remote refresh complete before log evidence. Ignored scripts/logs:
+logs/phase5-new-network-{app,voice,camera}*, processes JSON. Source archive39712 bytes.
+Next: user completes login/copy, app Ready, spoken track person/shoot, saved print,
+phone gallery http://10.153.76.45:8080 and crop http://10.153.76.189:81/stream.
+Then stop app and benchmark on UnoQ against new laptop stream; old benchmark URLs
+must not be used. Phase5 live/benchmark acceptance remains pending. No commit/push.
+Preserve separate CAD and Session B records/work; context updated before any commit.
+
+---
+
+Prior network addresses are historical; preserve separate CAD/firmware entries.
+
 ## CAD-only validation - 2026-10-04
 
 Used the official portable OpenSCAD 2021.01 Windows ZIP in the temporary folder
@@ -1675,3 +2196,208 @@ historical-address clarification. No host-key verification bypass.
 Exact next action after publishing: wait for user's readiness, recheck DHCP
 addresses/headset ID, then run Phase5 mock flow/phone gallery/benchmark and
 record actual acceptance. Do not advance gates or auto-start live tests.
+
+## Current device IP check - 2026-10-04
+User requested C3/S3/Uno Q IPs. Read-only verification: Uno Q wlan0 remains
+10.153.76.45/24 via USB ADB; S3 http://10.153.76.67/status returned HTTPsuccess,
+centre90/90, uptime2818/reset_reason1/RSSI-22. C3 last durable flash record is
+mic_level bench, not Wi-Fi voice firmware; voice_unit.ino remains placeholder.
+No verified C3 network IP available. Report no assigned/known Wi-Fi IP rather
+than guessing a static address. No flash, movement, commit/push this turn.
+Existing HEADbf89885 is published. Runtime/live acceptance remains deferred.
+
+## C3 voice implementation and authorized flashing - 2026-10-04
+User requested flash it immediately after being told C3 has only mic bench and
+needs production voice implementation. This explicitly resumes C3 work beyond
+prior S3-only/F3 deferral; S3/F2 acceptance remains pending, not retroactively
+passed. Known tested micGPIO4/5/6 L/Rgrounded, pixelGPIO7 GRB brightness40,
+SHIFT14 retained; IR omitted. User previously reported all boards connected.
+Implemented voice_unit.ino:16kHz mono-left32bit I2S, clipped little-endian16bit
+512sample/1024byte UDP5005 to confirmed Uno Q10.153.76.45; independent audio
+task and bounded UDP5006 light processing, all8 contract states with timed
+transient restoration, reconnect indication and offline audio discard.
+Added standalone check_voice_unit.py/voice README/tools docs. Syntax/help and
+signed PCM RMS/peak/empty-buffer checks passed. No speech/audio WAV/light-cycle
+acceptance run (user deferred tests); packet loss is estimated, not exact.
+Ignored C3 secrets created from local S3 configuration with DHCP and confirmed
+Uno Q destination. Compared/synchronized privately with Uno Q working hotspot
+profile; old values matched. No password values printed or stored in context.
+Initial compile998525 program bytes/37976 globals, flash success with hash
+verification; esptool verified COM18 ESP32-C3 AZrev1.1/4MB/MAC44:b1:76:17:f5:7c.
+Boot confirmed mic/I2S initialization andIRomission but Wi-Fi did not obtainIP.
+Added disconnect reasons/45s manual retry spacing and malformed-NUL rejection.
+Diagnostic build999451/37976 compiled/flashed successfully; boot shows
+reason2 authentication expiry,201 noAP and36 association-related failure.
+Installed SDK confirms WPA3/SAE/H2E enabled. Uno Q remains connected on WPA3
+and S3 status still responds. No conclusion that all C3 WPA3 is unsupported.
+Trying explicit WPA3_SAE_PWE_BOTH station configuration before connection;
+compile/upload/boot result to follow. No static IP guessed or gate declared
+complete. Existing HEADbf89885; no commit/push requested in this flash turn.
+
+## Final C3 flash result; Wi-Fi acceptance pending - 2026-10-04
+Explicit SAE-both build compiled exit0:999581 program bytes,37976 globals,
+core3.3.11/C3 CDCOnBoot. Uploaded successfully to verified COM18 ESP32-C3;
+written-data hashes verified. Serial boot confirms voice_unit/reset_reason11,
+mic4/5/6/SHIFT14, IRomitted, DHCP mode anddestination10.153.76.45:5005.
+No DHCP IP obtained: repeated reason2 (authentication expiry) on current WPA3
+hotspot even with supported SAE methods explicitly enabled. Do not claim Wi-Fi,
+UDP audio delivery, physical lights, speech clarity or full F3 acceptance passed.
+Final ignored logs:voice-unit-sae-compile.log/upload.log/serial.log under.build.
+C3 now retains this final production build, replacing mic_level bench. S3 code
+and Uno Q app/runtime were not changed; no user voice recording/WAV or colour
+cycle performed. Final checker syntax/help and PCM math checks pass; firmware
+whitespace check passes. Credentials/builds/diagnostic helper remain ignored.
+User prompted to temporarily select2.4GHz/WPA2-Personal with unchanged password
+and restart hotspot; answer pending. Exact next action: after user confirms,
+read C3 Serial/recheck Uno Q current DHCP address and audio destination, then
+verify connection/packet presence without recording until user is ready. If
+connection fails on WPA2 too, diagnose signal/power/hotspot access restrictions;
+do not assume firmware or microphone hardware has passed from compilation.
+No commit/push in this turn; new C3 firmware/checker/docs and shared context
+are local. Existing HEADbf89885. F2 camera acceptance and Phase5 mock/gallery/
+benchmark remain deferred; F3 network and physical acceptance are IN PROGRESS.
+
+User replied I can't change the hotspot now. Leave the successfully flashed
+C3 build in place; defer connection/voice/colour acceptance until a suitable
+network or hotspot settings are available. No additional retry or flash.
+Exact next action: user supplies available same-network connection conditions,
+then recheck C3 authentication and DHCP before recording or claiming acceptance.
+No verified C3 IP can be supplied yet. Code/context remain uncommitted locally.
+
+## C3 header editor fix and WPA2 compatibility preparation - 2026-10-04
+User requests pragma-once/include editor fix, C3 IP and impact of WPA2 on Uno Q.
+Added explicit ESP32-C3 SuperMini configuration (riscv compiler/variant/C3 SDK/
+I2S/NeoPixel/build database); retained S3 configuration. Associated .h with C++.
+Both configurations' compiler/database/include paths exist and JSON validates.
+pragma once is valid; final C3 compilation already passed999581/37976. No source
+pragma removed, credentials changed, extra compile/upload or editor visual QA.
+Next editor action: select C3 profile and reload; confirm red underline clearance.
+Read Uno Q active profile Jasil1: originally key-mgmtsae (WPA3only). Modified only
+key-mgmt to wpa-psk (NetworkManager supports WPA2+WPA3 personal); verified field.
+Kept password/PMF0/network active; wlan0 remains10.153.76.45/24. No reactivation,
+service restart, app/model changes or firmware flash required for this profile
+compatibility update. Original profile UUIDa2a07a5a-67b2-4891-a812-ca948b4b7bc5.
+C3 still has no verified IP on current WPA3 hotspot; user needs WPA2/2.4GHz trial
+with same SSID/password. After hotspot restart, recheck all DHCP addresses and
+update C3 audio destination only if verified Uno Q address changes. Don't claim
+C3 connection before actual boot/packet evidence. Physical/voice acceptance and
+Phase5 live checks remain deferred. No commit/push; changes remain local.
+
+## Mixed WPA2/WPA3 hotspot check - 2026-10-04
+User changed Jasil to WPA2/WPA3-Personal. Uno Q scan confirms active Jasil
+advertises WPA2 WPA3; wlan0 remains 10.153.76.45/24. Laptop IPv4 is
+10.153.76.189. S3 /status at 10.153.76.67 returned HTTP 200 (uptime 4144).
+C3 COM18 serial capture for 20 seconds still reports disconnect reasons
+2, 201 and 36, Wi-Fi state 0, with no DHCP IP. Serial port closed after capture;
+ignored evidence: firmware/.build/voice-unit-mixed-network.log. Mixed mode has
+not resolved the C3 connection; do not infer lack of WPA3 support or assign IP.
+Next action: ask for a temporary 2.4 GHz WPA2-Personal-only trial using the same
+SSID/password, then recheck C3 serial and all DHCP addresses. No new firmware
+edit/upload, audio recording, light cycle or live application acceptance run.
+F2/F3 and Phase 5 acceptance remain pending. Existing HEAD bf89885; no commit
+or push requested/performed in this turn. Preserve unrelated enclosure/ work.
+
+## WPA2-only hotspot retry - 2026-10-04
+User switched Jasil to WPA2-Personal only. Uno Q scan confirms active WPA2;
+wlan0 remains 10.153.76.45/24 and laptop remains 10.153.76.189. S3 status at
+10.153.76.67 returned HTTP 200, uptime 4440, RSSI -42, actual pan/tilt 90/90.
+C3 COM18 capture for 25 seconds still reports disconnect reasons 2/201/36 and
+states 0/6; no connection/IP log. Capture closed/disposed its serial port.
+Ignored evidence: firmware/.build/voice-unit-wpa2-network.log. No firmware edit
+or upload, microphone recording, light cycle or live acceptance test performed.
+Asked user to press C3 RESET once with BOOT released and reply reset; next
+capture should inspect fresh boot against verified WPA2 network before any
+further firmware diagnosis. Do not invent C3 address or claim WPA2 solved it.
+Existing HEAD bf89885; no commit/push. F2/F3 and Phase 5 acceptance pending.
+
+## C3 reset on verified WPA2 hotspot - 2026-10-04
+User pressed C3 RESET. COM18 20-second capture shows voice_unit boot, mic4/5/6,
+SHIFT14, IR omitted, DHCP destination 10.153.76.45:5005, then repeated disconnect
+reasons 201/36/2 with no connected/IP log. Capture also observed USB UART chip
+reset (reset_reason11); do not label it a brownout. Port closed/disposed.
+Ignored evidence: firmware/.build/voice-unit-wpa2-reset.log. Uno Q remains
+10.153.76.45/24. Active Jasil confirmed WPA2, channel1,2412MHz, signal100 at
+Uno Q; this does not establish signal strength at the C3. No C3 IP verified.
+Read Arduino core STA connect implementation; no confirmed firmware root cause.
+Asked user to place C3 within1m of hotspot and check additional-client capacity
+and blocked-device list for verified C3 MAC44:b1:76:17:f5:7c, then reply ready.
+Exact next action: capture C3 connection retry after those checks. If it still
+fails, hand off isolated Wi-Fi scan/connection diagnosis to firmware Session B
+under current Session A ownership instructions; do not blindly flash or modify
+firmware here. No firmware edits/uploads, private audio or light acceptance.
+Shared handoff updated, no commit/push. Existing HEAD bf89885. Acceptance pending.
+
+## C3 nearby WPA2 retry and firmware diagnostic handoff - 2026-10-04
+User replied ready after requested proximity/client-capacity/block-list checks;
+these physical/hotspot settings were not independently observed. COM18 serial
+capture50seconds still shows disconnect reasons2/201/36, states0/6 and one
+wifi:sta is connecting error. No Wi-Fi connected/IP log, no verified C3 address.
+Port closed/disposed. Ignored evidence: firmware/.build/voice-unit-wpa2-nearby.log.
+Uno Q wlan0 still10.153.76.45/24. No microphone recording, LED commands, firmware
+edit/upload or acceptance pass. Existing HEAD bf89885; no commit/push.
+Repeated hotspot/reset retries have not isolated the root cause. Next action
+for firmware Session B: prepare a minimal Wi-Fi-only diagnostic using the same
+ignored local credentials; log scan presence/channel/RSSI/security plus complete
+connection/disconnect events, compare with production voice firmware, check
+WiFi.begin/config/connect results and overlapping reconnect attempts. Preserve
+production sketch and obtain any required flash gate confirmation. Do not print
+credentials, assume unsupported WPA3, assign an IP or mark F3 complete.
+Current Session A AGENTS.md forbids firmware implementation here; hand off this
+failure through the user. Root context refreshed; F2/F3/Phase5 remain pending.
+
+## Authorized C3 diagnostic and restored production connection - 2026-10-04
+User said go ahead after the Wi-Fi-only diagnostic proposal. This authorizes
+this targeted firmware diagnostic despite Session A ownership; scope remains
+C3 troubleshooting/restoration, not future phases or app/contract changes.
+Created firmware/bench/wifi_diagnostic with ignored local secrets copied from
+voice_unit; no credentials printed or committed. Default-power build953413/
+36144 compiled and flashed verified COM18 ESP32-C3 MAC44:b1:76:17:f5:7c.
+Scan detected target channel1/WPA2 auth3/RSSI-47 but connection failed reason2.
+Controlled 8.5dBm cap (ESP-IDF34,quarter-dBm) initially showed state3; a repeat
+was inconclusive, so no fix was declared from that alone. Final diagnostic
+queues callback events and prints in loop, avoiding callback Serial/network
+reads; build953875/36152 compiled/uploaded with verified hashes. Confirmed
+GOT_IP10.153.76.243 gateway10.153.76.224 and repeated connected reports over
+38seconds at RSSI-41..-49. Both transmit-power set/read calls returned ESP_OK.
+Applied the observed working cap to production voice_unit before connecting;
+otherwise preserved its audio/light/IR-omitted contract. Production build999841/
+37976 compiled and uploaded COM18 with verified hashes, then booted core3.3.11.
+Serial confirmed cap8.5dBm, DHCP, receiver10.153.76.45:5005, light UDP5006 and
+connected state3. Packets_sent240/553/866 with5 initial send_errors unchanged
+across later reports. Two pings to10.153.76.243 succeeded (74/126ms); Windows
+neighbour entry Reachable matched44-B1-76-17-F5-7C, confirming production C3 IP.
+The cap is an observed board/network setting; hardware root cause is unproven
+and other security modes/range/long-run stability have not passed. No microphone
+recording/WAV, physical light cycle, receiver packet verification or end-to-end
+voice acceptance. F3 and F2/Phase5 acceptance remain pending. S3/Uno Q were not
+reflashed or reconfigured. C3 now runs production voice_unit, not diagnostic.
+Serial captures closed/disposed their ports. Logs/builds/local secrets ignored;
+git diff --check passed, both secrets headers confirmed ignored. Existing HEAD
+bf89885; no commit/push requested/performed and no intended commit message yet.
+Exact next action: when user is ready, verify receiver packet delivery and run
+F3 mic/light checks with confirmed destination, then obtain actual acceptance.
+If using laptop bench checker, destination must be changed from Uno Q to the
+confirmed laptop10.153.76.189 first; do not run it against the wrong receiver.
+
+## Persistent header C/C++1696 editor repair - 2026-10-04
+User reports pragma-once underline; exact diagnostic is include errors detected,
+update compile_commands.json/includePath, C/C++1696. Editor configuration log
+shows voice_unit.ino using the S3 camera_head database and fallback includePath.
+Arduino compile database lists generated .ino.cpp, not original .ino files.
+Added .vscode/refresh_firmware_intellisense.py and README; both board profiles
+now reference ignored firmware/.build/intellisense_commands.json. Refresher maps
+original camera_head/voice_unit/wifi_diagnostic sketches to their actual compiler
+commands with -x c++; verified all3 mapped sources exist and match argument once.
+Added each SDK cpp_flags/includes/defines response files and -iprefix to fallback
+compilerArgs so standalone headers have SDK defines and architecture flags.
+Header probe containing only include IPAddress.h passes syntax-only with both
+C3 and S3 compiler/fallback flags. Initial probe invocation mistakenly filtered
+all include paths and failed; corrected probe passed both. JSON validates;
+git diff --check passes for editor changes. Original pragma/header credentials
+and firmware source untouched in this editor turn; no compile/flash or hardware
+acceptance performed. No GUI confirmation that underline cleared yet. Exact
+next editor action: select C3 profile, Reset IntelliSense Database, then reload
+window; user confirms clearance or supplies missing-header follow-on diagnostic.
+Existing HEAD bf89885, no commit/push. Preserve existing C3/S3 work and unrelated
+enclosure/. New helper must be rerun after completed Arduino compilations; do
+not claim this editor change completes pending F2/F3/Phase5 acceptance.

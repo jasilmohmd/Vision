@@ -1,0 +1,19 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Vision live camera</title>
+<style>body{margin:0;background:#151719;color:#f6f3ed;font:16px system-ui,sans-serif}main{max-width:960px;margin:auto;padding:24px}a{color:#c6e0ac}img{display:block;width:100%;aspect-ratio:4/3;object-fit:contain;background:#000;border-radius:12px}p{line-height:1.5}#connection{color:#a9afb2}</style>
+</head><body><main><a href="/">Camera roll</a><h1>Live camera &amp; tracking</h1><img id="camera" alt="Live S3 camera with tracking box, mode, pan and tilt"><p id="connection" role="status">Connecting to camera?</p><p>Say <strong>camera track person</strong> to follow a person.<br>Say <strong>camera stop tracking</strong>, then pause, to stop following. The view should show <strong>IDLE</strong>.<br>Say <strong>camera shoot</strong> to save a photo.</p></main>
+<script>
+const camera=document.getElementById('camera'),status=document.getElementById('connection');let currentURL;
+async function refresh(){
+ if(document.hidden){setTimeout(refresh,1000);return}
+ try{
+  const response=await fetch('/live/frame.jpg',{cache:'no-store'});
+  if(!response.ok)throw new Error('waiting');
+  const next=URL.createObjectURL(await response.blob());
+  camera.src=next;if(currentURL)URL.revokeObjectURL(currentURL);currentURL=next;
+  status.textContent='Live view ? tracking status is shown on the image.';
+ }catch{status.textContent='Waiting for camera; reconnecting?'}
+ setTimeout(refresh,250);
+}
+refresh();
+</script></body></html>

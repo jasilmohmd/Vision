@@ -1,7 +1,7 @@
-# Example hotspot addresses; confirm the real addresses at Gate 0.
-s3_ip: 192.168.43.101
-c3_ip: 192.168.43.102
-unoq_ip: 192.168.43.103
+# Board addresses supplied by user on 2026-10-04. Phase5 uses separate laptop-mock config.
+s3_ip: 10.153.76.67
+c3_ip: 10.153.76.243
+unoq_ip: 10.153.76.45
 camera_http_port: 80
 camera_stream_port: 81
 audio_port: 5005

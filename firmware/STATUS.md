@@ -890,3 +890,114 @@ historical-address clarification. No host-key verification bypass.
 Exact next action after publishing: wait for user's readiness, recheck DHCP
 addresses/headset ID, then run Phase5 mock flow/phone gallery/benchmark and
 record actual acceptance. Do not advance gates or auto-start live tests.
+
+## C3 voice implementation and authorized flashing - 2026-10-04
+User requested flash it immediately after being told C3 has only mic bench and
+needs production voice implementation. This explicitly resumes C3 work beyond
+prior S3-only/F3 deferral; S3/F2 acceptance remains pending, not retroactively
+passed. Known tested micGPIO4/5/6 L/Rgrounded, pixelGPIO7 GRB brightness40,
+SHIFT14 retained; IR omitted. User previously reported all boards connected.
+Implemented voice_unit.ino:16kHz mono-left32bit I2S, clipped little-endian16bit
+512sample/1024byte UDP5005 to confirmed Uno Q10.153.76.45; independent audio
+task and bounded UDP5006 light processing, all8 contract states with timed
+transient restoration, reconnect indication and offline audio discard.
+Added standalone check_voice_unit.py/voice README/tools docs. Syntax/help and
+signed PCM RMS/peak/empty-buffer checks passed. No speech/audio WAV/light-cycle
+acceptance run (user deferred tests); packet loss is estimated, not exact.
+Ignored C3 secrets created from local S3 configuration with DHCP and confirmed
+Uno Q destination. Compared/synchronized privately with Uno Q working hotspot
+profile; old values matched. No password values printed or stored in context.
+Initial compile998525 program bytes/37976 globals, flash success with hash
+verification; esptool verified COM18 ESP32-C3 AZrev1.1/4MB/MAC44:b1:76:17:f5:7c.
+Boot confirmed mic/I2S initialization andIRomission but Wi-Fi did not obtainIP.
+Added disconnect reasons/45s manual retry spacing and malformed-NUL rejection.
+Diagnostic build999451/37976 compiled/flashed successfully; boot shows
+reason2 authentication expiry,201 noAP and36 association-related failure.
+Installed SDK confirms WPA3/SAE/H2E enabled. Uno Q remains connected on WPA3
+and S3 status still responds. No conclusion that all C3 WPA3 is unsupported.
+Trying explicit WPA3_SAE_PWE_BOTH station configuration before connection;
+compile/upload/boot result to follow. No static IP guessed or gate declared
+complete. Existing HEADbf89885; no commit/push requested in this flash turn.
+
+## Final C3 flash result; Wi-Fi acceptance pending - 2026-10-04
+Explicit SAE-both build compiled exit0:999581 program bytes,37976 globals,
+core3.3.11/C3 CDCOnBoot. Uploaded successfully to verified COM18 ESP32-C3;
+written-data hashes verified. Serial boot confirms voice_unit/reset_reason11,
+mic4/5/6/SHIFT14, IRomitted, DHCP mode anddestination10.153.76.45:5005.
+No DHCP IP obtained: repeated reason2 (authentication expiry) on current WPA3
+hotspot even with supported SAE methods explicitly enabled. Do not claim Wi-Fi,
+UDP audio delivery, physical lights, speech clarity or full F3 acceptance passed.
+Final ignored logs:voice-unit-sae-compile.log/upload.log/serial.log under.build.
+C3 now retains this final production build, replacing mic_level bench. S3 code
+and Uno Q app/runtime were not changed; no user voice recording/WAV or colour
+cycle performed. Final checker syntax/help and PCM math checks pass; firmware
+whitespace check passes. Credentials/builds/diagnostic helper remain ignored.
+User prompted to temporarily select2.4GHz/WPA2-Personal with unchanged password
+and restart hotspot; answer pending. Exact next action: after user confirms,
+read C3 Serial/recheck Uno Q current DHCP address and audio destination, then
+verify connection/packet presence without recording until user is ready. If
+connection fails on WPA2 too, diagnose signal/power/hotspot access restrictions;
+do not assume firmware or microphone hardware has passed from compilation.
+No commit/push in this turn; new C3 firmware/checker/docs and shared context
+are local. Existing HEADbf89885. F2 camera acceptance and Phase5 mock/gallery/
+benchmark remain deferred; F3 network and physical acceptance are IN PROGRESS.
+
+User replied I can't change the hotspot now. Leave the successfully flashed
+C3 build in place; defer connection/voice/colour acceptance until a suitable
+network or hotspot settings are available. No additional retry or flash.
+Exact next action: user supplies available same-network connection conditions,
+then recheck C3 authentication and DHCP before recording or claiming acceptance.
+No verified C3 IP can be supplied yet. Code/context remain uncommitted locally.
+
+## C3 header editor fix and WPA2 compatibility preparation - 2026-10-04
+User requests pragma-once/include editor fix, C3 IP and impact of WPA2 on Uno Q.
+Added explicit ESP32-C3 SuperMini configuration (riscv compiler/variant/C3 SDK/
+I2S/NeoPixel/build database); retained S3 configuration. Associated .h with C++.
+Both configurations' compiler/database/include paths exist and JSON validates.
+pragma once is valid; final C3 compilation already passed999581/37976. No source
+pragma removed, credentials changed, extra compile/upload or editor visual QA.
+Next editor action: select C3 profile and reload; confirm red underline clearance.
+Read Uno Q active profile Jasil1: originally key-mgmtsae (WPA3only). Modified only
+key-mgmt to wpa-psk (NetworkManager supports WPA2+WPA3 personal); verified field.
+Kept password/PMF0/network active; wlan0 remains10.153.76.45/24. No reactivation,
+service restart, app/model changes or firmware flash required for this profile
+compatibility update. Original profile UUIDa2a07a5a-67b2-4891-a812-ca948b4b7bc5.
+C3 still has no verified IP on current WPA3 hotspot; user needs WPA2/2.4GHz trial
+with same SSID/password. After hotspot restart, recheck all DHCP addresses and
+update C3 audio destination only if verified Uno Q address changes. Don't claim
+C3 connection before actual boot/packet evidence. Physical/voice acceptance and
+Phase5 live checks remain deferred. No commit/push; changes remain local.
+
+## Authorized C3 diagnostic and restored production connection - 2026-10-04
+User said go ahead after the Wi-Fi-only diagnostic proposal. This authorizes
+this targeted firmware diagnostic despite Session A ownership; scope remains
+C3 troubleshooting/restoration, not future phases or app/contract changes.
+Created firmware/bench/wifi_diagnostic with ignored local secrets copied from
+voice_unit; no credentials printed or committed. Default-power build953413/
+36144 compiled and flashed verified COM18 ESP32-C3 MAC44:b1:76:17:f5:7c.
+Scan detected target channel1/WPA2 auth3/RSSI-47 but connection failed reason2.
+Controlled 8.5dBm cap (ESP-IDF34,quarter-dBm) initially showed state3; a repeat
+was inconclusive, so no fix was declared from that alone. Final diagnostic
+queues callback events and prints in loop, avoiding callback Serial/network
+reads; build953875/36152 compiled/uploaded with verified hashes. Confirmed
+GOT_IP10.153.76.243 gateway10.153.76.224 and repeated connected reports over
+38seconds at RSSI-41..-49. Both transmit-power set/read calls returned ESP_OK.
+Applied the observed working cap to production voice_unit before connecting;
+otherwise preserved its audio/light/IR-omitted contract. Production build999841/
+37976 compiled and uploaded COM18 with verified hashes, then booted core3.3.11.
+Serial confirmed cap8.5dBm, DHCP, receiver10.153.76.45:5005, light UDP5006 and
+connected state3. Packets_sent240/553/866 with5 initial send_errors unchanged
+across later reports. Two pings to10.153.76.243 succeeded (74/126ms); Windows
+neighbour entry Reachable matched44-B1-76-17-F5-7C, confirming production C3 IP.
+The cap is an observed board/network setting; hardware root cause is unproven
+and other security modes/range/long-run stability have not passed. No microphone
+recording/WAV, physical light cycle, receiver packet verification or end-to-end
+voice acceptance. F3 and F2/Phase5 acceptance remain pending. S3/Uno Q were not
+reflashed or reconfigured. C3 now runs production voice_unit, not diagnostic.
+Serial captures closed/disposed their ports. Logs/builds/local secrets ignored;
+git diff --check passed, both secrets headers confirmed ignored. Existing HEAD
+bf89885; no commit/push requested/performed and no intended commit message yet.
+Exact next action: when user is ready, verify receiver packet delivery and run
+F3 mic/light checks with confirmed destination, then obtain actual acceptance.
+If using laptop bench checker, destination must be changed from Uno Q to the
+confirmed laptop10.153.76.189 first; do not run it against the wrong receiver.

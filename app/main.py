@@ -27,7 +27,8 @@ def run(config, args):
     from app.voice.recognizer import VoiceRecognizer
 
     stop, display_lock = Event(), Lock()
-    display = {'frame': None, 'box': None, 'offset': None}
+    display = {'frame': None, 'box': None, 'offset': None, 'fresh': False,
+               'mode': 'IDLE', 'pan': 90, 'tilt': 90, 'target': None}
     failures = []
     host = '127.0.0.1' if args.mock else config.s3_ip
     light_host = '127.0.0.1' if args.mock else config.c3_ip
@@ -54,7 +55,28 @@ def run(config, args):
         stream = MjpegStream(f'http://{host}:{config.camera_stream_port}/stream')
         stream.start()
         cleanup.callback(stream.close)
-        gallery = GalleryServer(store, port=config.gallery_port)
+        def live_frame():
+            # Read the same snapshot as the local preview; never open another stream.
+            with display_lock:
+                frame = display['frame'].copy() if display['frame'] is not None else None
+                snapshot = {key: value for key, value in display.items() if key != 'frame'}
+            if frame is None:
+                return None
+            box, offset = snapshot['box'], snapshot['offset']
+            if box:
+                x, y, w, h = map(round, box)
+                cv2.rectangle(frame, (x, y), (x+w, y+h), (0, 255, 0), 2)
+            cv2.rectangle(frame, (0, 0), (frame.shape[1], 43), (0, 0, 0), -1)
+            label = f"{snapshot['mode']} pan={snapshot['pan']} tilt={snapshot['tilt']}"
+            cv2.putText(frame, label, (5, 16), cv2.FONT_HERSHEY_SIMPLEX, .4, (255,255,255), 1)
+            detail = (f'dx={offset[0]:+.2f} dy={offset[1]:+.2f}' if offset else
+                      ('Camera reconnecting' if not snapshot['fresh'] else
+                       ('Searching for subject' if snapshot['target'] else 'Tracking stopped')))
+            cv2.putText(frame, detail, (5, 35), cv2.FONT_HERSHEY_SIMPLEX, .4, (255,255,255), 1)
+            ok, jpeg = cv2.imencode('.jpg', frame, [cv2.IMWRITE_JPEG_QUALITY, 75])
+            return jpeg.tobytes() if ok else None
+
+        gallery = GalleryServer(store, port=config.gallery_port, live_frame=live_frame)
         gallery.start()
         cleanup.callback(gallery.close)
 
@@ -95,7 +117,9 @@ def run(config, args):
                         offset, box = None, None
                     state.tick(offset)
                     with display_lock:
-                        display.update(frame=frame, box=box, offset=offset)
+                        display.update(frame=frame, box=box, offset=offset, fresh=fresh,
+                                       mode=state.mode.value, pan=controller.pan,
+                                       tilt=controller.tilt, target=state.tracking_target)
                 except CameraOffline as error:
                     logging.warning('%s', error)
                     lights.send('error')

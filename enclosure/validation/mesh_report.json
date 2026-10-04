@@ -1,0 +1,218 @@
+[
+  {
+    "file": "C1.stl",
+    "triangles": 2582,
+    "components": [
+      {
+        "triangles": 2582,
+        "min": [
+          -20.8872,
+          -20.8872,
+          0.0
+        ],
+        "max": [
+          41.4,
+          20.8872,
+          61.7
+        ]
+      }
+    ],
+    "nonmanifold_edges": 0,
+    "winding_errors": 0,
+    "degenerate_triangles": 0,
+    "signed_volume_mm3": 42006.893,
+    "passed": true
+  },
+  {
+    "file": "C1_vertical.stl",
+    "triangles": 2308,
+    "components": [
+      {
+        "triangles": 2308,
+        "min": [
+          -20.8872,
+          -48.662,
+          0.0
+        ],
+        "max": [
+          41.4,
+          20.8872,
+          52.0
+        ]
+      }
+    ],
+    "nonmanifold_edges": 0,
+    "winding_errors": 0,
+    "degenerate_triangles": 0,
+    "signed_volume_mm3": 42374.932,
+    "passed": true
+  },
+  {
+    "file": "C2.stl",
+    "triangles": 2444,
+    "components": [
+      {
+        "triangles": 2444,
+        "min": [
+          -38.2,
+          -22.4,
+          0.0
+        ],
+        "max": [
+          38.2,
+          22.4,
+          62.98
+        ]
+      }
+    ],
+    "nonmanifold_edges": 0,
+    "winding_errors": 0,
+    "degenerate_triangles": 0,
+    "signed_volume_mm3": 18874.866,
+    "passed": true
+  },
+  {
+    "file": "C3.stl",
+    "triangles": 5420,
+    "components": [
+      {
+        "triangles": 5420,
+        "min": [
+          -23.4,
+          -38.4,
+          0.0
+        ],
+        "max": [
+          23.4,
+          38.4,
+          25.8
+        ]
+      }
+    ],
+    "nonmanifold_edges": 0,
+    "winding_errors": 0,
+    "degenerate_triangles": 0,
+    "signed_volume_mm3": 23001.714,
+    "passed": true
+  },
+  {
+    "file": "C4.stl",
+    "triangles": 5600,
+    "components": [
+      {
+        "triangles": 5600,
+        "min": [
+          -20.4,
+          -38.4,
+          0.0
+        ],
+        "max": [
+          20.4,
+          38.4,
+          25.6
+        ]
+      }
+    ],
+    "nonmanifold_edges": 0,
+    "winding_errors": 0,
+    "degenerate_triangles": 0,
+    "signed_volume_mm3": 21921.081,
+    "passed": true
+  },
+  {
+    "file": "P5.stl",
+    "triangles": 5136,
+    "components": [
+      {
+        "triangles": 5136,
+        "min": [
+          -50.4,
+          -26.8,
+          0.0
+        ],
+        "max": [
+          50.4,
+          34.8,
+          32.0
+        ]
+      }
+    ],
+    "nonmanifold_edges": 0,
+    "winding_errors": 0,
+    "degenerate_triangles": 0,
+    "signed_volume_mm3": 33022.769,
+    "passed": true
+  },
+  {
+    "file": "P6.stl",
+    "triangles": 5508,
+    "components": [
+      {
+        "triangles": 5508,
+        "min": [
+          -50.4,
+          -26.8,
+          0.0
+        ],
+        "max": [
+          50.4,
+          26.8,
+          3.2
+        ]
+      }
+    ],
+    "nonmanifold_edges": 0,
+    "winding_errors": 0,
+    "degenerate_triangles": 0,
+    "signed_volume_mm3": 10969.393,
+    "passed": true
+  },
+  {
+    "file": "P7_back.stl",
+    "triangles": 3468,
+    "components": [
+      {
+        "triangles": 3468,
+        "min": [
+          -14.9679,
+          -24.743,
+          0.0
+        ],
+        "max": [
+          14.9679,
+          25.603,
+          14.9679
+        ]
+      }
+    ],
+    "nonmanifold_edges": 0,
+    "winding_errors": 0,
+    "degenerate_triangles": 0,
+    "signed_volume_mm3": 6638.727,
+    "passed": true
+  },
+  {
+    "file": "P7_front.stl",
+    "triangles": 4752,
+    "components": [
+      {
+        "triangles": 4752,
+        "min": [
+          -14.9679,
+          -24.743,
+          0.0
+        ],
+        "max": [
+          14.9679,
+          25.603,
+          17.8301
+        ]
+      }
+    ],
+    "nonmanifold_edges": 0,
+    "winding_errors": 0,
+    "degenerate_triangles": 0,
+    "signed_volume_mm3": 6401.437,
+    "passed": true
+  }
+]

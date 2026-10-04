@@ -1,5 +1,168 @@
 # Project scope and architecture
 
+## Complete-project publication preparation - 2026-10-04
+
+User explicitly requested update contexts then commit and push EVERYTHING.
+This authorizes publication of all existing software,deployment,firmware,CAD,
+editor and context changes; no new firmware implementation or future phases.
+Existing HEAD before this commit:bf898850ed1fe0a0fc68a9f5c0e6a6a948f1087b
+Intended commit message:feat: publish live tracking, C3 firmware and enclosure models
+Do not invent the resulting commit hash;Git log is authoritative after publish.
+
+Scope:read-only live annotated /live + /live/frame.jpg using UnoQ's existing
+tracking snapshot,gallery link;new gallery tests;Phase5 network diagnostic and
+quote-safe runner/current-IP deployment docs;user board config;existing C3
+voice_unit and Wi-Fi diagnostic/checker/docs/context;ESP32C3/S3 editor setup;
+enclosure OpenSCAD,9 STL exports,previews and validation;durable issue handoffs.
+Root context records below preserve separate firmware/CAD histories. Root current
+handoff supersedes older firmware notes claiming no receiver tests had yet run.
+No credentials,private media,model/toolchain archives or ignored runtime logs.
+
+Fresh commit checks:129 pytest tests pass (7.56s);bash syntax for Phase5 runner
+passes;normal Git diff --check passes. C3 production sketch compiled999841bytes
+program/37976globals;Wi-Fi diagnostic953875program/36152globals,exit0 for both,
+no hardware upload. All9 existing STL meshes pass standard-library validation.
+No credential scan matches;both ignored secrets.h and private WAV/JPEG confirmed
+excluded. HEAD/origin main synchronized before commit. Source tests/compilation
+are not physical hardware acceptance;no phase/gate declared complete.
+
+Latest live run is STOPPED:app log ends^C,result exit0,no app process found via
+USB;owned serial reader26616 absent. User said everything powered from laptop.
+Current known IPs S3 10.153.76.67,UnoQ 10.153.76.45,C3 10.153.76.243;reverify DHCP
+before future run. Full application runs on UnoQ;live URLhttp://10.153.76.45:8080/live.
+Manual run has no timer;Ctrl+C stops it. Runtime-local launch scripts are ignored,
+not part of reproducible firmware fix;README documents normal runtime command.
+
+Confirmed blockers:repeated S3brownouts after servo motion (power topology and
+under-load voltage need hardwareteam);C3 USB logging suspected to stall audio
+when serial reader closed (open31.41packets/s vsclosed2.265s gap). See
+HARDWARE_POWER_ISSUE.md and FIRMWARE_AUDIO_ISSUE.md. Original five-second C3
+checker failed42.4% rate shortfall. All8 light states were sent but physical
+colour/clear-WAV confirmation not received. Live direction/track/shoot accepted,
+photosIMG_0001/0002 saved in actual logs;phone-new-photo/fullmotion smoothness
+unconfirmed. Spoken camera stop tracking accepted at least once after initial
+recognition complaints. Network14.45FPS is NOT CPU benchmark;UnoQ benchmark
+still unrun. Full mock/hardware acceptance remains pending despite publication.
+
+Next resume:read this handoff and issue docs;resolve S3power and nonblocking C3
+logging through hardwareteam/SessionB;verify gates,then full real-component
+tracking/photo/physicallights/phone-gallery and actualCPUbenchmark. Do not
+restart automatically or implement later phases merely because commit pushed.
+Update context before every future commit;preserve other sessions' work.
+
+---
+
+## Live annotated browser view deployed and verified - 2026-10-04
+
+User requested visible live camera/tracking and reported no response to spoken
+stop tracking. Correct exact phrase remains "camera stop tracking". Existing
+logs had no accepted stop command; no voice threshold/gain change or speech fix
+claimed. Existing state test covers transition to IDLE when command accepted.
+User then requested restart with live visual; implemented requested view only.
+
+Added /live browser page and /live/frame.jpg to existing Uno Q gallery8080.
+Uses read-only callback from the existing control/display snapshot,without
+opening another S3 stream or running detection on laptop. JPEG includes green
+box,mode,pan/tilt,dx/dy,search/stopped/reconnect indication. Page polls one request
+at a time every250ms,backs off when hidden,retries unavailable camera. Routes
+return404 without provider,503 while no frame,no-store caching. Gallery root
+links live view. No browser control/movement route added.
+Files:app/main.py,app/gallery/server.py,templates/index.html,templates/live.html;
+new tests/test_live_gallery.py. Full129 tests pass (7.49s),remote py_compile passed.
+
+Prior manual-stop app/monitor had already ended (no Python receiver or owned
+reader present); cause not established. Preserved prior app log, deployed only
+runtime source/templates over verified USB ADB,then restarted no-time-limit app
+and serial workaround. New monitor PID22888,COM18/C3+COM19/S3. Same stop marker
+and Ctrl+C console cleanup;no app/monitor timeout. No firmware changes.
+Actual remote Ready05:40:53.796,accepted track person05:40:57.713. Live page200,
+JPEG200,image/jpeg,decoded320x240. Visually inspected actual frame:greenperson
+box,TRACKING,pan43/tilt93,dx-0.04/dy-0.12. Opened user's browser to
+http://10.153.76.45:8080/live. Also accessible on phone same network.
+Image/private evidence ignored logs/vision-live-preview-{check.jpg,result.json}.
+
+Next: user says camera stop tracking,pause;watch IDLE and box disappear. If no
+recognition,response remains voice issue; don't claim it fixed from visual UI.
+Original user physical full-test/phone-new-photo confirmation,CPU benchmark and
+standalone USB-logging fix remain pending. App continues until user Ctrl+C in
+Vision - RUNNING until Ctrl+C. ExistingHEADbf89885;no commit/push. Context updated
+before ending and must be refreshed before every future commit. Preserve separate
+firmware/CAD/editor work and shared records.
+
+---
+
+## Current update: C3 microphone selected - 2026-10-04
+
+User explicitly requested INMP441 on ESP32-C3 Super Mini; do not use Bluetooth
+headset or laptop microphone. This supersedes earlier boAt preference.
+Laptop voice mock has exited with PortAudio channel error; it is not supplying
+audio. Firmware handoff confirms production C3 10.153.76.243 sends 16kHz mono
+s16le, 512 samples/1024 bytes to Uno Q 10.153.76.45:5005. No firmware edits.
+Opening ignored logs/check-c3-mic-console.ps1: password entered only locally,
+strict verified host key; uploads diagnostic shell, refuses concurrent app,
+then existing tools.demo_voice --mic udp --levels --seconds 180 on Uno Q.
+This check recognizes commands only; no camera requests, photos or light commands.
+Receiver delivery, speech clarity and acceptance remain pending actual output.
+Next: authenticate in C3 console; wait for Listening, say camera track person,
+pause, then camera shoot. Review levels/events. Keep camera on laptop mock for
+Phase5; do not switch to real S3 or declare firmware gates complete.
+
+Remote source refresh/preflight subsequently succeeded (older failure notes
+below are historical): all three models, CSRT/KCF,16 checksums passed.
+User's 60s UnoQ-to-laptop read-only stream diagnostic passed:875frames,
+60.569s,14.45 received FPS,max chunk gap1.011s,errors[],ok=true,SSH exit0.
+PowerShell NativeCommandError on normal SSH connection-close text was cosmetic.
+Received FPS is network delivery, not CPU inference benchmark.
+Quote-safe deploy/run_phase5.sh and read-only check_mock_network.py added;
+latest local full suite126 passed, bash syntax passed. Phase5 full flow,
+phone gallery and UnoQ CPU benchmark still pending; no commit/push this update.
+Laptop camera mock PID11448 remains active (no automatic expiry); stop owned
+mock after acceptance or user stop. Firmware/CAD/editor work preserved.
+Context must be refreshed before every commit. Current known HEAD bf89885;
+no intended commit yet while acceptance pending.
+
+---
+
+## Updated network and Phase5 restart - 2026-10-04T10:04:50+05:30
+
+User supplied updated board addresses: S3 camera10.153.76.67, UnoQ10.153.76.45,
+C310.153.76.243. Laptop Wi-Fi currently10.153.76.189, gateway10.153.76.224.
+These supersede old192.168.29.* addresses and example192.168.43.* board addresses.
+UnoQ new TCP22 reachable, oldUnoQ192.168.29.199 timed out. Board IPs are user-supplied;
+no real S3/C3 endpoint or hardware acceptance performed by Session A.
+
+Updated root config.yaml with real user board addresses (ports unchanged). Phase5
+must still use generated config.phase5.yaml: s3_ip and c3_ip BOTH10.153.76.189
+(laptop mocks), unoq_ip10.153.76.45, photos relative. No real-board integration
+started or firmware edits. Updated copy helper's default UnoQ and deploy runbook.
+Both config checks pass;21 config/deployment tests pass. Latest HEADbf89885
+contains Phase5 prep; later-current voice code includes64994af bounded-silence fix.
+
+Previous bounded mocks/app expired; no old Python/SSH sessions found before restart.
+Headset boAt MME ID is now5 (ID4 now AMD array); confirmed inventory and selected5.
+New camera/headset mocks launched on currentLAN for30min. Camera/status verified
+ready; voice mock announces audio->10.153.76.45:5005 and listens10.153.76.189:5006.
+Interactive new-network source-copy/live console opened. User supplies SSH passwords
+there. Reuses previous trusted UnoQ host key via temporary HostKeyAlias192.168.29.199,
+StrictHostKeyChecking=yes; new-address handshake passes key check but BatchMode
+cannot authenticate without password. No trust disabled or credentials stored.
+
+Current package includes runtime source/new mock config/latest voice fix, excludes
+firmware/CAD/private media/secrets. Only source archive is recopied; installed models
+and photos remain. Remote check-only verifies16 model hashes, then starts app for10min.
+This source update and new-network app readiness are pending user authentication;
+do not claim remote refresh complete before log evidence. Ignored scripts/logs:
+logs/phase5-new-network-{app,voice,camera}*, processes JSON. Source archive39712 bytes.
+Next: user completes login/copy, app Ready, spoken track person/shoot, saved print,
+phone gallery http://10.153.76.45:8080 and crop http://10.153.76.189:81/stream.
+Then stop app and benchmark on UnoQ against new laptop stream; old benchmark URLs
+must not be used. Phase5 live/benchmark acceptance remains pending. No commit/push.
+Preserve separate CAD and Session B records/work; context updated before any commit.
+
+---
+
+Prior network addresses are historical; preserve separate CAD/firmware entries.
+
 ## CAD artifact map - 2026-10-04
 
 enclosure/vision_enclosures.scad is a standalone parametric model for seven
@@ -321,3 +484,17 @@ historical-address clarification. No host-key verification bypass.
 Exact next action after publishing: wait for user's readiness, recheck DHCP
 addresses/headset ID, then run Phase5 mock flow/phone gallery/benchmark and
 record actual acceptance. Do not advance gates or auto-start live tests.
+
+firmware/voice_unit/voice_unit.ino now implements the C3 I2S/UDP audio and timed
+NeoPixel contract. firmware/tools/check_voice_unit.py is the standalone5s audio/
+light checker; private WAVs default to ignored firmware/.build. Current C3
+production build999581/37976 flashed, but no Wi-Fi IP yet (WPA3 auth expiry).
+Compile/boot is not real voice integration acceptance. Secrets remain ignored.
+
+## C3 connection setting - 2026-10-04
+User authorized the targeted Wi-Fi diagnostic/restoration. Keep production C3
+TX cap8.5dBm after start and before connect: WPA2 default-power diagnostic failed,
+reduced-power queued diagnostic obtained DHCP10.153.76.243, and restored voice
+firmware was reachable at that IP with matching C3 MAC. Root hardware cause is
+not proven; do not generalize to all C3 boards/WPA3. DHCP addresses may change.
+F3 audio/colour/receiver/voice acceptance still pending; no contract changes.

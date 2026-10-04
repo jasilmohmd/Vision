@@ -201,3 +201,24 @@ See [deploy/README.md](deploy/README.md) for source/model transfer, the Linux
 installer, laptop LAN mocks, phone-gallery acceptance and Uno Q benchmark.
 S3/C3 IPs are deferred; this phase uses laptop mocks. Do not run --mock on Uno Q
 when its mock servers are on the laptop; use the separate config.phase5.yaml.
+
+## Live tracking view on Uno Q
+
+After confirming hardware gates and updating board addresses in config.yaml,
+run from the deployed project directory:
+
+```bash
+.venv/bin/python -m app.main --config config.yaml --mic udp --seconds 0
+```
+
+Open `http://<UNOQ_IP>:8080/live` on the laptop or phone on the same network.
+The page shows the existing camera feed with its tracking box, mode, pan/tilt
+and offsets; it does not open another S3 stream. Say **camera track person**
+to follow a person and **camera stop tracking**, then pause, to return to IDLE.
+Use the Camera roll link for saved photos. Ctrl+C in the app terminal stops
+the run; `--seconds 0` has no time limit.
+
+Current hardware blockers and the temporary serial-reader workaround are
+recorded in [power diagnosis](context/HARDWARE_POWER_ISSUE.md) and
+[C3 audio diagnosis](context/FIRMWARE_AUDIO_ISSUE.md). Publication does not
+mean these hardware acceptance checks have passed.

@@ -15,3 +15,10 @@ Target/command readback cannot measure physical servo position; observe motion.
 Do not run simultaneously with the app: the stream server serves one viewer.
 
 check_voice_unit.py remains a Phase F3 task.
+
+Phase F3: check_voice_unit.py --ip <C3_IP> runs on the configured audio receiver.
+It records5s of UDP5005 PCM to ignored .build/voice_checks/check.wav, checks1024
+byte packet sizes and observed rate/RMS/peak, then sends all8 light states.
+User readiness is required before the microphone/colour checks. It cannot
+measure exact packet loss because the contract PCM datagrams have no sequence
+numbers; estimated rate shortfall is reported explicitly. IR remains omitted.

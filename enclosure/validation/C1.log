@@ -1,0 +1,16 @@
+ECHO: camera_outer = [40.8, 76.8, 39.6], yoke_gap = 69.8, tilt_axis_above_plate = 48
+ECHO: voice_internal = [96.8, 49.6, 30]
+ECHO: "PROTOTYPE: measure components and test joint motion before full printing."
+Geometries in cache: 59
+Geometry cache size in bytes: 429816
+CGAL Polyhedrons in cache: 17
+CGAL cache size in bytes: 7078960
+Total rendering time: 0:00:07.417
+   Top level object is a 3D object:
+   Simple:        yes
+   Vertices:     1290
+   Halfedges:    4242
+   Edges:        2121
+   Halffacets:   1672
+   Facets:        836
+   Volumes:         2

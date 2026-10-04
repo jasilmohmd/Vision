@@ -6,8 +6,8 @@ integration begins only at later gates. Service/autostart work belongs to Phase8
 
 ## Known network and login
 
-User supplied Uno Q LAN IP192.168.29.199 and confirmed SSH/hotspot readiness.
-Laptop Wi-Fi IP192.168.29.58 was observed locally when preparing this phase.
+User supplied Uno Q LAN IP10.153.76.45 and confirmed SSH/hotspot readiness.
+Laptop Wi-Fi IP10.153.76.189 was observed locally when preparing this phase.
 Recheck both after changing networks. User confirmed SSH username arduino; no password is stored in scripts or context. The laptop and Uno Q must be mutually reachable,
 not merely have access to the same hotspot; disable hotspot client isolation if
 it prevents this. Keep host-key verification enabled.
@@ -17,7 +17,7 @@ it prevents this. Keep host-key verification enabled.
 From the repository root:
 
 ```powershell
-.\deploy\copy_to_unoq.ps1 -User arduino -UnoqIp 192.168.29.199 -LaptopIp 192.168.29.58
+.\deploy\copy_to_unoq.ps1 -User arduino -UnoqIp 10.153.76.45 -LaptopIp 10.153.76.189
 ```
 
 This packages runtime source and the three required models, copies two archives
@@ -51,11 +51,11 @@ Use a different -RemoteDirectory if ~/Vision is used by another deployment.
 On the laptop, in separate terminals, select your actual microphone device ID:
 
 ```powershell
-.\.venv\Scripts\python.exe -m tools.mock_camera --bind 192.168.29.58
-.\.venv\Scripts\python.exe -m tools.mock_voice_unit --host 192.168.29.199 --bind 192.168.29.58 --device 4
+.\.venv\Scripts\python.exe -m tools.mock_camera --bind 10.153.76.189
+.\.venv\Scripts\python.exe -m tools.mock_voice_unit --host 10.153.76.45 --bind 10.153.76.189 --device MIC_ID
 ```
 
-Device4 was the boAt headset on this laptop; confirm with demo_voice --list-devices.
+Device IDs can change after reconnecting; choose the current input with demo_voice --list-devices.
 Wait for camera ready before running the Uno Q app. Allow this project Python
 through Windows Firewall for the shared network if prompted. Required traffic:
 Uno Q -> laptop TCP80/81 and UDP5006; laptop -> Uno Q UDP5005; phone -> Uno Q TCP8080.
@@ -71,9 +71,9 @@ cd ~/Vision
 
 Do NOT add --mock here: localhost would mean the Uno Q, not the laptop. Do NOT
 add --preview to the headless runtime. Say camera track person and move inside
-the laptop webcam view; view http://192.168.29.58:81/stream from a laptop browser
+the laptop webcam view; view http://10.153.76.189:81/stream from a laptop browser
 to observe the crop. Say camera shoot and confirm saved in the mock light console.
-From a phone on the same network, open http://192.168.29.199:8080 and confirm the
+From a phone on the same network, open http://10.153.76.45:8080 and confirm the
 newest photo opens at full resolution. Stop the app with Ctrl+C before benchmarking.
 No physical NeoPixel is needed for the mock's printed light message.
 
@@ -83,7 +83,7 @@ With laptop camera mock still running and a person visible in its crop:
 
 ```bash
 cd ~/Vision
-.venv/bin/python -m tools.bench_vision --config config.phase5.yaml --source http://192.168.29.58:81/stream --target person --frames 100 --output logs/phase5-benchmark.json
+.venv/bin/python -m tools.bench_vision --config config.phase5.yaml --source http://10.153.76.189:81/stream --target person --frames 100 --output logs/phase5-benchmark.json
 ```
 
 Record detected/tracked frames and detector-only/detector+tracker FPS, architecture
@@ -129,3 +129,21 @@ laptop camera mock running and benchmark:
 Do not report Phase5 passed from preflight alone. SSH also listens on port22,
 but the new IP's host key has not yet been enrolled in the laptop's SSH client;
 use the trusted USB connection to verify it rather than disabling verification.
+
+
+## Stream troubleshooting and quote-safe runner
+
+After copying the latest source, use the Linux runner to avoid Windows SSH command
+quoting problems. It checks for existing app processes and stops on guard errors:
+
+```bash
+bash deploy/run_phase5.sh network   # 60s read-only camera status/stream check
+bash deploy/run_phase5.sh live      # ten-minute app; stop old app first
+bash deploy/run_phase5.sh benchmark # 100 person frames; stop app first
+```
+
+Network results go to logs/phase5-network-unoq.json. The check counts received
+JPEGs and chunk gaps; it does not capture/save photos, ACK, move, or benchmark
+inference. A steady local stream with remote timeouts needs network diagnosis;
+keep firewall enabled and examine the shared hotspot connection. Do not count
+runtime setup or HTTP gallery access as full spoken/phone acceptance.
